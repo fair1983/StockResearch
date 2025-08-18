@@ -5,13 +5,88 @@ import { createChart, IChartApi, ISeriesApi, CandlestickData } from 'lightweight
 import { Candle } from '@/types';
 import { logger } from '@/lib/logger';
 
+// 取得時間框架顯示名稱
+function getTimeframeDisplayName(timeframe: string): string {
+  const timeframeMap: { [key: string]: string } = {
+    '1m': '1分鐘K',
+    '5m': '5分鐘K',
+    '15m': '15分鐘K',
+    '30m': '30分鐘K',
+    '60m': '60分鐘K',
+    '1d': '日K',
+    '1w': '週K',
+    '1M': '月K',
+  };
+  return timeframeMap[timeframe] || `${timeframe}K`;
+}
+
+// 根據時間框架取得時間軸設定
+function getTimeScaleOptions(timeframe: string) {
+  switch (timeframe) {
+    case '1m':
+    case '5m':
+    case '15m':
+    case '30m':
+    case '60m':
+      return {
+        timeVisible: true,
+        secondsVisible: true,
+        tickMarkFormatter: (time: number) => {
+          const date = new Date(time * 1000);
+          // 分K顯示：HH:MM 格式
+          const hours = date.getHours().toString().padStart(2, '0');
+          const minutes = date.getMinutes().toString().padStart(2, '0');
+          return `${hours}:${minutes}`;
+        },
+      };
+    case '1w':
+      return {
+        timeVisible: true,
+        secondsVisible: false,
+        tickMarkFormatter: (time: number) => {
+          const date = new Date(time * 1000);
+          // 週K顯示：MM/DD 格式
+          const month = (date.getMonth() + 1).toString().padStart(2, '0');
+          const day = date.getDate().toString().padStart(2, '0');
+          return `${month}/${day}`;
+        },
+      };
+    case '1M':
+      return {
+        timeVisible: true,
+        secondsVisible: false,
+        tickMarkFormatter: (time: number) => {
+          const date = new Date(time * 1000);
+          // 月K顯示：MM/YYYY 格式
+          const year = date.getFullYear();
+          const month = (date.getMonth() + 1).toString().padStart(2, '0');
+          return `${month}/${year}`;
+        },
+      };
+    case '1d':
+    default:
+      return {
+        timeVisible: true,
+        secondsVisible: false,
+        tickMarkFormatter: (time: number) => {
+          const date = new Date(time * 1000);
+          // 日K顯示：MM/DD 格式 (參考 TradingView)
+          const month = (date.getMonth() + 1).toString().padStart(2, '0');
+          const day = date.getDate().toString().padStart(2, '0');
+          return `${month}/${day}`;
+        },
+      };
+  }
+}
+
 interface PriceChartProps {
   data: Candle[];
   symbol: string;
   market: string;
+  timeframe?: string; // 新增時間框架參數
 }
 
-export default function PriceChart({ data, symbol, market }: PriceChartProps) {
+export default function PriceChart({ data, symbol, market, timeframe = '1d' }: PriceChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
   const seriesRef = useRef<ISeriesApi<'Candlestick'> | null>(null);
@@ -56,8 +131,11 @@ export default function PriceChart({ data, symbol, market }: PriceChartProps) {
       },
       timeScale: {
         borderColor: '#cccccc',
-        timeVisible: true,
-        secondsVisible: false,
+        // 根據時間框架設定時間軸格式
+        ...getTimeScaleOptions(timeframe),
+        // 確保時間軸顯示正確
+        fixLeftEdge: true,
+        fixRightEdge: true,
       },
     });
 
@@ -78,10 +156,20 @@ export default function PriceChart({ data, symbol, market }: PriceChartProps) {
 
     // 轉換資料格式
     const chartData: CandlestickData[] = data.map(candle => {
-      // 將 YYYY-MM-DD 轉換為數字格式 (YYYYMMDD)
-      const timeStr = candle.time.replace(/-/g, '');
+      let time: any;
+      
+      if (timeframe === '1d' || timeframe === '1w' || timeframe === '1M') {
+        // 日K/週K/月K：將 YYYY-MM-DD 轉換為 Unix timestamp
+        const date = new Date(candle.time + 'T00:00:00');
+        time = Math.floor(date.getTime() / 1000);
+      } else {
+        // 分K：將 YYYY-MM-DD HH:MM 轉換為 Unix timestamp
+        const date = new Date(candle.time);
+        time = Math.floor(date.getTime() / 1000);
+      }
+      
       return {
-        time: parseInt(timeStr) as any,
+        time,
         open: candle.open,
         high: candle.high,
         low: candle.low,
@@ -144,14 +232,15 @@ export default function PriceChart({ data, symbol, market }: PriceChartProps) {
 
   return (
     <div className="w-full">
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">
-          {market === 'US' ? symbol : `${symbol} (台股)`}
-        </h2>
-        <p className="text-sm text-gray-600">
-          資料期間: {data[data.length - 1]?.time} 至 {data[0]?.time} ({data.length} 筆資料)
-        </p>
-      </div>
+                        <div className="mb-4">
+                    <h2 className="text-xl font-semibold text-gray-800">
+                      {market === 'US' ? symbol : `${symbol} (台股)`}
+                    </h2>
+                    <p className="text-sm text-gray-600">
+                      資料期間: {data[data.length - 1]?.time} 至 {data[0]?.time} ({data.length} 筆資料)
+                      {timeframe !== '1d' && ` • ${getTimeframeDisplayName(timeframe)}`}
+                    </p>
+                  </div>
       
       <div 
         ref={chartContainerRef} 

@@ -28,6 +28,12 @@ export default function RootLayout({
                   <a href="/" className="text-gray-600 hover:text-gray-900">
                     首頁
                   </a>
+                  <a href="/symbols" className="text-gray-600 hover:text-gray-900">
+                    股票列表
+                  </a>
+                  <a href="/admin" className="text-gray-600 hover:text-gray-900">
+                    後台管理
+                  </a>
                 </nav>
               </div>
             </div>

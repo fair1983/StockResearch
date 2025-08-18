@@ -82,7 +82,8 @@ export class YahooFinanceService {
    */
   private formatSymbol(symbol: string): string {
     // 台股：加上 .TW 後綴
-    if (/^\d{4}$/.test(symbol)) {
+    // 支援 4-5 位數股票代碼 (如 2330, 0050, 0056, 00878)
+    if (/^\d{4,5}$/.test(symbol)) {
       return `${symbol}.TW`;
     }
     

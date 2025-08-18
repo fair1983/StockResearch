@@ -114,7 +114,7 @@ export default function StockPage() {
           </div>
         </div>
         
-        <PriceChart data={data} symbol={symbol} market={market} />
+                            <PriceChart data={data} symbol={symbol} market={market} timeframe="1d" />
       </div>
 
       {data.length > 0 && (
