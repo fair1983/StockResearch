@@ -19,6 +19,22 @@ function determineMarket(symbol: string): string {
 	return 'TW';
 }
 
+// 過濾非 US/TW 市場
+function filterValidMarket(symbol: string, exchange?: string): boolean {
+	// 明確排除其他市場
+	if (exchange && /\.MX$|\.TO$|\.V$|\.AX$|\.L$|\.PA$|\.F$|\.DE$|\.AS$|\.SW$|\.HK$|\.T$|\.KS$|\.SS$|\.SZ$/.test(exchange)) {
+		return false;
+	}
+	
+	// 符號格式判斷
+	if (OPTION_SYMBOL_REGEX.test(symbol)) return true; // 期權都是 US
+	if (/^\d{5}$/.test(symbol)) return true; // 5位數是 TW ETF
+	if (/^\d{4}$/.test(symbol)) return true; // 4位數是 TW 股票
+	if (/^[A-Z][A-Z0-9.]{0,6}$/.test(symbol)) return true; // 英文字母開頭是 US
+	
+	return false;
+}
+
 // 類型判斷函數（備用，優先使用元資料）
 function determineCategory(symbol: string, name: string = ''): string {
 	const nm = (name || '').toLowerCase();
@@ -151,6 +167,13 @@ export async function GET(request: NextRequest) {
 					// 去重
 					if (results.some(r => r.symbol === symbol)) continue;
 
+					// 過濾非 US/TW 市場
+					const exchange = yahooResult.exchange || '';
+					if (!filterValidMarket(symbol, exchange)) {
+						logger.api.warn(`Skipping non-US/TW market: ${symbol} (${exchange})`);
+						continue;
+					}
+
 					const metadata = stockMetadataManager.getStockMetadata(symbol);
 					const name = yahooResult.longname || yahooResult.shortname || yahooResult.name || metadata?.name || symbol;
 
@@ -159,7 +182,7 @@ export async function GET(request: NextRequest) {
 						name,
 						market: metadata?.market || determineMarket(symbol),
 						category: metadata?.category || determineCategory(symbol, name),
-						exchange: metadata?.exchange || yahooResult.exchange || '',
+						exchange: metadata?.exchange || exchange,
 						exchangeName: metadata?.exchangeName || yahooResult.exchDisp || '',
 						source: 'yahoo'
 					});
@@ -188,12 +211,20 @@ export async function GET(request: NextRequest) {
 					try {
 						const quote = await yahooFinanceService.getQuote(symbol);
 						const name = quote?.longName || quote?.shortName || symbol;
+						
+						// 過濾非 US/TW 市場
+						const exchange = quote?.exchange || '';
+						if (!filterValidMarket(symbol, exchange)) {
+							logger.api.warn(`Skipping non-US/TW market in direct lookup: ${symbol} (${exchange})`);
+							return NextResponse.json({ success: false, error: '不支援此市場的股票' }, { status: 400 });
+						}
+						
 						results.push({
 							symbol,
 							name,
 							market: determineMarket(symbol),
 							category: determineCategory(symbol, name),
-							exchange: quote?.exchange || '',
+							exchange: exchange,
 							exchangeName: quote?.fullExchangeName || '',
 							source: 'yahoo'
 						});
