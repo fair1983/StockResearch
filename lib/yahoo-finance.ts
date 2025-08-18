@@ -42,7 +42,7 @@ export class YahooFinanceService {
       } else {
         // 分K使用 chart API
         result = await yahooFinance.chart(formattedSymbol, queryOptions);
-        result = result.quotes || []; // chart API 返回 { quotes: [...] }
+        result = (result as any).quotes || []; // chart API 返回 { quotes: [...] }
       }
       
       logger.yahooFinance.response(`Returned ${result.length} records for ${symbol}`);
@@ -55,7 +55,7 @@ export class YahooFinanceService {
       }
       
       // 轉換資料格式
-      const candles: Candle[] = result.map(item => ({
+      const candles: Candle[] = result.map((item: any) => ({
         time: this.formatTime(item.date, interval), // 根據間隔格式化時間
         open: item.open,
         high: item.high,

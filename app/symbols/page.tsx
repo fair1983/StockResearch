@@ -51,7 +51,7 @@ export default function SymbolsPage() {
           categories: data.categories 
         });
       } else {
-        throw new Error(data.error || '無法取得股票列表');
+        throw new Error((data as any).error || '無法取得股票列表');
       }
     } catch (err) {
       const errorMessage = err instanceof Error ? err.message : '未知錯誤';

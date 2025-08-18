@@ -4,21 +4,25 @@ import { useState, useEffect } from 'react';
 import { LogConfig, LogLevel } from '@/types';
 import { logger } from '@/lib/logger';
 
-interface StockStats {
+interface StockUpdateStatus {
   lastUpdated: string;
+  version: string;
   totalStocks: number;
-  twStocks: number;
-  twEtfs: number;
-  usStocks: number;
-  usEtfs: number;
+  breakdown: {
+    twStocks: number;
+    twETFs: number;
+    usStocks: number;
+    usETFs: number;
+  };
 }
 
 export default function AdminPage() {
   const [config, setConfig] = useState<LogConfig>(logger.getConfig());
   const [logs, setLogs] = useState<LogLevel[]>([]);
   const [autoRefresh, setAutoRefresh] = useState(false);
-  const [stockStats, setStockStats] = useState<StockStats | null>(null);
+  const [stockStatus, setStockStatus] = useState<StockUpdateStatus | null>(null);
   const [isUpdating, setIsUpdating] = useState(false);
+  const [updateMessage, setUpdateMessage] = useState('');
 
   // 更新配置
   const updateConfig = (newConfig: Partial<LogConfig>) => {
@@ -64,36 +68,44 @@ export default function AdminPage() {
     }
   }, [autoRefresh]);
 
-  // 載入股票統計
-  const loadStockStats = async () => {
+  // 獲取股票列表狀態
+  const fetchStockStatus = async () => {
     try {
-      const response = await fetch('/api/admin/update-stocks');
-      const data = await response.json();
-      if (data.success) {
-        setStockStats(data.stats);
+      const response = await fetch('/api/stocks/update');
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setStockStatus(data.data);
+        }
       }
     } catch (error) {
-      console.error('Failed to load stock stats:', error);
+      console.error('Failed to fetch stock status:', error);
     }
   };
 
   // 更新股票列表
-  const handleUpdateStocks = async () => {
+  const updateStockList = async () => {
     setIsUpdating(true);
+    setUpdateMessage('正在更新股票列表...');
+    
     try {
-      const response = await fetch('/api/admin/update-stocks', {
-        method: 'POST'
+      const response = await fetch('/api/stocks/update', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
+      
       const data = await response.json();
       
       if (data.success) {
-        setStockStats(data.stats);
-        alert('股票列表更新成功！');
+        setUpdateMessage(`✅ ${data.message}`);
+        setStockStatus(data.data);
       } else {
-        alert(`更新失敗: ${data.error}`);
+        setUpdateMessage(`❌ ${data.message}`);
       }
     } catch (error) {
-      alert(`更新失敗: ${error instanceof Error ? error.message : '未知錯誤'}`);
+      setUpdateMessage(`❌ 更新失敗: ${error}`);
     } finally {
       setIsUpdating(false);
     }
@@ -102,7 +114,7 @@ export default function AdminPage() {
   // 初始載入
   useEffect(() => {
     refreshLogs();
-    loadStockStats();
+    fetchStockStatus();
   }, []);
 
   // 獲取日誌等級顏色
@@ -122,7 +134,7 @@ export default function AdminPage() {
         {/* 標題 */}
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">系統後台管理</h1>
-          <p className="text-gray-600">股票列表管理、日誌配置與監控</p>
+          <p className="text-gray-600">日誌配置、股票列表管理與系統監控</p>
         </div>
 
         {/* 股票列表管理 */}
@@ -130,48 +142,55 @@ export default function AdminPage() {
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-lg font-semibold text-gray-900">股票列表管理</h2>
             <button
-              onClick={handleUpdateStocks}
+              onClick={updateStockList}
               disabled={isUpdating}
-              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+              className={`px-4 py-2 text-sm font-medium rounded-md ${
+                isUpdating
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                  : 'bg-blue-600 text-white hover:bg-blue-700'
+              }`}
             >
               {isUpdating ? '更新中...' : '更新股票列表'}
             </button>
           </div>
-          
-          {stockStats && (
-            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 p-4 bg-gray-50 rounded-lg">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">{stockStats.totalStocks}</div>
-                <div className="text-sm text-gray-600">總股票數</div>
+
+          {updateMessage && (
+            <div className={`mb-4 p-3 rounded-md ${
+              updateMessage.includes('✅') 
+                ? 'bg-green-50 text-green-800 border border-green-200' 
+                : 'bg-red-50 text-red-800 border border-red-200'
+            }`}>
+              {updateMessage}
+            </div>
+          )}
+
+          {stockStatus && stockStatus.breakdown && (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="bg-blue-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-blue-600">{stockStatus.totalStocks || 0}</div>
+                <div className="text-sm text-blue-800">總股票數量</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{stockStats.twStocks}</div>
-                <div className="text-sm text-gray-600">台股</div>
+              <div className="bg-green-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-green-600">{stockStatus.breakdown.twStocks || 0}</div>
+                <div className="text-sm text-green-800">台股股票</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">{stockStats.twEtfs}</div>
-                <div className="text-sm text-gray-600">台股 ETF</div>
+              <div className="bg-yellow-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-yellow-600">{stockStatus.breakdown.twETFs || 0}</div>
+                <div className="text-sm text-yellow-800">台股ETF</div>
               </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">{stockStats.usStocks}</div>
-                <div className="text-sm text-gray-600">美股</div>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl font-bold text-purple-600">{stockStats.usEtfs}</div>
-                <div className="text-sm text-gray-600">美股 ETF</div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm text-gray-600">最後更新</div>
-                <div className="text-xs text-gray-500">
-                  {new Date(stockStats.lastUpdated).toLocaleString('zh-TW')}
-                </div>
+              <div className="bg-purple-50 p-4 rounded-lg">
+                <div className="text-2xl font-bold text-purple-600">{(stockStatus.breakdown.usStocks || 0) + (stockStatus.breakdown.usETFs || 0)}</div>
+                <div className="text-sm text-purple-800">美股總數</div>
               </div>
             </div>
           )}
-          
-          <p className="text-sm text-gray-500 mt-2">
-            點擊按鈕更新股票列表，系統會重新載入 JSON 檔案並更新時間戳
-          </p>
+
+          {stockStatus && (
+            <div className="mt-4 text-sm text-gray-600">
+              <p>最後更新時間: {stockStatus.lastUpdated ? new Date(stockStatus.lastUpdated).toLocaleString('zh-TW') : '未知'}</p>
+              <p>版本: {stockStatus.version || '1.0.0'}</p>
+            </div>
+          )}
         </div>
 
         {/* 日誌配置 */}
