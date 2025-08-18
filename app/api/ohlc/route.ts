@@ -33,10 +33,10 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    // 目前只支援日K線
-    if (tf !== '1d') {
+    // 驗證時間框架
+    if (!['1d', '1w', '1M'].includes(tf)) {
       return NextResponse.json<ErrorResponse>(
-        { error: '目前只支援日K線 (1d)，分K線功能開發中' },
+        { error: '時間框架必須是 1d (日K)、1w (週K) 或 1M (月K)' },
         { status: 400 }
       );
     }
@@ -50,7 +50,7 @@ export async function GET(request: NextRequest) {
       
       try {
         logger.yahooFinance.request(`Fetching data for US symbol: ${symbol}`, { timeframe: tf });
-        candles = await yahooFinance.getKlineData(symbol, from || undefined, to || undefined, tf);
+        candles = await yahooFinance.getKlineData(symbol, from || undefined, to || undefined, tf, market);
         logger.yahooFinance.response(`Yahoo Finance returned ${candles.length} candles for US`);
         dataSource = 'Yahoo Finance';
       } catch (error) {
@@ -89,11 +89,15 @@ export async function GET(request: NextRequest) {
         if (toDate && candleDate > toDate) return false;
         return true;
       });
+    } else {
+      // 如果沒有指定日期範圍，則取得所有可用資料
+      // 這將包含從股票上市以來的最早資料
     }
 
     // 限制回傳資料量（避免過大的回應）
-    if (candles.length > 1000) {
-      candles = candles.slice(0, 1000);
+    // 增加限制到 5000 筆，以支援更長期的歷史資料
+    if (candles.length > 5000) {
+      candles = candles.slice(0, 5000);
     }
 
     logger.api.response(`Final response`, { 

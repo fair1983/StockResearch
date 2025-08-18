@@ -1,6 +1,6 @@
 {
-  "lastUpdated": "2025-08-18T12:30:58.030Z",
-  "version": "1.0.0",
+  "lastUpdated": "2025-08-18T14:45:39.737Z",
+  "version": "1.1.0",
   "stocks": {
     "TW": {
       "stocks": [
@@ -2283,12 +2283,6 @@
           "name": "潤泰新",
           "category": "stock",
           "market": "TW"
-        },
-        {
-          "symbol": "9999",
-          "name": "測試股票",
-          "category": "stock",
-          "market": "TW"
         }
       ],
       "etfs": [
@@ -2421,12 +2415,6 @@
         {
           "symbol": "00692",
           "name": "富邦公司治理",
-          "category": "etf",
-          "market": "TW"
-        },
-        {
-          "symbol": "8888",
-          "name": "測試ETF",
           "category": "etf",
           "market": "TW"
         }
@@ -2881,12 +2869,6 @@
         {
           "symbol": "SNAP",
           "name": "Snap Inc.",
-          "category": "stock",
-          "market": "US"
-        },
-        {
-          "symbol": "TEST",
-          "name": "Test US Stock",
           "category": "stock",
           "market": "US"
         }

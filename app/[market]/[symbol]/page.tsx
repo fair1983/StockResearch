@@ -3,6 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import PriceChart from '@/components/PriceChart';
+import DateRangeSelector, { TimeFrame } from '@/components/DateRangeSelector';
+import TechnicalIndicators, { IndicatorType } from '@/components/TechnicalIndicators';
 import { Candle, Market } from '@/types';
 import { logger } from '@/lib/logger';
 
@@ -15,6 +17,12 @@ export default function StockPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<string>('');
+  const [timeFrame, setTimeFrame] = useState<TimeFrame>('1d');
+  const [dateFrom, setDateFrom] = useState<string>('');
+  const [dateTo, setDateTo] = useState<string>('');
+  const [earliestDate, setEarliestDate] = useState<string>('');
+  const [latestDate, setLatestDate] = useState<string>('');
+  const [selectedIndicators, setSelectedIndicators] = useState<IndicatorType[]>([]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -22,8 +30,17 @@ export default function StockPage() {
       setError(null);
       
       try {
-        logger.frontend.dataFetch(`Fetching data for: ${market} ${symbol}`);
-        const response = await fetch(`/api/ohlc?market=${market}&symbol=${symbol}`);
+        logger.frontend.dataFetch(`Fetching data for: ${market} ${symbol}`, { timeFrame, dateFrom, dateTo });
+        
+        // 構建 API URL
+        const url = new URL('/api/ohlc', window.location.origin);
+        url.searchParams.set('market', market);
+        url.searchParams.set('symbol', symbol);
+        url.searchParams.set('tf', timeFrame);
+        if (dateFrom) url.searchParams.set('from', dateFrom);
+        if (dateTo) url.searchParams.set('to', dateTo);
+        
+        const response = await fetch(url.toString());
         logger.frontend.dataFetch(`Response status: ${response.status}`);
         
         if (!response.ok) {
@@ -48,6 +65,13 @@ export default function StockPage() {
           });
           setData(result.data);
           setDataSource(response.headers.get('X-Data-Source') || 'Unknown');
+          
+          // 更新最早和最晚日期
+          if (result.data.length > 0) {
+            const dates = result.data.map(candle => candle.time).sort();
+            setEarliestDate(dates[0]);
+            setLatestDate(dates[dates.length - 1]);
+          }
         } else {
           logger.frontend.error('Unexpected response format', result);
           setError('資料格式錯誤');
@@ -63,7 +87,7 @@ export default function StockPage() {
     if (market && symbol) {
       fetchData();
     }
-  }, [market, symbol]);
+  }, [market, symbol, timeFrame, dateFrom, dateTo]);
 
   if (loading) {
     return (
@@ -93,29 +117,73 @@ export default function StockPage() {
     );
   }
 
-  return (
-    <div className="space-y-8 pb-8">
-      <div className="bg-white p-6 rounded-lg shadow-sm border">
-        <div className="flex items-center justify-between mb-4">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900">
-              {market === 'US' ? symbol : `${symbol} (台股)`}
-            </h1>
-            <p className="text-gray-600">
-              市場: {market === 'US' ? '美股' : '台股'} | 
-              資料來源: {dataSource}
-            </p>
-          </div>
-          <div className="text-right">
-            <div className="text-sm text-gray-500">最新收盤價</div>
-            <div className="text-xl font-semibold text-gray-900">
-              ${data[data.length - 1]?.close?.toFixed(2) || 'N/A'}
-            </div>
-          </div>
-        </div>
-        
-                            <PriceChart data={data} symbol={symbol} market={market} timeframe="1d" />
-      </div>
+  const handleTimeFrameChange = (newTimeFrame: TimeFrame) => {
+    setTimeFrame(newTimeFrame);
+  };
+
+  const handleDateRangeChange = (from: string, to: string) => {
+    setDateFrom(from);
+    setDateTo(to);
+  };
+
+  const handleIndicatorChange = (indicators: IndicatorType[]) => {
+    setSelectedIndicators(indicators);
+  };
+
+     return (
+     <div className="space-y-8 pb-8">
+       <div className="bg-white p-6 rounded-lg shadow-sm border">
+         <div className="flex items-center justify-between mb-4">
+           <div>
+             <h1 className="text-2xl font-bold text-gray-900">
+               {market === 'US' ? symbol : `${symbol} (台股)`}
+             </h1>
+             <p className="text-gray-600">
+               市場: {market === 'US' ? '美股' : '台股'} | 
+               資料來源: {dataSource}
+             </p>
+           </div>
+           <div className="text-right">
+             <div className="text-sm text-gray-500">最新收盤價</div>
+             <div className="text-xl font-semibold text-gray-900">
+               ${data[data.length - 1]?.close?.toFixed(2) || 'N/A'}
+             </div>
+           </div>
+         </div>
+         
+         <DateRangeSelector
+           onTimeFrameChange={handleTimeFrameChange}
+           onDateRangeChange={handleDateRangeChange}
+           currentTimeFrame={timeFrame}
+           currentFrom={dateFrom}
+           currentTo={dateTo}
+           earliestDate={earliestDate}
+           latestDate={latestDate}
+           loading={loading}
+         />
+       </div>
+
+       <div className="flex gap-6">
+         {/* 左側技術指標面板 */}
+         <div className="w-80 flex-shrink-0">
+           <TechnicalIndicators
+             onIndicatorChange={handleIndicatorChange}
+             selectedIndicators={selectedIndicators}
+             loading={loading}
+           />
+         </div>
+         
+         {/* 右側K線圖 */}
+         <div className="flex-1">
+           <PriceChart 
+             data={data} 
+             symbol={symbol} 
+             market={market} 
+             timeframe={timeFrame} 
+             selectedIndicators={selectedIndicators}
+           />
+         </div>
+       </div>
 
       {data.length > 0 && (
         <div className="bg-white p-6 rounded-lg shadow-sm border">

@@ -1,5 +1,5 @@
 export type Market = 'US' | 'TW';
-export type TimeFrame = '1d' | '1m' | '5m' | '15m' | '30m' | '60m';
+export type TimeFrame = '1d' | '1w' | '1M' | '1m' | '5m' | '15m' | '30m' | '60m';
 
 export interface Candle {
   time: string; // YYYY-MM-DD format
