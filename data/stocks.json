@@ -1,0 +1,966 @@
+{
+  "lastUpdated": "2025-08-18T11:36:45.104Z",
+  "version": "1.1",
+  "markets": {
+    "TW": {
+      "stocks": [
+        {
+          "symbol": "2330",
+          "name": "台積電",
+          "category": "半導體",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2317",
+          "name": "鴻海",
+          "category": "電子代工",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2454",
+          "name": "聯發科",
+          "category": "半導體",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2412",
+          "name": "中華電",
+          "category": "電信",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "1301",
+          "name": "台塑",
+          "category": "塑膠",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "1303",
+          "name": "南亞",
+          "category": "塑膠",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2002",
+          "name": "中鋼",
+          "category": "鋼鐵",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "1216",
+          "name": "統一",
+          "category": "食品",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2207",
+          "name": "和泰車",
+          "category": "汽車",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2881",
+          "name": "富邦金",
+          "category": "金融",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2882",
+          "name": "國泰金",
+          "category": "金融",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2884",
+          "name": "玉山金",
+          "category": "金融",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2885",
+          "name": "元大金",
+          "category": "金融",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2891",
+          "name": "中信金",
+          "category": "金融",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2308",
+          "name": "台達電",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2303",
+          "name": "聯電",
+          "category": "半導體",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2377",
+          "name": "微星",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2354",
+          "name": "鴻準",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2357",
+          "name": "華碩",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2382",
+          "name": "廣達",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2408",
+          "name": "南亞科",
+          "category": "半導體",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2417",
+          "name": "圓剛",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2439",
+          "name": "美律",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2449",
+          "name": "京元電子",
+          "category": "半導體",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2458",
+          "name": "義隆",
+          "category": "半導體",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2481",
+          "name": "強茂",
+          "category": "半導體",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "2498",
+          "name": "宏達電",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "3008",
+          "name": "大立光",
+          "category": "光學",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "3034",
+          "name": "聯詠",
+          "category": "半導體",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "3045",
+          "name": "台灣大",
+          "category": "電信",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "3231",
+          "name": "緯創",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "3711",
+          "name": "日月光投控",
+          "category": "半導體",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "4938",
+          "name": "和碩",
+          "category": "電子",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "5871",
+          "name": "中租-KY",
+          "category": "金融",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "5880",
+          "name": "合庫金",
+          "category": "金融",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "6505",
+          "name": "台塑化",
+          "category": "塑膠",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "9904",
+          "name": "寶成",
+          "category": "紡織",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "9910",
+          "name": "豐泰",
+          "category": "紡織",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "9921",
+          "name": "巨大",
+          "category": "其他",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "9945",
+          "name": "潤泰新",
+          "category": "營建",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "9958",
+          "name": "世紀鋼",
+          "category": "鋼鐵",
+          "exchange": "TWSE"
+        }
+      ],
+      "etfs": [
+        {
+          "symbol": "0050",
+          "name": "元大台灣50",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "0056",
+          "name": "元大高股息",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00878",
+          "name": "國泰永續高股息",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00881",
+          "name": "國泰台灣5G+",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00892",
+          "name": "富邦台灣半導體",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00929",
+          "name": "復華台灣科技",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00930",
+          "name": "永豐台灣ESG",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00935",
+          "name": "野村台灣創新科技",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00939",
+          "name": "統一台灣高息動能",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00940",
+          "name": "元大台灣價值高息",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00941",
+          "name": "中信上游半導體",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00942",
+          "name": "中信小資高價30",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00943",
+          "name": "兆豐台灣晶圓製造",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00944",
+          "name": "野村趨勢動能高息",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00945",
+          "name": "野村台灣創新科技50",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00946",
+          "name": "群益台灣精選高息",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00947",
+          "name": "統一台灣高息動能",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00948",
+          "name": "元大台灣高息低波",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00949",
+          "name": "富邦台灣半導體",
+          "category": "ETF",
+          "exchange": "TWSE"
+        },
+        {
+          "symbol": "00950",
+          "name": "元大台灣高息低波",
+          "category": "ETF",
+          "exchange": "TWSE"
+        }
+      ]
+    },
+    "US": {
+      "stocks": [
+        {
+          "symbol": "AAPL",
+          "name": "Apple Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "MSFT",
+          "name": "Microsoft Corporation",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "GOOGL",
+          "name": "Alphabet Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "AMZN",
+          "name": "Amazon.com Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "TSLA",
+          "name": "Tesla Inc.",
+          "category": "汽車",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "META",
+          "name": "Meta Platforms Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "NVDA",
+          "name": "NVIDIA Corporation",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "NFLX",
+          "name": "Netflix Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "ADBE",
+          "name": "Adobe Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "CRM",
+          "name": "Salesforce Inc.",
+          "category": "科技",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "ORCL",
+          "name": "Oracle Corporation",
+          "category": "科技",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "INTC",
+          "name": "Intel Corporation",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "AMD",
+          "name": "Advanced Micro Devices",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "QCOM",
+          "name": "Qualcomm Incorporated",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "AVGO",
+          "name": "Broadcom Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "TXN",
+          "name": "Texas Instruments",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "MU",
+          "name": "Micron Technology",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "IBM",
+          "name": "International Business Machines",
+          "category": "科技",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "CSCO",
+          "name": "Cisco Systems Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "JPM",
+          "name": "JPMorgan Chase & Co.",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "BAC",
+          "name": "Bank of America Corp.",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "WFC",
+          "name": "Wells Fargo & Company",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "GS",
+          "name": "Goldman Sachs Group Inc.",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "MS",
+          "name": "Morgan Stanley",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "C",
+          "name": "Citigroup Inc.",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "AXP",
+          "name": "American Express Company",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "BLK",
+          "name": "BlackRock Inc.",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "SCHW",
+          "name": "Charles Schwab Corporation",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "JNJ",
+          "name": "Johnson & Johnson",
+          "category": "醫療",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "PFE",
+          "name": "Pfizer Inc.",
+          "category": "醫療",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "UNH",
+          "name": "UnitedHealth Group Inc.",
+          "category": "醫療",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "ABBV",
+          "name": "AbbVie Inc.",
+          "category": "醫療",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "MRK",
+          "name": "Merck & Co. Inc.",
+          "category": "醫療",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "TMO",
+          "name": "Thermo Fisher Scientific",
+          "category": "醫療",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "ABT",
+          "name": "Abbott Laboratories",
+          "category": "醫療",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "DHR",
+          "name": "Danaher Corporation",
+          "category": "醫療",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "BMY",
+          "name": "Bristol-Myers Squibb",
+          "category": "醫療",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "AMGN",
+          "name": "Amgen Inc.",
+          "category": "醫療",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "PG",
+          "name": "Procter & Gamble Co.",
+          "category": "消費品",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "KO",
+          "name": "Coca-Cola Company",
+          "category": "消費品",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "PEP",
+          "name": "PepsiCo Inc.",
+          "category": "消費品",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "WMT",
+          "name": "Walmart Inc.",
+          "category": "零售",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "HD",
+          "name": "Home Depot Inc.",
+          "category": "零售",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "MCD",
+          "name": "McDonald's Corporation",
+          "category": "餐飲",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "SBUX",
+          "name": "Starbucks Corporation",
+          "category": "餐飲",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "NKE",
+          "name": "NIKE Inc.",
+          "category": "消費品",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "DIS",
+          "name": "Walt Disney Company",
+          "category": "媒體",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "CMCSA",
+          "name": "Comcast Corporation",
+          "category": "媒體",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "XOM",
+          "name": "Exxon Mobil Corporation",
+          "category": "能源",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "CVX",
+          "name": "Chevron Corporation",
+          "category": "能源",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "COP",
+          "name": "ConocoPhillips",
+          "category": "能源",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "EOG",
+          "name": "EOG Resources Inc.",
+          "category": "能源",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "SLB",
+          "name": "Schlumberger Limited",
+          "category": "能源",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "BA",
+          "name": "Boeing Company",
+          "category": "工業",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "CAT",
+          "name": "Caterpillar Inc.",
+          "category": "工業",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "GE",
+          "name": "General Electric Company",
+          "category": "工業",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "HON",
+          "name": "Honeywell International",
+          "category": "工業",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "MMM",
+          "name": "3M Company",
+          "category": "工業",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "UPS",
+          "name": "United Parcel Service",
+          "category": "運輸",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "FDX",
+          "name": "FedEx Corporation",
+          "category": "運輸",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "VZ",
+          "name": "Verizon Communications",
+          "category": "通訊",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "T",
+          "name": "AT&T Inc.",
+          "category": "通訊",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "TMUS",
+          "name": "T-Mobile US Inc.",
+          "category": "通訊",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "BRK-B",
+          "name": "Berkshire Hathaway Inc.",
+          "category": "投資",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "V",
+          "name": "Visa Inc.",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "MA",
+          "name": "Mastercard Incorporated",
+          "category": "金融",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "PYPL",
+          "name": "PayPal Holdings Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "SQ",
+          "name": "Block Inc.",
+          "category": "科技",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "UBER",
+          "name": "Uber Technologies Inc.",
+          "category": "科技",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "LYFT",
+          "name": "Lyft Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "SPOT",
+          "name": "Spotify Technology S.A.",
+          "category": "科技",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "ZM",
+          "name": "Zoom Video Communications",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "SHOP",
+          "name": "Shopify Inc.",
+          "category": "科技",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "ROKU",
+          "name": "Roku Inc.",
+          "category": "科技",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "SNAP",
+          "name": "Snap Inc.",
+          "category": "科技",
+          "exchange": "NYSE"
+        }
+      ],
+      "etfs": [
+        {
+          "symbol": "SPY",
+          "name": "SPDR S&P 500 ETF Trust",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "QQQ",
+          "name": "Invesco QQQ Trust",
+          "category": "ETF",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "IWM",
+          "name": "iShares Russell 2000 ETF",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "VTI",
+          "name": "Vanguard Total Stock Market ETF",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "VOO",
+          "name": "Vanguard S&P 500 ETF",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "VEA",
+          "name": "Vanguard FTSE Developed Markets ETF",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "VWO",
+          "name": "Vanguard FTSE Emerging Markets ETF",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "BND",
+          "name": "Vanguard Total Bond Market ETF",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "TLT",
+          "name": "iShares 20+ Year Treasury Bond ETF",
+          "category": "ETF",
+          "exchange": "NASDAQ"
+        },
+        {
+          "symbol": "GLD",
+          "name": "SPDR Gold Shares",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "SLV",
+          "name": "iShares Silver Trust",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "USO",
+          "name": "United States Oil Fund LP",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLF",
+          "name": "Financial Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLK",
+          "name": "Technology Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLE",
+          "name": "Energy Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLV",
+          "name": "Health Care Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLI",
+          "name": "Industrial Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLP",
+          "name": "Consumer Staples Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLY",
+          "name": "Consumer Discretionary Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLU",
+          "name": "Utilities Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLB",
+          "name": "Materials Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        },
+        {
+          "symbol": "XLRE",
+          "name": "Real Estate Select Sector SPDR Fund",
+          "category": "ETF",
+          "exchange": "NYSE"
+        }
+      ]
+    }
+  }
+}

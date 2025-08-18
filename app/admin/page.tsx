@@ -4,10 +4,21 @@ import { useState, useEffect } from 'react';
 import { LogConfig, LogLevel } from '@/types';
 import { logger } from '@/lib/logger';
 
+interface StockStats {
+  lastUpdated: string;
+  totalStocks: number;
+  twStocks: number;
+  twEtfs: number;
+  usStocks: number;
+  usEtfs: number;
+}
+
 export default function AdminPage() {
   const [config, setConfig] = useState<LogConfig>(logger.getConfig());
   const [logs, setLogs] = useState<LogLevel[]>([]);
   const [autoRefresh, setAutoRefresh] = useState(false);
+  const [stockStats, setStockStats] = useState<StockStats | null>(null);
+  const [isUpdating, setIsUpdating] = useState(false);
 
   // 更新配置
   const updateConfig = (newConfig: Partial<LogConfig>) => {
@@ -53,9 +64,45 @@ export default function AdminPage() {
     }
   }, [autoRefresh]);
 
+  // 載入股票統計
+  const loadStockStats = async () => {
+    try {
+      const response = await fetch('/api/admin/update-stocks');
+      const data = await response.json();
+      if (data.success) {
+        setStockStats(data.stats);
+      }
+    } catch (error) {
+      console.error('Failed to load stock stats:', error);
+    }
+  };
+
+  // 更新股票列表
+  const handleUpdateStocks = async () => {
+    setIsUpdating(true);
+    try {
+      const response = await fetch('/api/admin/update-stocks', {
+        method: 'POST'
+      });
+      const data = await response.json();
+      
+      if (data.success) {
+        setStockStats(data.stats);
+        alert('股票列表更新成功！');
+      } else {
+        alert(`更新失敗: ${data.error}`);
+      }
+    } catch (error) {
+      alert(`更新失敗: ${error instanceof Error ? error.message : '未知錯誤'}`);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
   // 初始載入
   useEffect(() => {
     refreshLogs();
+    loadStockStats();
   }, []);
 
   // 獲取日誌等級顏色
@@ -75,7 +122,56 @@ export default function AdminPage() {
         {/* 標題 */}
         <div className="bg-white p-6 rounded-lg shadow-sm border">
           <h1 className="text-2xl font-bold text-gray-900 mb-2">系統後台管理</h1>
-          <p className="text-gray-600">日誌配置與監控</p>
+          <p className="text-gray-600">股票列表管理、日誌配置與監控</p>
+        </div>
+
+        {/* 股票列表管理 */}
+        <div className="bg-white p-6 rounded-lg shadow-sm border">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold text-gray-900">股票列表管理</h2>
+            <button
+              onClick={handleUpdateStocks}
+              disabled={isUpdating}
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              {isUpdating ? '更新中...' : '更新股票列表'}
+            </button>
+          </div>
+          
+          {stockStats && (
+            <div className="grid grid-cols-2 md:grid-cols-6 gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="text-center">
+                <div className="text-2xl font-bold text-blue-600">{stockStats.totalStocks}</div>
+                <div className="text-sm text-gray-600">總股票數</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{stockStats.twStocks}</div>
+                <div className="text-sm text-gray-600">台股</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-green-600">{stockStats.twEtfs}</div>
+                <div className="text-sm text-gray-600">台股 ETF</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">{stockStats.usStocks}</div>
+                <div className="text-sm text-gray-600">美股</div>
+              </div>
+              <div className="text-center">
+                <div className="text-2xl font-bold text-purple-600">{stockStats.usEtfs}</div>
+                <div className="text-sm text-gray-600">美股 ETF</div>
+              </div>
+              <div className="text-center">
+                <div className="text-sm text-gray-600">最後更新</div>
+                <div className="text-xs text-gray-500">
+                  {new Date(stockStats.lastUpdated).toLocaleString('zh-TW')}
+                </div>
+              </div>
+            </div>
+          )}
+          
+          <p className="text-sm text-gray-500 mt-2">
+            點擊按鈕更新股票列表，系統會重新載入 JSON 檔案並更新時間戳
+          </p>
         </div>
 
         {/* 日誌配置 */}
