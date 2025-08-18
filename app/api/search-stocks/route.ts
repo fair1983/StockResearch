@@ -33,6 +33,79 @@ function determineCategory(symbol: string, name: string = ''): string {
 	return 'stock';
 }
 
+async function loadStocksJson() {
+	const filePath = path.join(process.cwd(), 'data', 'stocks.json');
+	const raw = await fs.readFile(filePath, 'utf8');
+	return { filePath, data: JSON.parse(raw) } as { filePath: string; data: any };
+}
+
+function upsertIntoMarketNode(marketNode: any, entry: { symbol: string; name: string; market: string; category: string }) {
+	const { symbol, name, category } = entry;
+	// 確保結構存在
+	marketNode.stocks = marketNode.stocks || [];
+	marketNode.etfs = marketNode.etfs || [];
+	if (marketNode.options === undefined) marketNode.options = []; // 兼容期權
+
+	const upsert = (arr: any[]) => {
+		const idx = arr.findIndex((x: any) => x.symbol === symbol);
+		if (idx >= 0) {
+			arr[idx] = { ...arr[idx], name, market: entry.market, category };
+		} else {
+			arr.push({ symbol, name, market: entry.market, category });
+		}
+	};
+
+	if (category === 'etf') {
+		// 從 stocks 移除、寫入 etfs
+		marketNode.stocks = marketNode.stocks.filter((x: any) => x.symbol !== symbol);
+		upsert(marketNode.etfs);
+	} else if (category === 'option') {
+		// 從 stocks/etfs 移除、寫入 options（僅 US 會用到）
+		marketNode.stocks = marketNode.stocks.filter((x: any) => x.symbol !== symbol);
+		marketNode.etfs = marketNode.etfs.filter((x: any) => x.symbol !== symbol);
+		upsert(marketNode.options);
+	} else {
+		// 預設視為股票
+		marketNode.etfs = marketNode.etfs.filter((x: any) => x.symbol !== symbol);
+		upsert(marketNode.stocks);
+	}
+}
+
+async function persistResultsToStocksJson(results: Array<{ symbol: string; name: string; market: string; category: string }>) {
+	try {
+		const { filePath, data } = await loadStocksJson();
+		data.stocks = data.stocks || {};
+
+		for (const r of results) {
+			if (!r?.symbol || !r?.name) continue;
+			const marketKey = r.market || determineMarket(r.symbol);
+			data.stocks[marketKey] = data.stocks[marketKey] || { stocks: [], etfs: [] };
+			upsertIntoMarketNode(data.stocks[marketKey], {
+				symbol: r.symbol,
+				name: r.name,
+				market: marketKey,
+				category: r.category || determineCategory(r.symbol, r.name),
+			});
+		}
+
+		// 去重並排序
+		for (const mk of Object.keys(data.stocks)) {
+			const node = data.stocks[mk];
+			const dedupe = (arr: any[]) => Array.from(new Map(arr.map((x: any) => [x.symbol, x])).values())
+				.sort((a, b) => a.symbol.localeCompare(b.symbol));
+			node.stocks = dedupe(node.stocks || []);
+			node.etfs = dedupe(node.etfs || []);
+			if (node.options) node.options = dedupe(node.options || []);
+		}
+
+		data.lastUpdated = new Date().toISOString();
+		await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
+		logger.api.response('stocks.json updated from search', { count: results.length });
+	} catch (e) {
+		logger.api.error('Failed to persist results to stocks.json', e);
+	}
+}
+
 export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
@@ -155,6 +228,14 @@ export async function GET(request: NextRequest) {
 		// 5) 限制數量
 		const finalResults = results.slice(0, limit);
 
+		// 6) 依使用者要求：搜尋結果自動寫入 data（去重，已存在就更新）
+		await persistResultsToStocksJson(finalResults.map(r => ({
+			symbol: r.symbol,
+			name: r.name,
+			market: r.market,
+			category: r.category,
+		})));
+
 		logger.api.response('Stock search completed', { count: finalResults.length });
 		return NextResponse.json({ success: true, data: finalResults, total: finalResults.length });
 	} catch (error) {
@@ -193,6 +274,9 @@ export async function POST(request: NextRequest) {
 			quoteType: '',
 			currency: finalMarket === 'TW' ? 'TWD' : 'USD'
 		});
+
+		// 同步到 stocks.json
+		await persistResultsToStocksJson([{ symbol, name, market: finalMarket, category: finalCategory }]);
 
 		await stockMetadataManager.save();
 		logger.api.response('Stock added to local data', { symbol, name });
