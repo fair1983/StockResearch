@@ -89,7 +89,30 @@ export class StockCache {
   }
 
   /**
-   * 儲存股票資料到快取
+   * 合併現有快取資料與新資料
+   * 新資料會覆蓋相同時間的舊資料
+   */
+  private mergeCachedData(existingData: Candle[], newData: Candle[]): Candle[] {
+    const dataMap = new Map<string, Candle>();
+    
+    // 先加入現有資料
+    existingData.forEach(candle => {
+      dataMap.set(candle.time, candle);
+    });
+    
+    // 新資料覆蓋舊資料
+    newData.forEach(candle => {
+      dataMap.set(candle.time, candle);
+    });
+    
+    // 轉換回陣列並按時間排序
+    return Array.from(dataMap.values()).sort((a, b) => 
+      new Date(a.time).getTime() - new Date(b.time).getTime()
+    );
+  }
+
+  /**
+   * 儲存股票資料到快取（支援合併現有資料）
    */
   async setCachedData(market: string, symbol: string, interval: string, data: Candle[], from?: string, to?: string): Promise<void> {
     try {
@@ -102,23 +125,80 @@ export class StockCache {
         fs.mkdirSync(dir, { recursive: true });
       }
 
+      let finalData = data;
+      let mergeInfo = '';
+
+      // 嘗試讀取現有快取資料進行合併
+      if (fs.existsSync(filePath)) {
+        try {
+          const existingData = fs.readFileSync(filePath, 'utf-8');
+          const cachedData: CachedStockData = JSON.parse(existingData);
+          
+          if (cachedData.data && cachedData.data.length > 0) {
+            const beforeCount = cachedData.data.length;
+            finalData = this.mergeCachedData(cachedData.data, data);
+            const afterCount = finalData.length;
+            const updatedCount = data.length;
+            const newCount = afterCount - beforeCount + updatedCount;
+            
+            mergeInfo = ` (merged: ${beforeCount} → ${afterCount}, updated: ${updatedCount}, new: ${newCount})`;
+            logger.api.response(`Cache merge: ${fileName}${mergeInfo}`);
+          }
+        } catch (error) {
+          logger.api.error(`Error merging cache for ${fileName}: ${error}`);
+        }
+      }
+
       const cachedData: CachedStockData = {
         market,
         symbol,
         interval,
         lastUpdated: new Date().toISOString(),
-        data,
+        data: finalData,
         from,
         to
       };
 
       fs.writeFileSync(filePath, JSON.stringify(cachedData, null, 2));
-      logger.api.response(`Data cached: ${fileName} (${data.length} records)`);
+      logger.api.response(`Data cached: ${fileName} (${finalData.length} records)${mergeInfo}`);
 
       // 更新快取統計
       await this.updateCacheMetadata();
     } catch (error) {
       logger.api.error(`Error saving cache for ${market}/${symbol}: ${error}`);
+    }
+  }
+
+  /**
+   * 更新特定時間範圍的資料（不影響其他時間範圍）
+   */
+  async updateCachedData(market: string, symbol: string, interval: string, newData: Candle[], from?: string, to?: string): Promise<void> {
+    try {
+      const fileName = this.getCacheFileName(market, symbol, interval, from, to);
+      const filePath = path.join(this.cacheDir, fileName);
+      
+      let existingData: Candle[] = [];
+      
+      // 讀取現有資料
+      if (fs.existsSync(filePath)) {
+        try {
+          const data = fs.readFileSync(filePath, 'utf-8');
+          const cachedData: CachedStockData = JSON.parse(data);
+          existingData = cachedData.data || [];
+        } catch (error) {
+          logger.api.error(`Error reading existing cache for update: ${error}`);
+        }
+      }
+      
+      // 合併資料
+      const mergedData = this.mergeCachedData(existingData, newData);
+      
+      // 儲存合併後的資料
+      await this.setCachedData(market, symbol, interval, mergedData, from, to);
+      
+      logger.api.response(`Cache updated: ${fileName} (${existingData.length} → ${mergedData.length} records)`);
+    } catch (error) {
+      logger.api.error(`Error updating cache for ${market}/${symbol}: ${error}`);
     }
   }
 
@@ -182,12 +262,25 @@ export class StockCache {
         })
         .sort((a, b) => a.mtime.getTime() - b.mtime.getTime());
 
-      // 刪除最舊的 20% 檔案
-      const filesToDelete = Math.ceil(files.length * 0.2);
-      for (let i = 0; i < filesToDelete; i++) {
-        fs.unlinkSync(files[i].filePath);
-        logger.api.response(`Removed old cache: ${files[i].file}`);
+      // 刪除最舊的檔案直到快取大小符合限制
+      let deletedSize = 0;
+      const targetSize = this.MAX_CACHE_SIZE_MB * 0.8; // 目標大小為限制的80%
+
+      for (const { file, filePath } of files) {
+        const stats = fs.statSync(filePath);
+        const fileSizeMB = stats.size / (1024 * 1024);
+        
+        fs.unlinkSync(filePath);
+        deletedSize += fileSizeMB;
+        
+        logger.api.response(`Removed old cache: ${file} (${fileSizeMB.toFixed(2)}MB)`);
+        
+        if (deletedSize >= targetSize) {
+          break;
+        }
       }
+
+      logger.api.response(`Cache size reduced by ${deletedSize.toFixed(2)}MB`);
     } catch (error) {
       logger.api.error(`Error cleaning oldest cache: ${error}`);
     }
@@ -198,19 +291,23 @@ export class StockCache {
    */
   private async updateCacheMetadata(): Promise<void> {
     try {
-      const files = fs.readdirSync(this.cacheDir).filter(file => file !== 'metadata.json');
+      const files = fs.readdirSync(this.cacheDir)
+        .filter(file => file !== 'metadata.json');
+      
       let totalSize = 0;
+      let totalCached = 0;
 
       for (const file of files) {
         const filePath = path.join(this.cacheDir, file);
         const stats = fs.statSync(filePath);
         totalSize += stats.size;
+        totalCached++;
       }
 
       const metadata: CacheMetadata = {
-        version: '1.0.0',
+        version: '1.0',
         lastCleanup: new Date().toISOString(),
-        totalCached: files.length,
+        totalCached,
         cacheSize: totalSize
       };
 
@@ -221,9 +318,9 @@ export class StockCache {
   }
 
   /**
-   * 獲取快取統計資訊
+   * 取得快取統計資訊
    */
-  async getCacheStats(): Promise<CacheMetadata | null> {
+  async getCacheMetadata(): Promise<CacheMetadata | null> {
     try {
       if (!fs.existsSync(this.metadataPath)) {
         return null;
@@ -232,7 +329,7 @@ export class StockCache {
       const data = fs.readFileSync(this.metadataPath, 'utf-8');
       return JSON.parse(data);
     } catch (error) {
-      logger.api.error(`Error reading cache stats: ${error}`);
+      logger.api.error(`Error reading cache metadata: ${error}`);
       return null;
     }
   }
@@ -240,17 +337,30 @@ export class StockCache {
   /**
    * 清除特定股票的快取
    */
-  async clearStockCache(market: string, symbol: string): Promise<void> {
+  async clearStockCache(market: string, symbol: string, interval?: string): Promise<void> {
     try {
-      const files = fs.readdirSync(this.cacheDir);
+      const stockDir = path.join(this.cacheDir, market, symbol);
+      
+      if (!fs.existsSync(stockDir)) {
+        return;
+      }
+
+      const files = fs.readdirSync(stockDir);
       let clearedCount = 0;
 
       for (const file of files) {
-        if (file.startsWith(`${market}_${symbol}_`)) {
-          const filePath = path.join(this.cacheDir, file);
-          fs.unlinkSync(filePath);
-          clearedCount++;
+        if (interval && !file.startsWith(interval)) {
+          continue;
         }
+
+        const filePath = path.join(stockDir, file);
+        fs.unlinkSync(filePath);
+        clearedCount++;
+      }
+
+      // 如果目錄為空，刪除目錄
+      if (fs.readdirSync(stockDir).length === 0) {
+        fs.rmdirSync(stockDir);
       }
 
       logger.api.response(`Cleared cache for ${market}/${symbol}: ${clearedCount} files`);
@@ -265,18 +375,19 @@ export class StockCache {
    */
   async clearAllCache(): Promise<void> {
     try {
-      const files = fs.readdirSync(this.cacheDir);
-      let clearedCount = 0;
+      const files = fs.readdirSync(this.cacheDir)
+        .filter(file => file !== 'metadata.json');
 
       for (const file of files) {
-        if (file !== 'metadata.json') {
-          const filePath = path.join(this.cacheDir, file);
+        const filePath = path.join(this.cacheDir, file);
+        if (fs.statSync(filePath).isDirectory()) {
+          fs.rmSync(filePath, { recursive: true, force: true });
+        } else {
           fs.unlinkSync(filePath);
-          clearedCount++;
         }
       }
 
-      logger.api.response(`Cleared all cache: ${clearedCount} files`);
+      logger.api.response(`Cleared all cache: ${files.length} items`);
       await this.updateCacheMetadata();
     } catch (error) {
       logger.api.error(`Error clearing all cache: ${error}`);

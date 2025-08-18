@@ -6,6 +6,7 @@ import { Candle } from '@/types';
 import { logger } from '@/lib/logger';
 import { calculateAllIndicators } from '@/lib/technical-indicators';
 import { IndicatorType } from './TechnicalIndicators';
+import { getStockName } from '@/lib/stock-utils';
 
 // 取得時間框架顯示名稱
 function getTimeframeDisplayName(timeframe: string): string {
@@ -131,7 +132,7 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
     // 建立K線圖表
     const chart = createChart(chartContainerRef.current, {
       width: chartContainerRef.current.clientWidth,
-      height: 300,
+      height: 400,
       layout: {
         background: { color: '#ffffff' },
         textColor: '#333',
@@ -177,7 +178,7 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
     if (selectedIndicators.length > 0 && indicatorChartContainerRef.current) {
       indicatorChart = createChart(indicatorChartContainerRef.current, {
         width: indicatorChartContainerRef.current.clientWidth,
-        height: 200,
+        height: 250,
         layout: {
           background: { color: '#ffffff' },
           textColor: '#333',
@@ -298,9 +299,24 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           value: indicators.ma20[i] || NaN
         }));
         
-        const ma5Series = indicatorChart.addLineSeries({ color: '#FF6B6B', lineWidth: 1, title: 'MA5' });
-        const ma10Series = indicatorChart.addLineSeries({ color: '#4ECDC4', lineWidth: 1, title: 'MA10' });
-        const ma20Series = indicatorChart.addLineSeries({ color: '#45B7D1', lineWidth: 1, title: 'MA20' });
+        const ma5Series = indicatorChart.addLineSeries({ 
+          color: '#FF6B6B', 
+          lineWidth: 2, 
+          title: 'MA5',
+          lineStyle: 0
+        });
+        const ma10Series = indicatorChart.addLineSeries({ 
+          color: '#4ECDC4', 
+          lineWidth: 2, 
+          title: 'MA10',
+          lineStyle: 0
+        });
+        const ma20Series = indicatorChart.addLineSeries({ 
+          color: '#45B7D1', 
+          lineWidth: 2, 
+          title: 'MA20',
+          lineStyle: 0
+        });
         
         ma5Series.setData(ma5Data);
         ma10Series.setData(ma10Data);
@@ -322,8 +338,18 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           value: indicators.ema26[i] || NaN
         }));
         
-        const ema12Series = indicatorChart.addLineSeries({ color: '#FF6B6B', lineWidth: 1, title: 'EMA12' });
-        const ema26Series = indicatorChart.addLineSeries({ color: '#4ECDC4', lineWidth: 1, title: 'EMA26' });
+        const ema12Series = indicatorChart.addLineSeries({ 
+          color: '#FF6B6B', 
+          lineWidth: 2, 
+          title: 'EMA12',
+          lineStyle: 0
+        });
+        const ema26Series = indicatorChart.addLineSeries({ 
+          color: '#4ECDC4', 
+          lineWidth: 2, 
+          title: 'EMA26',
+          lineStyle: 0
+        });
         
         ema12Series.setData(ema12Data);
         ema26Series.setData(ema26Data);
@@ -347,9 +373,24 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           value: indicators.bollinger.lower[i] || NaN
         }));
         
-        const upperSeries = indicatorChart.addLineSeries({ color: '#FFEAA7', lineWidth: 1, title: 'BOLL Upper' });
-        const middleSeries = indicatorChart.addLineSeries({ color: '#96CEB4', lineWidth: 1, title: 'BOLL Middle' });
-        const lowerSeries = indicatorChart.addLineSeries({ color: '#FFEAA7', lineWidth: 1, title: 'BOLL Lower' });
+        const upperSeries = indicatorChart.addLineSeries({ 
+          color: '#FFEAA7', 
+          lineWidth: 1, 
+          title: 'BOLL Upper',
+          lineStyle: 0
+        });
+        const middleSeries = indicatorChart.addLineSeries({ 
+          color: '#96CEB4', 
+          lineWidth: 2, 
+          title: 'BOLL Middle',
+          lineStyle: 0
+        });
+        const lowerSeries = indicatorChart.addLineSeries({ 
+          color: '#FFEAA7', 
+          lineWidth: 1, 
+          title: 'BOLL Lower',
+          lineStyle: 0
+        });
         
         upperSeries.setData(upperData);
         middleSeries.setData(middleData);
@@ -375,9 +416,24 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           value: indicators.kdj.j[i] || NaN
         }));
         
-        const kSeries = indicatorChart.addLineSeries({ color: '#FF6B6B', lineWidth: 1, title: 'KDJ-K' });
-        const dSeries = indicatorChart.addLineSeries({ color: '#4ECDC4', lineWidth: 1, title: 'KDJ-D' });
-        const jSeries = indicatorChart.addLineSeries({ color: '#45B7D1', lineWidth: 1, title: 'KDJ-J' });
+        const kSeries = indicatorChart.addLineSeries({ 
+          color: '#FF6B6B', 
+          lineWidth: 2, 
+          title: 'KDJ-K',
+          lineStyle: 0
+        });
+        const dSeries = indicatorChart.addLineSeries({ 
+          color: '#4ECDC4', 
+          lineWidth: 2, 
+          title: 'KDJ-D',
+          lineStyle: 0
+        });
+        const jSeries = indicatorChart.addLineSeries({ 
+          color: '#45B7D1', 
+          lineWidth: 2, 
+          title: 'KDJ-J',
+          lineStyle: 0
+        });
         
         kSeries.setData(kData);
         dSeries.setData(dData);
@@ -388,20 +444,191 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         indicatorSeriesRef.current['KDJ-J'] = jSeries;
       }
       
+      // 添加 MACD 指標到指標圖表
+      if (selectedIndicators.includes('MACD')) {
+        const macdData: LineData[] = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.macd.macd[i] || NaN
+        }));
+        const signalData: LineData[] = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.macd.signal[i] || NaN
+        }));
+        const histogramData = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.macd.histogram[i] || 0,
+          color: indicators.macd.histogram[i] >= 0 ? '#26a69a' : '#ef5350'
+        }));
+        
+        const macdSeries = indicatorChart.addLineSeries({ 
+          color: '#FF6B6B', 
+          lineWidth: 2, 
+          title: 'MACD',
+          lineStyle: 0
+        });
+        const signalSeries = indicatorChart.addLineSeries({ 
+          color: '#4ECDC4', 
+          lineWidth: 2, 
+          title: 'Signal',
+          lineStyle: 0
+        });
+        const histogramSeries = indicatorChart.addHistogramSeries({
+          color: '#98D8C8',
+          title: 'Histogram',
+        });
+        
+        macdSeries.setData(macdData);
+        signalSeries.setData(signalData);
+        histogramSeries.setData(histogramData);
+        
+        indicatorSeriesRef.current['MACD'] = macdSeries;
+        indicatorSeriesRef.current['Signal'] = signalSeries;
+        indicatorSeriesRef.current['Histogram'] = histogramSeries;
+      }
+      
+      // 添加 RSI 指標到指標圖表
+      if (selectedIndicators.includes('RSI')) {
+        const rsiData: LineData[] = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.rsi[i] || NaN
+        }));
+        
+        const rsiSeries = indicatorChart.addLineSeries({ 
+          color: '#FFEAA7', 
+          lineWidth: 2, 
+          title: 'RSI',
+          lineStyle: 0
+        });
+        
+        rsiSeries.setData(rsiData);
+        indicatorSeriesRef.current['RSI'] = rsiSeries;
+      }
+      
+      // 添加隨機指標到指標圖表
+      if (selectedIndicators.includes('STOCH')) {
+        const kData: LineData[] = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.stochastic.k[i] || NaN
+        }));
+        const dData: LineData[] = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.stochastic.d[i] || NaN
+        }));
+        
+        const kSeries = indicatorChart.addLineSeries({ 
+          color: '#DDA0DD', 
+          lineWidth: 2, 
+          title: 'Stoch-K',
+          lineStyle: 0
+        });
+        const dSeries = indicatorChart.addLineSeries({ 
+          color: '#98D8C8', 
+          lineWidth: 2, 
+          title: 'Stoch-D',
+          lineStyle: 0
+        });
+        
+        kSeries.setData(kData);
+        dSeries.setData(dData);
+        
+        indicatorSeriesRef.current['Stoch-K'] = kSeries;
+        indicatorSeriesRef.current['Stoch-D'] = dSeries;
+      }
+      
+      // 添加 CCI 指標到指標圖表
+      if (selectedIndicators.includes('CCI')) {
+        const cciData: LineData[] = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.cci[i] || NaN
+        }));
+        
+        const cciSeries = indicatorChart.addLineSeries({ 
+          color: '#F7DC6F', 
+          lineWidth: 2, 
+          title: 'CCI',
+          lineStyle: 0
+        });
+        
+        cciSeries.setData(cciData);
+        indicatorSeriesRef.current['CCI'] = cciSeries;
+      }
+      
+      // 添加 ATR 指標到指標圖表
+      if (selectedIndicators.includes('ATR')) {
+        const atrData: LineData[] = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.atr[i] || NaN
+        }));
+        
+        const atrSeries = indicatorChart.addLineSeries({ 
+          color: '#BB8FCE', 
+          lineWidth: 2, 
+          title: 'ATR',
+          lineStyle: 0
+        });
+        
+        atrSeries.setData(atrData);
+        indicatorSeriesRef.current['ATR'] = atrSeries;
+      }
+      
+      // 添加 ADX 指標到指標圖表
+      if (selectedIndicators.includes('ADX')) {
+        const adxData: LineData[] = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.adx[i] || NaN
+        }));
+        
+        const adxSeries = indicatorChart.addLineSeries({ 
+          color: '#85C1E9', 
+          lineWidth: 2, 
+          title: 'ADX',
+          lineStyle: 0
+        });
+        
+        adxSeries.setData(adxData);
+        indicatorSeriesRef.current['ADX'] = adxSeries;
+      }
+      
+      // 添加 OBV 指標到指標圖表
+      if (selectedIndicators.includes('OBV')) {
+        const obvData: LineData[] = chartData.map((candle, i) => ({
+          time: candle.time,
+          value: indicators.obv[i] || NaN
+        }));
+        
+        const obvSeries = indicatorChart.addLineSeries({ 
+          color: '#F8C471', 
+          lineWidth: 2, 
+          title: 'OBV',
+          lineStyle: 0
+        });
+        
+        obvSeries.setData(obvData);
+        indicatorSeriesRef.current['OBV'] = obvSeries;
+      }
+      
       // 添加成交量到指標圖表
       if (selectedIndicators.includes('VOL')) {
-        const volumeData = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.volume[i] || 0,
-          color: candle.close >= candle.open ? '#26a69a' : '#ef5350'
-        }));
+        // 計算成交量的最大值，用於比例計算
+        const validVolumes = indicators.volume.filter(v => typeof v === 'number' && v > 0);
+        const maxVolume = validVolumes.length > 0 ? Math.max(...validVolumes) : 1;
+        const volumeData = chartData.map((candle, i) => {
+          const volume = indicators.volume[i] || 0;
+          // 將成交量轉換為 0-100 的比例值
+          const volumeRatio = maxVolume > 0 ? (volume / maxVolume) * 100 : 0;
+          return {
+            time: candle.time,
+            value: volumeRatio,
+            color: candle.close >= candle.open ? '#26a69a' : '#ef5350'
+          };
+        });
         
         const volumeSeries = indicatorChart.addHistogramSeries({
           color: '#98D8C8',
           priceFormat: {
             type: 'volume',
           },
-          title: '成交量',
+          title: '成交量 (比例)',
         });
         
         volumeSeries.setData(volumeData);
@@ -552,7 +779,7 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
       <div className="flex items-center justify-center h-[500px] bg-gray-50 rounded-lg">
         <div className="text-center">
           <div className="text-gray-500 text-lg mb-2">無資料可顯示</div>
-          <div className="text-gray-400 text-sm">請檢查股票代碼是否正確</div>
+          <div className="text-gray-400 text-sm">請檢查股票代碼是否正確或是否有交易資料</div>
         </div>
       </div>
     );
@@ -562,10 +789,10 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
     <div className="w-full">
       <div className="mb-4">
         <h2 className="text-xl font-semibold text-gray-800">
-          {market === 'US' ? symbol : `${symbol} (台股)`}
+          {getStockName(market, symbol)}
         </h2>
         <p className="text-sm text-gray-600">
-          資料期間: {data[data.length - 1]?.time} 至 {data[0]?.time} ({data.length} 筆資料)
+          資料期間: {data[0]?.time} 至 {data[data.length - 1]?.time} ({data.length} 筆資料)
           {timeframe !== '1d' && ` • ${getTimeframeDisplayName(timeframe)}`}
         </p>
       </div>
@@ -573,14 +800,14 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
       {/* K線圖表 */}
       <div 
         ref={chartContainerRef} 
-        className="w-full h-[300px] border border-gray-200 rounded-lg overflow-hidden mb-4"
+        className="w-full h-[400px] border border-gray-200 rounded-lg overflow-hidden mb-4"
       />
 
       {/* 技術指標圖表 */}
       {selectedIndicators.length > 0 && (
         <div 
           ref={indicatorChartContainerRef} 
-          className="w-full h-[200px] border border-gray-200 rounded-lg overflow-hidden mb-4"
+          className="w-full h-[250px] border border-gray-200 rounded-lg overflow-hidden mb-4"
         />
       )}
 
@@ -602,7 +829,35 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
               <span>H: {typeof show.h === 'number' ? show.h.toFixed(2) : '-'}</span>
               <span>L: {typeof show.l === 'number' ? show.l.toFixed(2) : '-'}</span>
               <span>C: {typeof show.c === 'number' ? show.c.toFixed(2) : '-'}</span>
-              <span>Vol: {typeof show.v === 'number' ? Math.round(show.v) : '-'}</span>
+              <span>Vol: {typeof show.v === 'number' ? (show.v >= 1000 ? (show.v / 1000).toFixed(1) + 'K' : Math.round(show.v)) : '-'}</span>
+              {selectedIndicators.includes('MACD') && (
+                <>
+                  <span>MACD: {show.indicators?.['MACD'] ? Number(show.indicators['MACD']).toFixed(4) : '-'}</span>
+                  <span>Signal: {show.indicators?.['Signal'] ? Number(show.indicators['Signal']).toFixed(4) : '-'}</span>
+                  <span>Hist: {show.indicators?.['Histogram'] ? Number(show.indicators['Histogram']).toFixed(4) : '-'}</span>
+                </>
+              )}
+              {selectedIndicators.includes('RSI') && (
+                <span>RSI: {show.indicators?.['RSI'] ? Number(show.indicators['RSI']).toFixed(2) : '-'}</span>
+              )}
+              {selectedIndicators.includes('STOCH') && (
+                <>
+                  <span>Stoch-K: {show.indicators?.['Stoch-K'] ? Number(show.indicators['Stoch-K']).toFixed(2) : '-'}</span>
+                  <span>Stoch-D: {show.indicators?.['Stoch-D'] ? Number(show.indicators['Stoch-D']).toFixed(2) : '-'}</span>
+                </>
+              )}
+              {selectedIndicators.includes('CCI') && (
+                <span>CCI: {show.indicators?.['CCI'] ? Number(show.indicators['CCI']).toFixed(2) : '-'}</span>
+              )}
+              {selectedIndicators.includes('ATR') && (
+                <span>ATR: {show.indicators?.['ATR'] ? Number(show.indicators['ATR']).toFixed(2) : '-'}</span>
+              )}
+              {selectedIndicators.includes('ADX') && (
+                <span>ADX: {show.indicators?.['ADX'] ? Number(show.indicators['ADX']).toFixed(2) : '-'}</span>
+              )}
+              {selectedIndicators.includes('OBV') && (
+                <span>OBV: {show.indicators?.['OBV'] ? Number(show.indicators['OBV']).toFixed(0) : '-'}</span>
+              )}
               {selectedIndicators.includes('KDJ') && (
                 <>
                   <span>K: {show.indicators?.['KDJ-K'] ? Number(show.indicators['KDJ-K']).toFixed(2) : '-'}</span>

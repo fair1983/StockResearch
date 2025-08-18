@@ -44,41 +44,35 @@ export async function GET(request: NextRequest) {
     let candles: any[] = [];
     let dataSource = '';
 
-        if (market === 'US') {
-      // 美股：只使用 Yahoo Finance
-      const yahooFinance = new YahooFinanceService();
+    // 使用新的 Yahoo Finance 服務
+    const yahooFinance = new YahooFinanceService();
+    
+    try {
+      logger.yahooFinance.request(`Fetching data for ${market} symbol: ${symbol}`, { timeframe: tf });
       
-      try {
-        logger.yahooFinance.request(`Fetching data for US symbol: ${symbol}`, { timeframe: tf });
-        candles = await yahooFinance.getKlineData(symbol, from || undefined, to || undefined, tf, market);
-        logger.yahooFinance.response(`Yahoo Finance returned ${candles.length} candles for US`);
-        dataSource = 'Yahoo Finance';
-      } catch (error) {
-        logger.yahooFinance.error('Yahoo Finance failed for US', error);
-        return NextResponse.json<ErrorResponse>(
-          { error: `無法從 Yahoo Finance 取得資料: ${error instanceof Error ? error.message : '未知錯誤'}` },
-          { status: 500 }
-        );
-      }
-        } else if (market === 'TW') {
-      // 台股：只使用 Yahoo Finance
-      const yahooFinance = new YahooFinanceService();
+      // 轉換日期格式
+      let period1: Date | undefined;
+      let period2: Date | undefined;
       
-      try {
-        logger.yahooFinance.request(`Fetching data for TW symbol: ${symbol}`, { timeframe: tf });
-        candles = await yahooFinance.getKlineData(symbol, from || undefined, to || undefined, tf);
-        logger.yahooFinance.response(`Yahoo Finance returned ${candles.length} candles for TW`);
-        dataSource = 'Yahoo Finance';
-      } catch (error) {
-        logger.yahooFinance.error('Yahoo Finance failed for TW', error);
-        return NextResponse.json<ErrorResponse>(
-          { error: `無法從 Yahoo Finance 取得資料: ${error instanceof Error ? error.message : '未知錯誤'}` },
-          { status: 500 }
-        );
+      if (from) {
+        period1 = new Date(from);
       }
+      if (to) {
+        period2 = new Date(to);
+      }
+      
+      candles = await yahooFinance.getKlineData(symbol, market, tf, period1, period2);
+      logger.yahooFinance.response(`Yahoo Finance returned ${candles.length} candles for ${market}`);
+      dataSource = 'Yahoo Finance';
+    } catch (error) {
+      logger.yahooFinance.error(`Yahoo Finance failed for ${market}`, error);
+      return NextResponse.json<ErrorResponse>(
+        { error: `無法從 Yahoo Finance 取得資料: ${error instanceof Error ? error.message : '未知錯誤'}` },
+        { status: 500 }
+      );
     }
 
-    // 篩選日期範圍
+    // 篩選日期範圍（如果需要）
     if (from || to) {
       candles = candles.filter(candle => {
         const candleDate = new Date(candle.time);
@@ -89,50 +83,62 @@ export async function GET(request: NextRequest) {
         if (toDate && candleDate > toDate) return false;
         return true;
       });
-    } else {
-      // 如果沒有指定日期範圍，則取得所有可用資料
-      // 這將包含從股票上市以來的最早資料
     }
 
     // 限制回傳資料量（避免過大的回應）
     // 增加限制到 5000 筆，以支援更長期的歷史資料
     if (candles.length > 5000) {
       candles = candles.slice(0, 5000);
+      logger.api.warn(`Data truncated to 5000 records for ${symbol}`);
     }
 
-    logger.api.response(`Final response`, { 
-      candlesLength: candles.length, 
-      firstCandle: candles[0],
-      dataSource 
+    // 計算統計資訊
+    const totalRecords = candles.length;
+    const earliestDate = totalRecords > 0 ? candles[0].time : null;
+    const latestDate = totalRecords > 0 ? candles[totalRecords - 1].time : null;
+
+    // 計算執行時間
+    const executionTime = Date.now() - startTime;
+
+    // 記錄成功回應
+    logger.api.response(`API Response`, {
+      symbol,
+      market,
+      timeframe: tf,
+      totalRecords,
+      earliestDate,
+      latestDate,
+      dataSource,
+      executionTime: `${executionTime}ms`
     });
 
+    // 回傳成功回應
     const response: OHLCResponse = {
-      market,
-      symbol,
-      tf: tf,
+      success: true,
       data: candles,
+      metadata: {
+        symbol,
+        market,
+        timeframe: tf,
+        totalRecords,
+        earliestDate,
+        latestDate,
+        dataSource,
+        executionTime: `${executionTime}ms`
+      }
     };
 
-    // 添加資料來源資訊到 headers
-    const responseHeaders = new Headers();
-    responseHeaders.set('X-Data-Source', dataSource);
-    responseHeaders.set('X-Data-Count', candles.length.toString());
-    responseHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-    responseHeaders.set('Pragma', 'no-cache');
-    responseHeaders.set('Expires', '0');
-
-    const responseTime = Date.now() - startTime;
-    logger.api.timing(`Response sent in ${responseTime}ms`, { responseTime, dataLength: response.data.length });
-    
-    return NextResponse.json(response, {
-      headers: responseHeaders,
-    });
+    return NextResponse.json(response);
 
   } catch (error) {
-    logger.api.error('API error', error);
-    return NextResponse.json<ErrorResponse>(
-      { error: '內部伺服器錯誤' },
-      { status: 500 }
-    );
+    // 記錄錯誤
+    logger.api.error('API Error', error);
+    
+    // 回傳錯誤回應
+    const errorResponse: ErrorResponse = {
+      error: `伺服器錯誤: ${error instanceof Error ? error.message : '未知錯誤'}`
+    };
+    
+    return NextResponse.json(errorResponse, { status: 500 });
   }
 }

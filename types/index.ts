@@ -12,10 +12,18 @@ export interface Candle {
 }
 
 export interface OHLCResponse {
-  market: Market;
-  symbol: string;
-  tf: TimeFrame;
+  success: boolean;
   data: Candle[];
+  metadata: {
+    symbol: string;
+    market: Market;
+    timeframe: TimeFrame;
+    totalRecords: number;
+    earliestDate: string | null;
+    latestDate: string | null;
+    dataSource: string;
+    executionTime: string;
+  };
 }
 
 export interface ErrorResponse {

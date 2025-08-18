@@ -142,6 +142,175 @@ export function calculateKDJ(data: Candle[], period: number = 9) {
   return { k, d, j };
 }
 
+// 隨機指標 (Stochastic Oscillator)
+export function calculateStochastic(data: Candle[], kPeriod: number = 14, dPeriod: number = 3) {
+  const k: number[] = [];
+  const d: number[] = [];
+  
+  for (let i = 0; i < data.length; i++) {
+    if (i < kPeriod - 1) {
+      k.push(NaN);
+      d.push(NaN);
+    } else {
+      const slice = data.slice(i - kPeriod + 1, i + 1);
+      const high = Math.max(...slice.map(candle => candle.high));
+      const low = Math.min(...slice.map(candle => candle.low));
+      const close = data[i].close;
+      
+      const kValue = ((close - low) / (high - low)) * 100;
+      k.push(kValue);
+      
+      // 計算 %D (K的移動平均)
+      if (i >= kPeriod + dPeriod - 2) {
+        const kSlice = k.slice(i - dPeriod + 1, i + 1);
+        const dValue = kSlice.reduce((acc, val) => acc + val, 0) / dPeriod;
+        d.push(dValue);
+      } else {
+        d.push(NaN);
+      }
+    }
+  }
+  
+  return { k, d };
+}
+
+// CCI (Commodity Channel Index)
+export function calculateCCI(data: Candle[], period: number = 20): number[] {
+  const cci: number[] = [];
+  
+  for (let i = 0; i < data.length; i++) {
+    if (i < period - 1) {
+      cci.push(NaN);
+    } else {
+      const slice = data.slice(i - period + 1, i + 1);
+      const typicalPrices = slice.map(candle => (candle.high + candle.low + candle.close) / 3);
+      const sma = typicalPrices.reduce((acc, price) => acc + price, 0) / period;
+      
+      const meanDeviation = typicalPrices.reduce((acc, price) => acc + Math.abs(price - sma), 0) / period;
+      
+      const currentTypicalPrice = (data[i].high + data[i].low + data[i].close) / 3;
+      cci.push(meanDeviation !== 0 ? (currentTypicalPrice - sma) / (0.015 * meanDeviation) : 0);
+    }
+  }
+  
+  return cci;
+}
+
+// ATR (Average True Range)
+export function calculateATR(data: Candle[], period: number = 14): number[] {
+  const atr: number[] = [];
+  const trueRanges: number[] = [];
+  
+  for (let i = 0; i < data.length; i++) {
+    if (i === 0) {
+      trueRanges.push(data[i].high - data[i].low);
+      atr.push(trueRanges[0]);
+    } else {
+      const highLow = data[i].high - data[i].low;
+      const highPrevClose = Math.abs(data[i].high - data[i - 1].close);
+      const lowPrevClose = Math.abs(data[i].low - data[i - 1].close);
+      
+      const trueRange = Math.max(highLow, highPrevClose, lowPrevClose);
+      trueRanges.push(trueRange);
+      
+      if (i < period) {
+        const avgTR = trueRanges.slice(0, i + 1).reduce((acc, tr) => acc + tr, 0) / (i + 1);
+        atr.push(avgTR);
+      } else {
+        const prevATR = atr[i - 1];
+        const newATR = ((prevATR * (period - 1)) + trueRange) / period;
+        atr.push(newATR);
+      }
+    }
+  }
+  
+  return atr;
+}
+
+// ADX (Average Directional Index)
+export function calculateADX(data: Candle[], period: number = 14) {
+  const adx: number[] = [];
+  const plusDM: number[] = [];
+  const minusDM: number[] = [];
+  const tr: number[] = [];
+  
+  // 計算 TR 和 DM
+  for (let i = 0; i < data.length; i++) {
+    if (i === 0) {
+      tr.push(data[i].high - data[i].low);
+      plusDM.push(0);
+      minusDM.push(0);
+    } else {
+      const highDiff = data[i].high - data[i - 1].high;
+      const lowDiff = data[i - 1].low - data[i].low;
+      
+      const trueRange = Math.max(
+        data[i].high - data[i].low,
+        Math.abs(data[i].high - data[i - 1].close),
+        Math.abs(data[i].low - data[i - 1].close)
+      );
+      tr.push(trueRange);
+      
+      if (highDiff > lowDiff && highDiff > 0) {
+        plusDM.push(highDiff);
+      } else {
+        plusDM.push(0);
+      }
+      
+      if (lowDiff > highDiff && lowDiff > 0) {
+        minusDM.push(lowDiff);
+      } else {
+        minusDM.push(0);
+      }
+    }
+  }
+  
+  // 計算 ADX
+  for (let i = 0; i < data.length; i++) {
+    if (i < period) {
+      adx.push(NaN);
+    } else {
+      const trSum = tr.slice(i - period + 1, i + 1).reduce((acc, val) => acc + val, 0);
+      const plusDMSum = plusDM.slice(i - period + 1, i + 1).reduce((acc, val) => acc + val, 0);
+      const minusDMSum = minusDM.slice(i - period + 1, i + 1).reduce((acc, val) => acc + val, 0);
+      
+      const plusDI = (plusDMSum / trSum) * 100;
+      const minusDI = (minusDMSum / trSum) * 100;
+      
+      const dx = Math.abs(plusDI - minusDI) / (plusDI + minusDI) * 100;
+      adx.push(dx);
+    }
+  }
+  
+  return adx;
+}
+
+// OBV (On Balance Volume)
+export function calculateOBV(data: Candle[]): number[] {
+  const obv: number[] = [];
+  
+  for (let i = 0; i < data.length; i++) {
+    if (i === 0) {
+      obv.push(data[i].volume);
+    } else {
+      const prevOBV = obv[i - 1];
+      const currentClose = data[i].close;
+      const prevClose = data[i - 1].close;
+      const currentVolume = data[i].volume;
+      
+      if (currentClose > prevClose) {
+        obv.push(prevOBV + currentVolume);
+      } else if (currentClose < prevClose) {
+        obv.push(prevOBV - currentVolume);
+      } else {
+        obv.push(prevOBV);
+      }
+    }
+  }
+  
+  return obv;
+}
+
 // 成交量
 export function calculateVolume(data: Candle[]) {
   return data.map(candle => candle.volume);
@@ -159,6 +328,11 @@ export function calculateAllIndicators(data: Candle[]) {
     rsi: calculateRSI(data),
     bollinger: calculateBollingerBands(data),
     kdj: calculateKDJ(data),
+    stochastic: calculateStochastic(data),
+    cci: calculateCCI(data),
+    atr: calculateATR(data),
+    adx: calculateADX(data),
+    obv: calculateOBV(data),
     volume: calculateVolume(data)
   };
 }

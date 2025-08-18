@@ -110,6 +110,11 @@ class Logger {
         this.log('error', 'api', `ERROR: ${message}`, data);
       }
     },
+    warn: (message: string, data?: any) => {
+      if (this.config.api.error) {
+        this.log('warn', 'api', `WARN: ${message}`, data);
+      }
+    },
     timing: (message: string, data?: any) => {
       if (this.config.api.timing) {
         this.log('info', 'api', `TIMING: ${message}`, data);
@@ -132,6 +137,11 @@ class Logger {
     error: (message: string, data?: any) => {
       if (this.config.yahooFinance.error) {
         this.log('error', 'yahooFinance', `ERROR: ${message}`, data);
+      }
+    },
+    warn: (message: string, data?: any) => {
+      if (this.config.yahooFinance.error) {
+        this.log('warn', 'yahooFinance', `WARN: ${message}`, data);
       }
     },
     dataRange: (message: string, data?: any) => {
@@ -174,6 +184,19 @@ class Logger {
     },
   };
 
+  // 股票元資料相關日誌
+  stockMetadata = {
+    info: (message: string, data?: any) => {
+      this.log('info', 'stockMetadata', message, data);
+    },
+    warn: (message: string, data?: any) => {
+      this.log('warn', 'stockMetadata', message, data);
+    },
+    error: (message: string, data?: any) => {
+      this.log('error', 'stockMetadata', message, data);
+    },
+  };
+
   // 獲取所有日誌
   getLogs(): LogLevel[] {
     return [...this.logs];
@@ -190,5 +213,5 @@ class Logger {
   }
 }
 
-// 建立全域日誌實例
+// 創建全域實例
 export const logger = new Logger();

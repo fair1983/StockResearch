@@ -5,8 +5,10 @@ import { useParams } from 'next/navigation';
 import PriceChart from '@/components/PriceChart';
 import DateRangeSelector, { TimeFrame } from '@/components/DateRangeSelector';
 import TechnicalIndicators, { IndicatorType } from '@/components/TechnicalIndicators';
+import CompanyInfo from '@/components/CompanyInfo';
 import { Candle, Market } from '@/types';
 import { logger } from '@/lib/logger';
+import { getStockName } from '@/lib/stock-utils';
 
 export default function StockPage() {
   const params = useParams();
@@ -18,11 +20,10 @@ export default function StockPage() {
   const [error, setError] = useState<string | null>(null);
   const [dataSource, setDataSource] = useState<string>('');
   const [timeFrame, setTimeFrame] = useState<TimeFrame>('1d');
-  const [dateFrom, setDateFrom] = useState<string>('');
-  const [dateTo, setDateTo] = useState<string>('');
-  const [earliestDate, setEarliestDate] = useState<string>('');
-  const [latestDate, setLatestDate] = useState<string>('');
   const [selectedIndicators, setSelectedIndicators] = useState<IndicatorType[]>([]);
+
+  // 獲取股票名稱
+  const stockName = getStockName(market, symbol);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -30,15 +31,13 @@ export default function StockPage() {
       setError(null);
       
       try {
-        logger.frontend.dataFetch(`Fetching data for: ${market} ${symbol}`, { timeFrame, dateFrom, dateTo });
+        logger.frontend.dataFetch(`Fetching data for: ${market} ${symbol}`, { timeFrame });
         
         // 構建 API URL
         const url = new URL('/api/ohlc', window.location.origin);
         url.searchParams.set('market', market);
         url.searchParams.set('symbol', symbol);
         url.searchParams.set('tf', timeFrame);
-        if (dateFrom) url.searchParams.set('from', dateFrom);
-        if (dateTo) url.searchParams.set('to', dateTo);
         
         const response = await fetch(url.toString());
         logger.frontend.dataFetch(`Response status: ${response.status}`);
@@ -58,20 +57,14 @@ export default function StockPage() {
         
         if (result.error) {
           setError(result.error);
-        } else if (result.data && Array.isArray(result.data)) {
+        } else if (result.success && result.data && Array.isArray(result.data)) {
           logger.frontend.dataFetch(`Data received`, { 
             dataLength: result.data.length, 
-            firstDataItem: result.data[0] 
+            firstDataItem: result.data[0],
+            metadata: result.metadata
           });
           setData(result.data);
-          setDataSource(response.headers.get('X-Data-Source') || 'Unknown');
-          
-          // 更新最早和最晚日期
-          if (result.data.length > 0) {
-            const dates = result.data.map(candle => candle.time).sort();
-            setEarliestDate(dates[0]);
-            setLatestDate(dates[dates.length - 1]);
-          }
+          setDataSource(result.metadata?.dataSource || 'Unknown');
         } else {
           logger.frontend.error('Unexpected response format', result);
           setError('資料格式錯誤');
@@ -87,7 +80,7 @@ export default function StockPage() {
     if (market && symbol) {
       fetchData();
     }
-  }, [market, symbol, timeFrame, dateFrom, dateTo]);
+  }, [market, symbol, timeFrame]);
 
   if (loading) {
     return (
@@ -106,6 +99,42 @@ export default function StockPage() {
         <div className="text-center">
           <div className="text-red-500 text-lg mb-2">載入失敗</div>
           <div className="text-gray-600 mb-4">{error}</div>
+          <div className="text-sm text-gray-500 mb-4">
+            可能的原因：
+            <ul className="list-disc list-inside mt-2">
+              <li>股票代碼不存在或已下市</li>
+              <li>網路連線問題</li>
+              <li>資料來源暫時無法使用</li>
+            </ul>
+          </div>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
+          >
+            重新載入
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // 檢查是否有資料
+  if (!loading && (!data || data.length === 0)) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="text-yellow-500 text-lg mb-2">無資料可顯示</div>
+          <div className="text-gray-600 mb-4">
+            股票代碼 {symbol} 目前沒有可用的交易資料
+          </div>
+          <div className="text-sm text-gray-500 mb-4">
+            可能的原因：
+            <ul className="list-disc list-inside mt-2">
+              <li>股票代碼不存在</li>
+              <li>股票已下市或暫停交易</li>
+              <li>該股票在指定時間範圍內無交易記錄</li>
+            </ul>
+          </div>
           <button 
             onClick={() => window.location.reload()} 
             className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors"
@@ -121,125 +150,63 @@ export default function StockPage() {
     setTimeFrame(newTimeFrame);
   };
 
-  const handleDateRangeChange = (from: string, to: string) => {
-    setDateFrom(from);
-    setDateTo(to);
-  };
-
   const handleIndicatorChange = (indicators: IndicatorType[]) => {
     setSelectedIndicators(indicators);
   };
 
-     return (
-     <div className="space-y-8 pb-8">
-       <div className="bg-white p-6 rounded-lg shadow-sm border">
-         <div className="flex items-center justify-between mb-4">
-           <div>
-             <h1 className="text-2xl font-bold text-gray-900">
-               {market === 'US' ? symbol : `${symbol} (台股)`}
-             </h1>
-             <p className="text-gray-600">
-               市場: {market === 'US' ? '美股' : '台股'} | 
-               資料來源: {dataSource}
-             </p>
-           </div>
-           <div className="text-right">
-             <div className="text-sm text-gray-500">最新收盤價</div>
-             <div className="text-xl font-semibold text-gray-900">
-               ${data[data.length - 1]?.close?.toFixed(2) || 'N/A'}
-             </div>
-           </div>
-         </div>
-         
-         <DateRangeSelector
-           onTimeFrameChange={handleTimeFrameChange}
-           onDateRangeChange={handleDateRangeChange}
-           currentTimeFrame={timeFrame}
-           currentFrom={dateFrom}
-           currentTo={dateTo}
-           earliestDate={earliestDate}
-           latestDate={latestDate}
-           loading={loading}
-         />
-       </div>
+  return (
+    <div className="space-y-6 pb-8">
+      {/* 簡化的標題區塊 */}
+      <div className="bg-white p-4 rounded-lg shadow-sm border">
+        <h1 className="text-2xl font-bold text-gray-900">
+          {stockName}
+        </h1>
+      </div>
 
-       <div className="flex gap-6">
-         {/* 左側技術指標面板 */}
-         <div className="w-80 flex-shrink-0">
-           <TechnicalIndicators
-             onIndicatorChange={handleIndicatorChange}
-             selectedIndicators={selectedIndicators}
-             loading={loading}
-           />
-         </div>
-         
-         {/* 右側K線圖 */}
-         <div className="flex-1">
-           <PriceChart 
-             data={data} 
-             symbol={symbol} 
-             market={market} 
-             timeframe={timeFrame} 
-             selectedIndicators={selectedIndicators}
-           />
-         </div>
-       </div>
-
-      {data.length > 0 && (
-        <div className="bg-white p-6 rounded-lg shadow-sm border">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">最近交易資料</h2>
-          <div className="overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    日期
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    開盤
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    最高
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    最低
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    收盤
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                    成交量
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {data.slice(-10).reverse().map((candle, index) => (
-                  <tr key={index} className={index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {candle.time}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${candle.open.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${candle.high.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${candle.low.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      ${candle.close.toFixed(2)}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {candle.volume?.toLocaleString() || 'N/A'}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+      <div className="flex gap-6">
+        {/* 左側技術指標面板 */}
+        <div className="w-80 flex-shrink-0">
+          <TechnicalIndicators
+            onIndicatorChange={handleIndicatorChange}
+            selectedIndicators={selectedIndicators}
+            loading={loading}
+          />
+        </div>
+        
+        {/* 中間K線圖和時間框架選擇器 */}
+        <div className="flex-1">
+          <div className="bg-white rounded-lg shadow-sm border p-4">
+            {/* 時間框架選擇器整合到圖表區域 */}
+            <div className="mb-4">
+              <DateRangeSelector
+                onTimeFrameChange={handleTimeFrameChange}
+                currentTimeFrame={timeFrame}
+                loading={loading}
+              />
+            </div>
+            
+            {/* K線圖表 */}
+            <PriceChart 
+              data={data} 
+              symbol={symbol} 
+              market={market} 
+              timeframe={timeFrame} 
+              selectedIndicators={selectedIndicators}
+            />
           </div>
         </div>
-      )}
+        
+        {/* 右側公司資訊面板 */}
+        {data.length > 0 && (
+          <div className="w-80 flex-shrink-0">
+            <CompanyInfo 
+              symbol={symbol} 
+              market={market} 
+              data={data} 
+            />
+          </div>
+        )}
+      </div>
     </div>
   );
 }
