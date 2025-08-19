@@ -33,84 +33,84 @@ export default function TechnicalIndicators({
     { 
       type: 'MA' as IndicatorType, 
       label: '移動平均線', 
-      description: 'Simple Moving Average (MA5, MA10, MA20)',
+      description: '顯示股價趨勢方向，判斷支撐阻力位，當股價在均線上方為多頭趨勢',
       color: '#FF6B6B',
       category: '趨勢'
     },
     { 
       type: 'EMA' as IndicatorType, 
       label: '指數移動平均線', 
-      description: 'Exponential Moving Average (EMA12, EMA26)',
+      description: '對近期價格賦予更高權重，反應更靈敏，適合短線交易判斷',
       color: '#4ECDC4',
       category: '趨勢'
     },
     { 
       type: 'BOLL' as IndicatorType, 
       label: '布林通道', 
-      description: 'Bollinger Bands (20, 2)',
+      description: '判斷股價是否偏離正常波動範圍，上軌為壓力線，下軌為支撐線',
       color: '#96CEB4',
       category: '趨勢'
     },
     { 
       type: 'MACD' as IndicatorType, 
       label: 'MACD', 
-      description: 'Moving Average Convergence Divergence',
+      description: '判斷趨勢轉折點，金叉為買進信號，死叉為賣出信號',
       color: '#45B7D1',
       category: '動量'
     },
     { 
       type: 'RSI' as IndicatorType, 
       label: 'RSI', 
-      description: 'Relative Strength Index (14)',
+      description: '測量股價漲跌動能，70以上為超買，30以下為超賣',
       color: '#FFEAA7',
       category: '動量'
     },
     { 
       type: 'STOCH' as IndicatorType, 
       label: '隨機指標', 
-      description: 'Stochastic Oscillator (14, 3, 3)',
+      description: '比較收盤價在最高最低價區間的位置，判斷買賣時機',
       color: '#DDA0DD',
       category: '動量'
     },
     { 
       type: 'KDJ' as IndicatorType, 
       label: 'KDJ', 
-      description: 'Stochastic RSI',
+      description: '結合動量概念的隨機指標，K線與D線交叉判斷進出場時機',
       color: '#98D8C8',
       category: '動量'
     },
     { 
       type: 'CCI' as IndicatorType, 
       label: 'CCI', 
-      description: 'Commodity Channel Index (20)',
+      description: '測量股價偏離統計平均值的程度，+100以上為超買，-100以下為超賣',
       color: '#F7DC6F',
       category: '動量'
     },
     { 
       type: 'ATR' as IndicatorType, 
       label: 'ATR', 
-      description: 'Average True Range (14)',
+      description: '測量股價波動幅度，數值越高表示波動越大，可用於設定停損點',
       color: '#BB8FCE',
       category: '波動'
     },
     { 
       type: 'ADX' as IndicatorType, 
       label: 'ADX', 
-      description: 'Average Directional Index (14)',
+      description: '測量趨勢強度，25以上表示趨勢明確，適合趨勢跟隨策略',
       color: '#85C1E9',
       category: '趨勢'
     },
     { 
       type: 'OBV' as IndicatorType, 
       label: 'OBV', 
-      description: 'On Balance Volume',
+      description: '結合成交量與價格變化，判斷資金流向，確認價格趨勢的有效性',
       color: '#F8C471',
       category: '成交量'
     },
     { 
       type: 'VOL' as IndicatorType, 
       label: '成交量', 
-      description: 'Volume',
+      description: '顯示交易活躍度，放量上漲為強勢，縮量下跌為弱勢',
       color: '#82E0AA',
       category: '成交量'
     },
