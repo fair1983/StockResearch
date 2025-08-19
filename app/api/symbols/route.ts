@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Market } from '@/types';
 import { logger } from '@/lib/logger';
-import { StockUpdater } from '@/lib/stock-updater';
+import { stockDB } from '@/lib/stock-database';
 
 // 備用股票列表（當JSON檔案不可用時使用）
 const TW_STOCKS = [
@@ -203,79 +203,18 @@ export async function GET(request: NextRequest) {
     
     logger.api.request('Symbols API Request', { market, category, search });
     
-    let symbols: any[] = [];
+    // 從股票資料庫取得資料
+    let stocks = stockDB.getAllStocks();
     
-    // 嘗試從JSON檔案讀取股票列表
-    try {
-      const updater = new StockUpdater();
-      const stockData = await updater.loadStockData();
-      
-      // 轉換JSON資料格式以符合現有API格式
-      const jsonSymbols: any[] = [];
-      
-      // 添加台股資料
-      stockData.stocks.TW.stocks.forEach(stock => {
-        jsonSymbols.push({
-          symbol: stock.symbol,
-          name: stock.name,
-          category: 'stock',
-          market: 'TW'
-        });
-      });
-      
-      stockData.stocks.TW.etfs.forEach(etf => {
-        jsonSymbols.push({
-          symbol: etf.symbol,
-          name: etf.name,
-          category: 'etf',
-          market: 'TW'
-        });
-      });
-      
-      // 添加美股資料
-      stockData.stocks.US.stocks.forEach(stock => {
-        jsonSymbols.push({
-          symbol: stock.symbol,
-          name: stock.name,
-          category: 'stock',
-          market: 'US'
-        });
-      });
-      
-      stockData.stocks.US.etfs.forEach(etf => {
-        jsonSymbols.push({
-          symbol: etf.symbol,
-          name: etf.name,
-          category: 'etf',
-          market: 'US'
-        });
-      });
-      
-      // 如果JSON檔案有資料，使用JSON資料
-      if (jsonSymbols.length > 0) {
-        symbols = jsonSymbols;
-        logger.api.response(`Using JSON data: ${jsonSymbols.length} symbols`);
-      } else {
-        throw new Error('JSON data is empty');
-      }
-    } catch (error) {
-      // 如果JSON檔案讀取失敗，使用備用資料
-      logger.api.error(`JSON data unavailable, using fallback data: ${error}`);
-      
-      if (market === 'TW') {
-        symbols = [...TW_STOCKS, ...TW_ETFS];
-      } else if (market === 'US') {
-        symbols = [...US_STOCKS, ...US_ETFS];
-      } else {
-        // 如果沒有指定市場，返回所有股票
-        symbols = [
-          ...TW_STOCKS.map(s => ({ ...s, market: 'TW' as Market })),
-          ...TW_ETFS.map(s => ({ ...s, market: 'TW' as Market })),
-          ...US_STOCKS.map(s => ({ ...s, market: 'US' as Market })),
-          ...US_ETFS.map(s => ({ ...s, market: 'US' as Market })),
-        ];
-      }
-    }
+    // 轉換為 API 格式
+    let symbols = stocks.map(stock => ({
+      symbol: stock.代號,
+      name: stock.名稱,
+      category: stockDB.getStockCategory(stock),
+      market: stock.市場 === '上市' ? 'TW' : 
+             stock.市場 === 'NASDAQ' || stock.市場 === 'Other' || stock.市場 === 'SEC' ? 'US' : stock.市場,
+      yahoo_symbol: stock.yahoo_symbol
+    }));
     
     // 按市場篩選
     if (market) {
@@ -309,9 +248,9 @@ export async function GET(request: NextRequest) {
       market,
       symbols,
       total: symbols.length,
-      categories: market ? 
-        Array.from(new Set(symbols.map(s => s.category))).sort() :
-        ['TW', 'US']
+      categories: stockDB.getAllCategories(),
+      categoryStats: stockDB.getCategoryStats(),
+      marketStats: stockDB.getDetailedMarketStats()
     });
     
   } catch (error) {

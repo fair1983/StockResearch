@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { YahooFinanceService } from '@/lib/yahoo-finance';
-import { stockMetadataManager } from '@/lib/stock-metadata';
+import { stockDB } from '@/lib/stock-database';
 import { logger } from '@/lib/logger';
-import fs from 'fs/promises';
-import path from 'path';
 
 const yahooFinanceService = new YahooFinanceService();
 
@@ -126,7 +124,7 @@ export async function GET(request: NextRequest) {
 	try {
 		const { searchParams } = new URL(request.url);
 		const query = searchParams.get('q')?.toLowerCase().trim() || '';
-		const market = searchParams.get('market') || 'TW';
+		const market = searchParams.get('market') || '';
 		const limit = parseInt(searchParams.get('limit') || '10');
 		const useYahoo = searchParams.get('yahoo') === 'true';
 
@@ -136,36 +134,31 @@ export async function GET(request: NextRequest) {
 
 		logger.api.request(`Searching stocks with query: ${query}`, { market, limit, useYahoo });
 
-		// 載入元資料
-		await stockMetadataManager.load();
-
 		const results: any[] = [];
 
-		// 1) 先從本地元資料搜尋
-		const localResults = stockMetadataManager.searchStocks(query, limit);
-		for (const metadata of localResults) {
-			if (!metadata?.symbol) continue;
-			results.push({
-				symbol: metadata.symbol,
-				name: metadata.name || metadata.symbol,
-				market: metadata.market,
-				category: metadata.category,
-				exchange: metadata.exchange,
-				exchangeName: metadata.exchangeName,
-				source: 'local'
-			});
+		// 1) 從本地股票資料庫搜尋
+		// 使用新的交易所地區搜尋
+		const localResults = stockDB.searchStocksByExchange(query, market);
+		for (const stock of localResults) {
+			                   results.push({
+                       symbol: stock.代號,
+                       name: stock.名稱,
+                       market: stock.市場,
+                       category: stockDB.getStockCategory(stock),
+                       exchange: stock.交易所 || (stock.市場 === '上市' ? 'TW' : 'US'),
+                       exchangeName: (stock.交易所 || (stock.市場 === '上市' ? 'TW' : 'US')) === 'TW' ? '台灣證券交易所' : '美國證券交易所',
+                       yahoo_symbol: stock.yahoo_symbol,
+                       source: 'local'
+                   });
 		}
 
-		// 2) Yahoo Finance 搜尋（補足）
-		if (useYahoo && results.length < limit) {
+		// 2) 如果本地沒有結果且啟用 Yahoo Finance，則使用 Yahoo 搜尋
+		if (useYahoo && results.length === 0) {
 			try {
-				const yahooResults = await yahooFinanceService.searchStocks(query, limit - results.length);
+				const yahooResults = await yahooFinanceService.searchStocks(query, limit);
 				for (const yahooResult of yahooResults) {
 					const symbol = (yahooResult && yahooResult.symbol) ? String(yahooResult.symbol).trim() : '';
-					if (!symbol) continue; // 跳過無 symbol 的項目
-
-					// 去重
-					if (results.some(r => r.symbol === symbol)) continue;
+					if (!symbol) continue;
 
 					// 過濾非 US/TW 市場
 					const exchange = yahooResult.exchange || '';
@@ -174,70 +167,24 @@ export async function GET(request: NextRequest) {
 						continue;
 					}
 
-					const metadata = stockMetadataManager.getStockMetadata(symbol);
-					const name = yahooResult.longname || yahooResult.shortname || yahooResult.name || metadata?.name || symbol;
+					const name = yahooResult.longname || yahooResult.shortname || yahooResult.name || symbol;
 
 					results.push({
 						symbol,
 						name,
-						market: metadata?.market || determineMarket(symbol),
-						category: metadata?.category || determineCategory(symbol, name),
-						exchange: metadata?.exchange || exchange,
-						exchangeName: metadata?.exchangeName || yahooResult.exchDisp || '',
+						market: determineMarket(symbol),
+						category: determineCategory(symbol, name),
+						exchange: exchange,
+						exchangeName: yahooResult.exchDisp || '',
 						source: 'yahoo'
 					});
 				}
 			} catch (e) {
-				logger.api.warn('Yahoo Finance search failed (continuing with partial results)', e);
+				logger.api.warn('Yahoo Finance search failed', e);
 			}
 		}
 
-		// 3) 直接代碼查詢（若目前還沒有結果）
-		if (results.length === 0 && /^[A-Z0-9.]{1,12}$/.test(query.toUpperCase())) {
-			try {
-				const symbol = query.toUpperCase();
-				const metadata = stockMetadataManager.getStockMetadata(symbol);
-				if (metadata) {
-					results.push({
-						symbol: metadata.symbol,
-						name: metadata.name || metadata.symbol,
-						market: metadata.market,
-						category: metadata.category,
-						exchange: metadata.exchange,
-						exchangeName: metadata.exchangeName,
-						source: 'local'
-					});
-				} else {
-					try {
-						const quote = await yahooFinanceService.getQuote(symbol);
-						const name = quote?.longName || quote?.shortName || symbol;
-						
-						// 過濾非 US/TW 市場
-						const exchange = quote?.exchange || '';
-						if (!filterValidMarket(symbol, exchange)) {
-							logger.api.warn(`Skipping non-US/TW market in direct lookup: ${symbol} (${exchange})`);
-							return NextResponse.json({ success: false, error: '不支援此市場的股票' }, { status: 400 });
-						}
-						
-						results.push({
-							symbol,
-							name,
-							market: determineMarket(symbol),
-							category: determineCategory(symbol, name),
-							exchange: exchange,
-							exchangeName: quote?.fullExchangeName || '',
-							source: 'yahoo'
-						});
-					} catch (e) {
-						logger.api.warn(`Direct symbol quote failed for ${symbol}`, e);
-					}
-				}
-			} catch (e) {
-				logger.api.warn('Direct symbol lookup failed', e);
-			}
-		}
-
-		// 4) 排序（安全處理大小寫與 name 缺失）
+		// 3) 排序
 		results.sort((a, b) => {
 			const qa = query;
 			const as = String(a.symbol || '').toLowerCase();
@@ -256,16 +203,8 @@ export async function GET(request: NextRequest) {
 			return as.localeCompare(bs);
 		});
 
-		// 5) 限制數量
+		// 4) 限制數量
 		const finalResults = results.slice(0, limit);
-
-		// 6) 依使用者要求：搜尋結果自動寫入 data（去重，已存在就更新）
-		await persistResultsToStocksJson(finalResults.map(r => ({
-			symbol: r.symbol,
-			name: r.name,
-			market: r.market,
-			category: r.category,
-		})));
 
 		logger.api.response('Stock search completed', { count: finalResults.length });
 		return NextResponse.json({ success: true, data: finalResults, total: finalResults.length });
@@ -284,36 +223,30 @@ export async function POST(request: NextRequest) {
 			return NextResponse.json({ success: false, error: '請提供股票代碼和名稱' }, { status: 400 });
 		}
 
-		logger.api.request('Adding stock to local data', { symbol, name });
+		logger.api.request('Checking stock in database', { symbol, name });
 
-		await stockMetadataManager.load();
-		const existing = stockMetadataManager.getStockMetadata(symbol);
+		// 檢查股票是否已存在於資料庫中
+		const existing = stockDB.getStockBySymbol(symbol, market);
 		if (existing) {
-			return NextResponse.json({ success: false, error: '股票已存在於本地資料中' }, { status: 409 });
+			return NextResponse.json({ 
+				success: true, 
+				message: '股票已存在於資料庫中', 
+				data: { 
+					symbol: existing.代號, 
+					name: existing.名稱, 
+					market: existing.市場, 
+					category: stockDB.getStockCategory(existing)
+				} 
+			});
 		}
 
-		const finalMarket = market || determineMarket(symbol);
-		const finalCategory = category || determineCategory(symbol, name);
-
-		stockMetadataManager.setStockMetadata(symbol, {
-			symbol,
-			name,
-			market: finalMarket,
-			category: finalCategory,
-			exchange: '',
-			exchangeName: '',
-			quoteType: '',
-			currency: finalMarket === 'TW' ? 'TWD' : 'USD'
-		});
-
-		// 同步到 stocks.json
-		await persistResultsToStocksJson([{ symbol, name, market: finalMarket, category: finalCategory }]);
-
-		await stockMetadataManager.save();
-		logger.api.response('Stock added to local data', { symbol, name });
-		return NextResponse.json({ success: true, message: '股票已成功加入本地資料', data: { symbol, name, market: finalMarket, category: finalCategory } });
+		// 如果不存在，返回錯誤（因為我們現在使用完整的資料庫）
+		return NextResponse.json({ 
+			success: false, 
+			error: '股票不存在於資料庫中，請使用股票資料收集器更新資料庫' 
+		}, { status: 404 });
 	} catch (error) {
-		logger.api.error(`Error adding stock: ${error}`);
-		return NextResponse.json({ success: false, error: '加入股票時發生錯誤' }, { status: 500 });
+		logger.api.error(`Error checking stock: ${error}`);
+		return NextResponse.json({ success: false, error: '檢查股票時發生錯誤' }, { status: 500 });
 	}
 }

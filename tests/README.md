@@ -1,99 +1,81 @@
 # 測試程式目錄
 
-這個目錄包含各種測試程式，用於驗證股票研究系統的各項功能。
+此目錄包含各種測試和探索程式，用於驗證股票資料來源的可用性。
 
-## 測試程式列表
+## 📁 檔案分類
 
-### 搜尋功能測試
-- **`test-yahoo-search.js`** - 測試 Yahoo Finance 搜尋功能
-  - 測試本地搜尋 vs Yahoo Finance 搜尋
-  - 測試各種股票代碼和名稱的搜尋
-  - 驗證搜尋結果的排序和來源標記
+### 🔍 資料來源測試
+- `test_taiwan_stock_sources.py` - 測試台股各種資料來源
+- `test_nasdaq_ftp_final.py` - 測試 NASDAQ Trader FTP 資料收集
+- `test_stock_collection_final.py` - 測試股票資料收集整合
 
-### 股票新增功能測試
-- **`test-add-stocks.js`** - 測試批量新增股票到本地資料庫
-  - 測試新增多支股票
-  - 驗證重複股票的跳過邏輯
-  - 驗證新增後的搜尋功能
+### 🌐 FTP 探索
+- `explore_nasdaq_ftp.py` - 探索 NASDAQ Trader FTP 目錄結構
+- `explore_all_directories.py` - 探索所有 FTP 目錄內容
 
-- **`test-add-new-stock.js`** - 測試新增單一股票
-  - 測試新增不存在的股票
-  - 驗證新增前後的搜尋結果
+### 📊 資料解析
+- `parse_taiwan_stock_data.py` - 解析台股 ISIN 資料
+- `simple_taiwan_stock_parser.py` - 簡單台股資料解析器
 
-- **`test-add-rare-stock.js`** - 測試新增非常不常見的股票
-  - 使用測試股票代碼 ZTEST
-  - 驗證完整的新增流程
+### 🎯 最終收集器
+- `final_taiwan_stock_collector.py` - 最終版台股資料收集器
 
-### API 功能測試
-- **`test-api.js`** - 綜合 API 測試
-  - 測試所有 API 端點
-  - 驗證錯誤處理
-  - 測試資料格式
+## 🚀 使用方式
 
-### 歷史資料測試
-- **`test-historical.js`** - 測試歷史資料獲取
-  - 測試不同時間範圍的資料獲取
-  - 驗證資料格式和完整性
-
-- **`test-historical-range.js`** - 測試歷史資料範圍
-  - 測試 20 年歷史資料的獲取
-  - 驗證資料的時間範圍
-
-- **`test-paged-merge.js`** - 測試分頁資料合併
-  - 測試分頁獲取歷史資料
-  - 驗證資料合併和去重邏輯
-
-### 特定股票測試
-- **`test-2494.js`** - 測試特定股票 (2494 國碩)
-  - 測試無資料股票的處理
-  - 驗證錯誤訊息顯示
-
-## 使用方法
-
-### 執行單一測試
+### 測試台股資料來源
 ```bash
-node tests/test-yahoo-search.js
-node tests/test-add-stocks.js
-```
-
-### 執行所有測試
-```bash
-# 在 tests 目錄中執行所有測試
 cd tests
-for file in test-*.js; do
-  echo "執行 $file..."
-  node "$file"
-  echo "---"
-done
+python3 test_taiwan_stock_sources.py
 ```
 
-### 測試前準備
-1. 確保伺服器正在運行 (`npm run dev`)
-2. 確保伺服器監聽在 `http://localhost:3000`
-3. 檢查網路連線（Yahoo Finance API 需要網路）
+### 測試美股 FTP 資料
+```bash
+cd tests
+python3 test_nasdaq_ftp_final.py
+```
 
-## 測試結果說明
+### 探索 NASDAQ FTP
+```bash
+cd tests
+python3 explore_nasdaq_ftp.py
+```
 
-### 成功標記
-- ✅ - 測試成功
-- ⚠️ - 警告（如股票已存在）
-- ⏭️ - 跳過（如重複資料）
+### 解析台股資料
+```bash
+cd tests
+python3 parse_taiwan_stock_data.py
+```
 
-### 錯誤標記
-- ❌ - 測試失敗
-- HTTP 錯誤 - API 請求失敗
-- 網路錯誤 - 連線問題
+## 📋 測試結果
 
-## 注意事項
+### ✅ 有效的資料來源
+1. **證交所 OpenAPI** - 上市股票 (1,057 支)
+2. **NASDAQ Trader FTP** - 美股資料 (11,700+ 支)
+3. **SEC JSON** - 美股公司資料
+4. **證交所 ISIN** - 上櫃/興櫃資料 (可解析)
 
-1. **伺服器依賴**: 所有測試都需要伺服器運行
-2. **網路依賴**: Yahoo Finance 相關測試需要網路連線
-3. **資料變更**: 新增股票測試會修改 `data/stocks.json` 檔案
-4. **重複執行**: 某些測試重複執行會跳過已存在的資料
+### ❌ 無效的資料來源
+1. **櫃買中心 OpenAPI** - 回傳 HTML 而非 JSON
+2. **櫃買中心其他 API** - 全部回傳網頁內容
 
-## 維護說明
+## 📊 資料統計
 
-- 新增測試時，請在 README 中添加說明
-- 測試程式應該獨立運行，不依賴其他測試
-- 保持測試程式的可讀性和可維護性
-- 定期更新測試以適應系統變更
+| 資料來源 | 狀態 | 數量 | 備註 |
+|----------|------|------|------|
+| 證交所上市 | ✅ | 1,057 支 | OpenAPI |
+| NASDAQ FTP | ✅ | 11,700+ 支 | 包含 ETF |
+| SEC JSON | ✅ | 8,000+ 支 | 公司資料 |
+| 櫃買中心 | ❌ | 0 | API 異常 |
+
+## 🔧 依賴套件
+
+```bash
+pip install requests pandas beautifulsoup4
+```
+
+## 📝 注意事項
+
+1. 測試程式僅用於驗證資料來源可用性
+2. 實際使用請使用根目錄的 `stock_data_collector.py`
+3. 部分測試程式可能需要網路連線
+4. FTP 測試可能需要較長時間

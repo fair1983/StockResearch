@@ -74,7 +74,15 @@ export default function StockSearch({
 
     setLoading(true);
     try {
-      const url = `/api/search-stocks?q=${encodeURIComponent(searchQuery)}&market=${market}&limit=10&yahoo=${useYahoo}`;
+      // 修正 market 參數映射
+      let apiMarket = market;
+      if (market === 'TW') {
+        apiMarket = 'TW'; // 台股使用 'TW'
+      } else if (market === 'US') {
+        apiMarket = 'US'; // 美股使用 'US'
+      }
+      
+      const url = `/api/search-stocks?q=${encodeURIComponent(searchQuery)}&market=${apiMarket}&limit=10&yahoo=${useYahoo}`;
       const response = await fetch(url);
       
       if (!response.ok) {
@@ -133,8 +141,11 @@ export default function StockSearch({
     setShowResults(false);
     setSelectedIndex(-1);
     
+    // 使用新的交易所地區分類
+    const exchange = stock.exchange || (stock.market === '上市' || stock.market === '上櫃' ? 'TW' : 'US');
+    
     // 導航到股票頁面
-    router.push(`/${stock.market}/${stock.symbol}`);
+    router.push(`/${exchange}/${stock.symbol}`);
   };
 
   const addStocksToLocal = async () => {

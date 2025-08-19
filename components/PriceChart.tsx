@@ -88,9 +88,10 @@ interface PriceChartProps {
   market: string;
   timeframe?: string; // 新增時間框架參數
   selectedIndicators?: IndicatorType[]; // 新增技術指標參數
+  isMainChart?: boolean; // 是否為主圖表
 }
 
-export default function PriceChart({ data, symbol, market, timeframe = '1d', selectedIndicators = [] }: PriceChartProps) {
+export default function PriceChart({ data, symbol, market, timeframe = '1d', selectedIndicators = [], isMainChart = true }: PriceChartProps) {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const indicatorChartContainerRef = useRef<HTMLDivElement>(null);
   const chartRef = useRef<IChartApi | null>(null);
@@ -231,8 +232,30 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
       return;
     }
 
+    // 檢查數據是否包含有效的時間和價格信息
+    const validData = data.filter(candle => 
+      candle.time && 
+      typeof candle.open === 'number' && 
+      typeof candle.high === 'number' && 
+      typeof candle.low === 'number' && 
+      typeof candle.close === 'number' &&
+      !isNaN(candle.open) && 
+      !isNaN(candle.high) && 
+      !isNaN(candle.low) && 
+      !isNaN(candle.close)
+    );
+
+    if (validData.length === 0) {
+      logger.frontend.chartRender('No valid data available for chart');
+      return;
+    }
+
+    if (validData.length !== data.length) {
+      logger.frontend.chartRender(`Filtered out ${data.length - validData.length} invalid data points`);
+    }
+
     // 轉換資料格式
-    const chartData: CandlestickData[] = data.map(candle => {
+    const chartData: CandlestickData[] = validData.map(candle => {
       let time: any;
       
       if (timeframe === '1d' || timeframe === '1w' || timeframe === '1M') {
@@ -270,21 +293,12 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
     // 設定K線資料
     candlestickSeries.setData(chartData);
 
-    // 計算並添加技術指標到獨立的指標圖表
-    if (selectedIndicators.length > 0 && data.length > 0 && indicatorChart) {
-      const indicators = calculateAllIndicators(data);
-      
-      // 清除舊的指標線
-      Object.values(indicatorSeriesRef.current).forEach(series => {
-        try {
-          indicatorChart!.removeSeries(series);
-        } catch (error) {
-          // 忽略已移除的系列錯誤
-        }
-      });
-      indicatorSeriesRef.current = {};
-      
-      // 添加移動平均線到指標圖表
+    // 計算技術指標
+    const indicators = calculateAllIndicators(validData);
+    
+    // 主圖表：添加基本指標（MA、EMA、BOLL）
+    if (isMainChart && selectedIndicators.length > 0 && validData.length > 0 && chart) {
+      // 添加移動平均線到主圖表
       if (selectedIndicators.includes('MA')) {
         const ma5Data: LineData[] = chartData.map((candle, i) => ({
           time: candle.time,
@@ -299,19 +313,19 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           value: indicators.ma20[i] || NaN
         }));
         
-        const ma5Series = indicatorChart.addLineSeries({ 
+        const ma5Series = chart.addLineSeries({ 
           color: '#FF6B6B', 
           lineWidth: 2, 
           title: 'MA5',
           lineStyle: 0
         });
-        const ma10Series = indicatorChart.addLineSeries({ 
+        const ma10Series = chart.addLineSeries({ 
           color: '#4ECDC4', 
           lineWidth: 2, 
           title: 'MA10',
           lineStyle: 0
         });
-        const ma20Series = indicatorChart.addLineSeries({ 
+        const ma20Series = chart.addLineSeries({ 
           color: '#45B7D1', 
           lineWidth: 2, 
           title: 'MA20',
@@ -321,13 +335,9 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         ma5Series.setData(ma5Data);
         ma10Series.setData(ma10Data);
         ma20Series.setData(ma20Data);
-        
-        indicatorSeriesRef.current['MA5'] = ma5Series;
-        indicatorSeriesRef.current['MA10'] = ma10Series;
-        indicatorSeriesRef.current['MA20'] = ma20Series;
       }
       
-      // 添加指數移動平均線到指標圖表
+      // 添加指數移動平均線到主圖表
       if (selectedIndicators.includes('EMA')) {
         const ema12Data: LineData[] = chartData.map((candle, i) => ({
           time: candle.time,
@@ -338,13 +348,13 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           value: indicators.ema26[i] || NaN
         }));
         
-        const ema12Series = indicatorChart.addLineSeries({ 
+        const ema12Series = chart.addLineSeries({ 
           color: '#FF6B6B', 
           lineWidth: 2, 
           title: 'EMA12',
           lineStyle: 0
         });
-        const ema26Series = indicatorChart.addLineSeries({ 
+        const ema26Series = chart.addLineSeries({ 
           color: '#4ECDC4', 
           lineWidth: 2, 
           title: 'EMA26',
@@ -353,12 +363,9 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         
         ema12Series.setData(ema12Data);
         ema26Series.setData(ema26Data);
-        
-        indicatorSeriesRef.current['EMA12'] = ema12Series;
-        indicatorSeriesRef.current['EMA26'] = ema26Series;
       }
       
-      // 添加布林通道到指標圖表
+      // 添加布林通道到主圖表
       if (selectedIndicators.includes('BOLL')) {
         const upperData: LineData[] = chartData.map((candle, i) => ({
           time: candle.time,
@@ -373,20 +380,20 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           value: indicators.bollinger.lower[i] || NaN
         }));
         
-        const upperSeries = indicatorChart.addLineSeries({ 
-          color: '#FFEAA7', 
+        const upperSeries = chart.addLineSeries({ 
+          color: '#96CEB4', 
           lineWidth: 1, 
           title: 'BOLL Upper',
           lineStyle: 0
         });
-        const middleSeries = indicatorChart.addLineSeries({ 
+        const middleSeries = chart.addLineSeries({ 
           color: '#96CEB4', 
-          lineWidth: 2, 
+          lineWidth: 1, 
           title: 'BOLL Middle',
           lineStyle: 0
         });
-        const lowerSeries = indicatorChart.addLineSeries({ 
-          color: '#FFEAA7', 
+        const lowerSeries = chart.addLineSeries({ 
+          color: '#96CEB4', 
           lineWidth: 1, 
           title: 'BOLL Lower',
           lineStyle: 0
@@ -395,11 +402,24 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         upperSeries.setData(upperData);
         middleSeries.setData(middleData);
         lowerSeries.setData(lowerData);
-        
-        indicatorSeriesRef.current['BOLL Upper'] = upperSeries;
-        indicatorSeriesRef.current['BOLL Middle'] = middleSeries;
-        indicatorSeriesRef.current['BOLL Lower'] = lowerSeries;
       }
+    }
+    
+    // 技術指標圖表：添加其他指標
+    if (!isMainChart && selectedIndicators.length > 0 && validData.length > 0 && indicatorChart) {
+      
+      // 清除舊的指標線
+      Object.values(indicatorSeriesRef.current).forEach(series => {
+        try {
+          indicatorChart!.removeSeries(series);
+        } catch (error) {
+          // 忽略已移除的系列錯誤
+        }
+      });
+      indicatorSeriesRef.current = {};
+      
+      // 技術指標圖表只顯示非基本指標（MACD、RSI、KDJ等）
+      // 基本指標（MA、EMA、BOLL）已在主圖表中顯示
       
       // 添加 KDJ 指標到指標圖表
       if (selectedIndicators.includes('KDJ')) {
@@ -662,20 +682,25 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         
         // 獲取當前價格範圍
         const priceScale = chartRef.current.priceScale('right');
-        if (priceScale) {
-          const logicalRange = priceScale.getVisibleLogicalRange();
-          const priceRange = priceScale.getVisiblePriceRange();
-          
-          if (logicalRange && priceRange) {
-            const center = (priceRange.minValue() + priceRange.maxValue()) / 2;
-            const range = priceRange.maxValue() - priceRange.minValue();
-            const newRange = range * scale;
+        if (priceScale && typeof priceScale.getVisiblePriceRange === 'function') {
+          try {
+            const priceRange = priceScale.getVisiblePriceRange();
             
-            // 設定新的價格範圍
-            priceScale.setVisiblePriceRange({
-              minValue: center - newRange / 2,
-              maxValue: center + newRange / 2,
-            });
+            if (priceRange && typeof priceRange.minValue === 'function' && typeof priceRange.maxValue === 'function') {
+              const center = (priceRange.minValue() + priceRange.maxValue()) / 2;
+              const range = priceRange.maxValue() - priceRange.minValue();
+              const newRange = range * scale;
+              
+              // 設定新的價格範圍
+              if (typeof priceScale.setVisiblePriceRange === 'function') {
+                priceScale.setVisiblePriceRange({
+                  minValue: center - newRange / 2,
+                  maxValue: center + newRange / 2,
+                });
+              }
+            }
+          } catch (error) {
+            logger.frontend.chartRender('Price scale zoom error', error);
           }
         }
       }
@@ -774,6 +799,7 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
     };
   }, [data, selectedIndicators, timeframe]);
 
+  // 驗證資料
   if (!data || data.length === 0) {
     return (
       <div className="flex items-center justify-center h-[500px] bg-gray-50 rounded-lg">
@@ -785,36 +811,77 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
     );
   }
 
-  return (
-    <div className="w-full">
-      <div className="mb-4">
-        <h2 className="text-xl font-semibold text-gray-800">
-          {getStockName(market, symbol)}
-        </h2>
-        <p className="text-sm text-gray-600">
-          資料期間: {data[0]?.time} 至 {data[data.length - 1]?.time} ({data.length} 筆資料)
-          {timeframe !== '1d' && ` • ${getTimeframeDisplayName(timeframe)}`}
-        </p>
-      </div>
-      
-      {/* K線圖表 */}
-      <div 
-        ref={chartContainerRef} 
-        className="w-full h-[400px] border border-gray-200 rounded-lg overflow-hidden mb-4"
-      />
+  // 檢查數據是否包含有效的時間和價格信息
+  const validData = data.filter(candle => 
+    candle.time && 
+    typeof candle.open === 'number' && 
+    typeof candle.high === 'number' && 
+    typeof candle.low === 'number' && 
+    typeof candle.close === 'number' &&
+    !isNaN(candle.open) && 
+    !isNaN(candle.high) && 
+    !isNaN(candle.low) && 
+    !isNaN(candle.close)
+  );
 
-      {/* 技術指標圖表 */}
-      {selectedIndicators.length > 0 && (
-        <div 
-          ref={indicatorChartContainerRef} 
-          className="w-full h-[250px] border border-gray-200 rounded-lg overflow-hidden mb-4"
-        />
+  if (validData.length === 0) {
+    return (
+      <div className="flex items-center justify-center h-[500px] bg-gray-50 rounded-lg">
+        <div className="text-center">
+          <div className="text-gray-500 text-lg mb-2">無有效資料可顯示</div>
+          <div className="text-gray-400 text-sm">資料格式錯誤或包含無效值</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="w-full h-full">
+      {/* 主圖表：顯示 K 線和基本指標 */}
+      {isMainChart && (
+        <>
+          <div className="mb-2">
+            <h2 className="text-lg font-semibold text-gray-800">
+              {getStockName(market, symbol)}
+            </h2>
+            <p className="text-xs text-gray-600">
+              {validData[0]?.time} 至 {validData[validData.length - 1]?.time} ({validData.length} 筆)
+              {timeframe !== '1d' && ` • ${getTimeframeDisplayName(timeframe)}`}
+            </p>
+          </div>
+          
+          {/* K線圖表 */}
+          <div 
+            ref={chartContainerRef} 
+            className="w-full h-full border border-gray-200 rounded-lg overflow-hidden"
+          />
+        </>
+      )}
+
+      {/* 技術指標圖表：只顯示指標 */}
+      {!isMainChart && selectedIndicators.length > 0 && (
+        <>
+          <div className="mb-2">
+            <h3 className="text-sm font-semibold text-gray-700">技術指標</h3>
+          </div>
+          <div 
+            ref={indicatorChartContainerRef} 
+            className="w-full h-full border border-gray-200 rounded-lg overflow-hidden"
+          />
+        </>
+      )}
+
+      {/* 空狀態 */}
+      {!isMainChart && selectedIndicators.length === 0 && (
+        <div className="w-full h-full flex items-center justify-center text-gray-400">
+          <p className="text-sm">請選擇技術指標</p>
+        </div>
       )}
 
       {/* 十字線資訊面板 */}
       <div className="mt-3 text-xs text-gray-700 flex flex-wrap gap-x-4 gap-y-1">
         {(() => {
-          const last = data[data.length - 1];
+          const last = validData[validData.length - 1];
           const show = hoverInfo || {
             o: last?.open,
             h: last?.high,
