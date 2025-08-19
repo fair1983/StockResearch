@@ -78,7 +78,7 @@ export async function GET(request: NextRequest) {
       
       try {
         logger.yahooFinance.request(`Fetching paged data for US symbol: ${symbol}`, { page, pageSize, timeframe: tf, existingDataLength: existingData.length });
-        result = await yahooFinance.getKlineDataByPage(symbol, page, pageSize, tf, market, existingData);
+        result = await yahooFinance.getKlineDataByPage(symbol, market, tf, page, pageSize, existingData);
         logger.yahooFinance.response(`Yahoo Finance returned page ${page} for US`);
         dataSource = 'Yahoo Finance';
       } catch (error) {
@@ -94,7 +94,7 @@ export async function GET(request: NextRequest) {
       
       try {
         logger.yahooFinance.request(`Fetching paged data for TW symbol: ${symbol}`, { page, pageSize, timeframe: tf, existingDataLength: existingData.length });
-        result = await yahooFinance.getKlineDataByPage(symbol, page, pageSize, tf, existingData);
+        result = await yahooFinance.getKlineDataByPage(symbol, market, tf, page, pageSize, existingData);
         logger.yahooFinance.response(`Yahoo Finance returned page ${page} for TW`);
         dataSource = 'Yahoo Finance';
       } catch (error) {
@@ -106,13 +106,17 @@ export async function GET(request: NextRequest) {
       }
     }
 
+    if (!result) {
+      return NextResponse.json<ErrorResponse>(
+        { error: '無法取得資料' },
+        { status: 500 }
+      );
+    }
+
     logger.api.response(`Paged response`, { 
-      page: result.currentPage,
-      totalPages: result.totalPages,
+      page: page,
       dataLength: result.data.length,
       hasMore: result.hasMore,
-      mergedCount: result.mergedCount,
-      newCount: result.newCount,
       dataSource 
     });
 
@@ -120,18 +124,18 @@ export async function GET(request: NextRequest) {
       market,
       symbol,
       tf: tf,
-      page: result.currentPage,
-      totalPages: result.totalPages,
+      page: page,
+      totalPages: 1, // 簡化版本，只返回一頁
       hasMore: result.hasMore,
       data: result.data,
       pageInfo: {
-        currentPage: result.currentPage,
-        totalPages: result.totalPages,
+        currentPage: page,
+        totalPages: 1,
         hasMore: result.hasMore,
-        earliestDate: result.earliestDate,
-        latestDate: result.latestDate,
-        mergedCount: result.mergedCount,
-        newCount: result.newCount,
+        earliestDate: result.data.length > 0 ? result.data[0].time : null,
+        latestDate: result.data.length > 0 ? result.data[result.data.length - 1].time : null,
+        mergedCount: result.data.length,
+        newCount: result.data.length,
       }
     };
 
@@ -139,8 +143,8 @@ export async function GET(request: NextRequest) {
     const responseHeaders = new Headers();
     responseHeaders.set('X-Data-Source', dataSource);
     responseHeaders.set('X-Data-Count', result.data.length.toString());
-    responseHeaders.set('X-Current-Page', result.currentPage.toString());
-    responseHeaders.set('X-Total-Pages', result.totalPages.toString());
+    responseHeaders.set('X-Current-Page', page.toString());
+    responseHeaders.set('X-Total-Pages', '1');
     responseHeaders.set('X-Has-More', result.hasMore.toString());
     responseHeaders.set('Cache-Control', 'no-cache, no-store, must-revalidate');
     responseHeaders.set('Pragma', 'no-cache');

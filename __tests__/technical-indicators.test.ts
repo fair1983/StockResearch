@@ -16,21 +16,21 @@ describe('Technical Indicators Tests', () => {
     clearPerformanceMetrics();
     // 創建模擬的K線數據
     mockData = [
-      { time: 1640995200, open: 100, high: 105, low: 98, close: 102, volume: 1000 },
-      { time: 1641081600, open: 102, high: 108, low: 100, close: 106, volume: 1200 },
-      { time: 1641168000, open: 106, high: 112, low: 104, close: 110, volume: 1100 },
-      { time: 1641254400, open: 110, high: 115, low: 107, close: 113, volume: 1300 },
-      { time: 1641340800, open: 113, high: 118, low: 110, close: 116, volume: 1400 },
-      { time: 1641427200, open: 116, high: 120, low: 112, close: 118, volume: 1500 },
-      { time: 1641513600, open: 118, high: 122, low: 115, close: 120, volume: 1600 },
-      { time: 1641600000, open: 120, high: 125, low: 117, close: 123, volume: 1700 },
-      { time: 1641686400, open: 123, high: 127, low: 120, close: 125, volume: 1800 },
-      { time: 1641772800, open: 125, high: 130, low: 122, close: 128, volume: 1900 },
-      { time: 1641859200, open: 128, high: 132, low: 125, close: 130, volume: 2000 },
-      { time: 1641945600, open: 130, high: 135, low: 127, close: 133, volume: 2100 },
-      { time: 1642032000, open: 133, high: 137, low: 130, close: 135, volume: 2200 },
-      { time: 1642118400, open: 135, high: 140, low: 132, close: 138, volume: 2300 },
-      { time: 1642204800, open: 138, high: 142, low: 135, close: 140, volume: 2400 }
+      { time: '2022-01-01', open: 100, high: 105, low: 98, close: 102, volume: 1000 },
+      { time: '2022-01-02', open: 102, high: 108, low: 100, close: 106, volume: 1200 },
+      { time: '2022-01-03', open: 106, high: 112, low: 104, close: 110, volume: 1100 },
+      { time: '2022-01-04', open: 110, high: 115, low: 107, close: 113, volume: 1300 },
+      { time: '2022-01-05', open: 113, high: 118, low: 110, close: 116, volume: 1400 },
+      { time: '2022-01-06', open: 116, high: 120, low: 112, close: 118, volume: 1500 },
+      { time: '2022-01-07', open: 118, high: 122, low: 115, close: 120, volume: 1600 },
+      { time: '2022-01-08', open: 120, high: 125, low: 117, close: 123, volume: 1700 },
+      { time: '2022-01-09', open: 123, high: 127, low: 120, close: 125, volume: 1800 },
+      { time: '2022-01-10', open: 125, high: 130, low: 122, close: 128, volume: 1900 },
+      { time: '2022-01-11', open: 128, high: 132, low: 125, close: 130, volume: 2000 },
+      { time: '2022-01-12', open: 130, high: 135, low: 127, close: 133, volume: 2100 },
+      { time: '2022-01-13', open: 133, high: 137, low: 130, close: 135, volume: 2200 },
+      { time: '2022-01-14', open: 135, high: 140, low: 132, close: 138, volume: 2300 },
+      { time: '2022-01-15', open: 138, high: 142, low: 135, close: 140, volume: 2400 }
     ];
   });
 
@@ -260,7 +260,7 @@ describe('Technical Indicators Tests', () => {
       const largeData: Candle[] = [];
       for (let i = 0; i < 1000; i++) {
         largeData.push({
-          time: 1640995200 + i * 86400,
+          time: new Date(1640995200000 + i * 86400000).toISOString().split('T')[0],
           open: 100 + Math.random() * 20,
           high: 100 + Math.random() * 30,
           low: 100 + Math.random() * 10,
@@ -281,9 +281,9 @@ describe('Technical Indicators Tests', () => {
   describe('數據驗證', () => {
     test('應該能夠處理無效數據', () => {
       const invalidData = [
-        { time: 1640995200, open: NaN, high: 105, low: 98, close: 102, volume: 1000 },
-        { time: 1641081600, open: 102, high: Infinity, low: 100, close: 106, volume: 1200 },
-        { time: 1641168000, open: 106, high: 112, low: -Infinity, close: 110, volume: 1100 }
+        { time: '2022-01-01', open: NaN, high: 105, low: 98, close: 102, volume: 1000 },
+        { time: '2022-01-02', open: 102, high: Infinity, low: 100, close: 106, volume: 1200 },
+        { time: '2022-01-03', open: 106, high: 112, low: -Infinity, close: 110, volume: 1100 }
       ];
 
       // 應該不會拋出錯誤
@@ -294,8 +294,8 @@ describe('Technical Indicators Tests', () => {
 
     test('應該能夠處理零值和負值', () => {
       const zeroData = [
-        { time: 1640995200, open: 0, high: 0, low: 0, close: 0, volume: 0 },
-        { time: 1641081600, open: -1, high: -1, low: -1, close: -1, volume: 0 }
+        { time: '2022-01-01', open: 0, high: 0, low: 0, close: 0, volume: 0 },
+        { time: '2022-01-02', open: -1, high: -1, low: -1, close: -1, volume: 0 }
       ];
 
       expect(() => calculateMA(zeroData, 2)).not.toThrow();

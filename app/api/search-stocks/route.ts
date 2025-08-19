@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { YahooFinanceService } from '@/lib/yahoo-finance';
 import { stockDB } from '@/lib/stock-database';
 import { logger } from '@/lib/logger';
+import path from 'path';
+import fs from 'fs/promises';
 
 const yahooFinanceService = new YahooFinanceService();
 
@@ -113,7 +115,7 @@ async function persistResultsToStocksJson(results: Array<{ symbol: string; name:
 		}
 
 		data.lastUpdated = new Date().toISOString();
-		await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
+		await fs.writeFile(filePath, JSON.stringify(data, null, 2));
 		logger.api.response('stocks.json updated from search', { count: results.length });
 	} catch (e) {
 		logger.api.error('Failed to persist results to stocks.json', e);

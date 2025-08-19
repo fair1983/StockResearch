@@ -7,7 +7,7 @@ export async function GET() {
     const watchlist = WatchlistManager.getWatchlist();
     const stats = WatchlistManager.getWatchlistStats();
     
-    logger.api.info('Watchlist retrieved', { count: watchlist.length });
+    logger.api.request('Watchlist retrieved', { count: watchlist.length });
     
     return NextResponse.json({
       success: true,
@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
         });
         
         if (added) {
-          logger.api.info('Stock added to watchlist', { symbol, market });
+          logger.api.request('Stock added to watchlist', { symbol, market });
           return NextResponse.json({ success: true, message: '已添加到關注列表' });
         } else {
           return NextResponse.json(
@@ -65,7 +65,7 @@ export async function POST(request: NextRequest) {
         const removed = WatchlistManager.removeFromWatchlist(symbol, market);
         
         if (removed) {
-          logger.api.info('Stock removed from watchlist', { symbol, market });
+          logger.api.request('Stock removed from watchlist', { symbol, market });
           return NextResponse.json({ success: true, message: '已從關注列表移除' });
         } else {
           return NextResponse.json(
@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
         
       case 'clear':
         WatchlistManager.clearWatchlist();
-        logger.api.info('Watchlist cleared');
+        logger.api.request('Watchlist cleared');
         return NextResponse.json({ success: true, message: '關注列表已清空' });
         
       default:

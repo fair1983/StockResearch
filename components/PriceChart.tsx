@@ -151,20 +151,20 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           top: 0.1,
           bottom: 0.1,
         },
-        handleScroll: {
-          mouseWheel: true,
-          pressedMouseMove: true,
-        },
-        handleScale: {
-          mouseWheel: true,
-          axisPressedMouseMove: true,
-          pinch: true,
-        },
+        // handleScroll: {
+        //   mouseWheel: true,
+        //   pressedMouseMove: true,
+        // },
+        // handleScale: {
+        //   mouseWheel: true,
+        //   axisPressedMouseMove: true,
+        //   pinch: true,
+        // },
         autoScale: true,
-        autoScaleInfoProvider: () => ({
-          priceRange: null,
-          margins: null,
-        }),
+        // autoScaleInfoProvider: () => ({
+        //   priceRange: null,
+        //   margins: null,
+        // }),
       },
       timeScale: {
         borderColor: '#cccccc',
@@ -197,15 +197,15 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
             top: 0.1,
             bottom: 0.1,
           },
-          handleScroll: {
-            mouseWheel: true,
-            pressedMouseMove: true,
-          },
-          handleScale: {
-            mouseWheel: true,
-            axisPressedMouseMove: true,
-            pinch: true,
-          },
+          // handleScroll: {
+          //   mouseWheel: true,
+          //   pressedMouseMove: true,
+          // },
+          // handleScale: {
+          //   mouseWheel: true,
+          //   axisPressedMouseMove: true,
+          //   pinch: true,
+          // },
           autoScale: true,
         },
         timeScale: {
@@ -215,6 +215,23 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           fixRightEdge: true,
         },
       });
+
+      // 同步主圖表和技術指標圖表的時間軸
+      if (chart && indicatorChart) {
+        chart.timeScale().subscribeVisibleTimeRangeChange(() => {
+          const timeRange = chart.timeScale().getVisibleRange();
+          if (timeRange) {
+            indicatorChart!.timeScale().setVisibleRange(timeRange);
+          }
+        });
+
+        indicatorChart.timeScale().subscribeVisibleTimeRangeChange(() => {
+          const timeRange = indicatorChart!.timeScale().getVisibleRange();
+          if (timeRange) {
+            chart.timeScale().setVisibleRange(timeRange);
+          }
+        });
+      }
     }
 
          // 建立 K 線圖系列
@@ -630,7 +647,7 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
       // 添加成交量到指標圖表
       if (selectedIndicators.includes('VOL')) {
         // 計算成交量的最大值，用於比例計算
-        const validVolumes = indicators.volume.filter(v => typeof v === 'number' && v > 0);
+        const validVolumes = indicators.volume.filter(v => typeof v === 'number' && v > 0) as number[];
         const maxVolume = validVolumes.length > 0 ? Math.max(...validVolumes) : 1;
         const volumeData = chartData.map((candle, i) => {
           const volume = indicators.volume[i] || 0;
@@ -681,28 +698,28 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         const scale = delta > 0 ? 0.9 : 1.1; // 縮小或放大
         
         // 獲取當前價格範圍
-        const priceScale = chartRef.current.priceScale('right');
-        if (priceScale && typeof priceScale.getVisiblePriceRange === 'function') {
-          try {
-            const priceRange = priceScale.getVisiblePriceRange();
-            
-            if (priceRange && typeof priceRange.minValue === 'function' && typeof priceRange.maxValue === 'function') {
-              const center = (priceRange.minValue() + priceRange.maxValue()) / 2;
-              const range = priceRange.maxValue() - priceRange.minValue();
-              const newRange = range * scale;
-              
-              // 設定新的價格範圍
-              if (typeof priceScale.setVisiblePriceRange === 'function') {
-                priceScale.setVisiblePriceRange({
-                  minValue: center - newRange / 2,
-                  maxValue: center + newRange / 2,
-                });
-              }
-            }
-          } catch (error) {
-            logger.frontend.chartRender('Price scale zoom error', error);
-          }
-        }
+        // const priceScale = chartRef.current.priceScale('right');
+        // if (priceScale && typeof priceScale.getVisiblePriceRange === 'function') {
+        //   try {
+        //     const priceRange = priceScale.getVisiblePriceRange();
+        //     
+        //     if (priceRange && typeof priceRange.minValue === 'function' && typeof priceRange.maxValue === 'function') {
+        //       const center = (priceRange.minValue() + priceRange.maxValue()) / 2;
+        //       const range = priceRange.maxValue() - priceRange.minValue();
+        //       const newRange = range * scale;
+        //       
+        //       // 設定新的價格範圍
+        //       if (typeof priceScale.setVisiblePriceRange === 'function') {
+        //         priceScale.setVisiblePriceRange({
+        //           minValue: center - newRange / 2,
+        //           maxValue: center + newRange / 2,
+        //         });
+        //       }
+        //     }
+        //   } catch (error) {
+        //     logger.frontend.chartRender('Price scale zoom error', error);
+        //   }
+        // }
       }
     };
 
@@ -858,7 +875,7 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         </>
       )}
 
-      {/* 技術指標圖表：始終顯示 */}
+      {/* 技術指標圖表 */}
       {!isMainChart && (
         <>
           <div className="mb-2">
