@@ -15,7 +15,7 @@ export class TestUtils {
     return measurePerformance(testName, async () => {
       const result = render(component);
       await waitFor(() => {
-        expect(screen.getByTestId('test-ready')).toBeInTheDocument();
+        expect(screen.getByTestId('test-ready')).toBeTruthy();
       });
       return result as T;
     });

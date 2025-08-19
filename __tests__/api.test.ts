@@ -172,7 +172,7 @@ describe('Core Functionality Tests', () => {
   });
 
   describe('Stock Search Functionality', () => {
-    test('應該能夠搜尋台股股票', () => {
+    test('應該能夠根據交易所(TW)搜尋台股股票', () => {
       const result = measurePerformanceSync('search-tw-stock', () => {
         return stockDB.searchStocksByExchange('2330', 'TW');
       });
@@ -184,17 +184,17 @@ describe('Core Functionality Tests', () => {
         const stock = result[0];
         expect(stock.代號).toBe('2330');
         expect(stock.名稱).toBe('台積電');
-        expect(stock.市場).toBe('上市');
-        // 檢查交易所字段是否存在，如果不存在則使用市場推斷
+        expect(stock.市場).toBe('上市'); // 次級市場
+        // 檢查交易所欄位，如果存在則驗證，否則使用市場推斷
         if (stock.交易所) {
-          expect(stock.交易所).toBe('TW');
+          expect(stock.交易所).toBe('TW'); // 交易所
         } else {
-          expect(stock.市場).toBe('上市'); // 台股上市股票
+          expect(stock.市場).toBe('上市'); // 次級市場推斷為台股
         }
       }
     });
 
-    test('應該能夠搜尋美股股票', () => {
+    test('應該能夠根據交易所(US)搜尋美股股票', () => {
       const result = measurePerformanceSync('search-us-stock', () => {
         return stockDB.searchStocksByExchange('AAPL', 'US');
       });
@@ -203,19 +203,46 @@ describe('Core Functionality Tests', () => {
       expect(Array.isArray(result)).toBe(true);
       
       if (result.length > 0) {
+        // 在結果中尋找 AAPL
+        const aaplStock = result.find(stock => stock.代號 === 'AAPL');
+        expect(aaplStock).toBeDefined();
+        expect(aaplStock?.代號).toBe('AAPL');
+        expect(aaplStock?.名稱).toBe('Apple Inc. - Common Stock');
+        expect(aaplStock?.市場).toBe('NASDAQ'); // 次級市場
+        // 檢查交易所欄位，如果存在則驗證，否則使用市場推斷
+        if (aaplStock?.交易所) {
+          expect(aaplStock.交易所).toBe('US'); // 交易所
+        } else {
+          expect(aaplStock?.市場).toBe('NASDAQ'); // 次級市場推斷為美股
+        }
+      }
+    });
+
+    test('應該能夠根據交易所(US)搜尋 NBIS 股票', () => {
+      const result = measurePerformanceSync('search-nbis-stock', () => {
+        return stockDB.searchStocksByExchange('NBIS', 'US');
+      });
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
+      
+      if (result.length > 0) {
         const stock = result[0];
-        // 檢查是否為美股（NASDAQ, Other, SEC 等市場）
-        expect(['NASDAQ', 'Other', 'SEC']).toContain(stock.市場);
-        // 檢查交易所字段是否存在，如果不存在則使用市場推斷
+        expect(stock.代號).toBe('NBIS');
+        expect(stock.名稱).toBe('Nebius Group N.V. - Class A Ordinary Shares');
+        expect(stock.市場).toBe('NASDAQ'); // 次級市場
+        // 檢查交易所欄位，如果存在則驗證，否則使用市場推斷
         if (stock.交易所) {
-          expect(stock.交易所).toBe('US');
+          expect(stock.交易所).toBe('US'); // 交易所
+        } else {
+          expect(stock.市場).toBe('NASDAQ'); // 次級市場推斷為美股
         }
       }
     });
 
     test('應該能夠處理空搜尋結果', () => {
       const result = measurePerformanceSync('search-non-existent', () => {
-        return stockDB.searchStocksByExchange('NONEXISTENT', 'TW');
+        return stockDB.searchStocksByExchange('NONEXISTENT', 'TW'); // 台股交易所
       });
 
       expect(result).toBeDefined();
@@ -225,27 +252,33 @@ describe('Core Functionality Tests', () => {
 
     test('應該能夠根據交易所代碼正確過濾結果', () => {
       const twResults = measurePerformanceSync('search-tw-exchange', () => {
-        return stockDB.searchStocksByExchange('2330', 'TW');
+        return stockDB.searchStocksByExchange('2330', 'TW'); // 台股交易所
       });
 
       const usResults = measurePerformanceSync('search-us-exchange', () => {
-        return stockDB.searchStocksByExchange('2330', 'US');
+        return stockDB.searchStocksByExchange('2330', 'US'); // 美股交易所
       });
 
-      // TW 搜尋應該找到台積電
+      // TW 交易所搜尋應該找到台積電
       expect(twResults.length).toBeGreaterThan(0);
       const twStock = twResults.find(s => s.代號 === '2330');
       expect(twStock).toBeDefined();
-      expect(twStock?.市場).toBe('上市'); // 台股上市股票
+      expect(twStock?.市場).toBe('上市'); // 次級市場
+      // 檢查交易所欄位，如果存在則驗證，否則使用市場推斷
+      if (twStock?.交易所) {
+        expect(twStock.交易所).toBe('TW'); // 交易所
+      } else {
+        expect(twStock?.市場).toBe('上市'); // 次級市場推斷為台股
+      }
 
-      // US 搜尋不應該找到台積電
+      // US 交易所搜尋不應該找到台積電
       const usStock = usResults.find(s => s.代號 === '2330');
       expect(usStock).toBeUndefined();
     });
 
     test('應該能夠處理部分匹配搜尋', () => {
       const result = measurePerformanceSync('search-partial-match', () => {
-        return stockDB.searchStocksByExchange('233', 'TW');
+        return stockDB.searchStocksByExchange('233', 'TW'); // 台股交易所
       });
 
       expect(result).toBeDefined();
@@ -256,6 +289,27 @@ describe('Core Functionality Tests', () => {
       result.forEach(stock => {
         expect(stock.代號).toContain('233');
       });
+    });
+
+    test('應該能夠處理不指定交易所的搜尋', () => {
+      const result = measurePerformanceSync('search-no-exchange', () => {
+        return stockDB.searchStocksByExchange('2330', ''); // 不指定交易所
+      });
+
+      expect(result).toBeDefined();
+      expect(Array.isArray(result)).toBe(true);
+      expect(result.length).toBeGreaterThan(0);
+      
+      // 應該能找到台積電
+      const stock = result.find(s => s.代號 === '2330');
+      expect(stock).toBeDefined();
+      expect(stock?.市場).toBe('上市'); // 次級市場
+      // 檢查交易所欄位，如果存在則驗證，否則使用市場推斷
+      if (stock?.交易所) {
+        expect(stock.交易所).toBe('TW'); // 交易所
+      } else {
+        expect(stock?.市場).toBe('上市'); // 次級市場推斷為台股
+      }
     });
   });
 

@@ -18,7 +18,7 @@ export default function Home() {
 
           {/* 快速導航 */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-            <Link href="/stocks" className="group">
+            <Link href="/symbols" className="group">
               <div className="bg-white p-6 rounded-lg shadow-sm hover:shadow-md transition-shadow">
                 <div className="flex items-center">
                   <div className="flex-shrink-0">

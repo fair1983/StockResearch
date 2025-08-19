@@ -110,12 +110,15 @@ export class HistoricalDataManager {
       }
 
       // 抓取新資料
+      const startDate = config.startDate ? new Date(config.startDate) : undefined;
+      const endDate = config.endDate ? new Date(config.endDate) : undefined;
+      
       const data = await this.yahooService.getKlineData(
         symbol,
-        config.startDate,
-        config.endDate,
+        market,
         interval,
-        market
+        startDate,
+        endDate
       );
 
       // 儲存到歷史資料目錄

@@ -29,7 +29,7 @@ export class YahooFinanceService {
     period2?: Date
   ): Promise<Candle[]> {
     try {
-      const formattedSymbol = this.formatSymbol(symbol);
+      const formattedSymbol = this.formatSymbol(symbol, market);
       logger.yahooFinance.request(`Fetching K-line data for ${symbol}`, { market, interval });
 
       // 設定預設時間範圍（20年前到現在）
@@ -39,7 +39,7 @@ export class YahooFinanceService {
       const result = await yahooFinance.historical(formattedSymbol, {
         period1: startDate,
         period2: endDate,
-        interval: this.mapInterval(interval)
+        interval: this.mapInterval(interval) as "1d" | "1mo" | "1wk"
       });
 
       // 轉換為內部格式
@@ -79,7 +79,7 @@ export class YahooFinanceService {
     existingData: Candle[] = []
   ): Promise<{ data: Candle[]; hasMore: boolean }> {
     try {
-      const formattedSymbol = this.formatSymbol(symbol);
+      const formattedSymbol = this.formatSymbol(symbol, market);
       logger.yahooFinance.request(`Fetching paged K-line data for ${symbol}`, { 
         market, interval, page, pageSize 
       });
@@ -91,7 +91,7 @@ export class YahooFinanceService {
       const result = await yahooFinance.historical(formattedSymbol, {
         period1: startDate,
         period2: endDate,
-        interval: this.mapInterval(interval)
+        interval: this.mapInterval(interval) as "1d" | "1mo" | "1wk"
       });
 
       // 轉換為內部格式
@@ -179,10 +179,13 @@ export class YahooFinanceService {
       // 為每個搜尋結果更新元資料
       for (const result of results) {
         try {
-          const quote = await yahooFinance.quote(result.symbol);
-          stockMetadataManager.updateFromYahooData(result.symbol, quote);
+          const symbol = (result as any).symbol;
+          if (symbol) {
+            const quote = await yahooFinance.quote(symbol);
+            stockMetadataManager.updateFromYahooData(symbol, quote);
+          }
         } catch (quoteError) {
-          logger.yahooFinance.warn(`Failed to fetch quote for ${result.symbol}`, quoteError);
+          logger.yahooFinance.warn(`Failed to fetch quote for ${(result as any).symbol}`, quoteError);
         }
       }
 
@@ -247,16 +250,32 @@ export class YahooFinanceService {
   /**
    * 格式化股票代碼
    * @param symbol 原始股票代碼
+   * @param market 市場 (TW/US)
    * @returns 格式化後的股票代碼
    */
-  private formatSymbol(symbol: string): string {
+  private formatSymbol(symbol: string, market: string): string {
     // 台股：加上 .TW 後綴
-    // 支援 4-5 位數股票代碼 (如 2330, 0050, 0056, 00878)
-    if (/^\d{4,5}$/.test(symbol)) {
+    if (market === 'TW') {
+      // 支援 4-5 位數股票代碼 (如 2330, 0050, 0056, 00878)
+      if (/^\d{4,5}$/.test(symbol)) {
+        return `${symbol}.TW`;
+      }
+      // 台股其他格式：直接加上 .TW
       return `${symbol}.TW`;
     }
     
-    // 美股：直接使用
+    // 美股：直接使用，不加後綴
+    if (market === 'US') {
+      return symbol;
+    }
+    
+    // 預設：根據股票代號格式判斷
+    if (/^\d{4,5}$/.test(symbol)) {
+      // 4-5 位數字：台股格式
+      return `${symbol}.TW`;
+    }
+    
+    // 其他：美股格式
     return symbol;
   }
 

@@ -11,7 +11,14 @@ const yahooFinanceService = new YahooFinanceService();
 const OPTION_SYMBOL_REGEX = /^[A-Z][A-Z0-9.]{0,6}\d{6}[CP]\d{8}$/i;
 
 // 市場判斷函數（備用，優先使用元資料）
-function determineMarket(symbol: string): string {
+function determineMarket(symbol: string, exchange?: string): string {
+	// 優先根據交易所代號判斷
+	if (exchange) {
+		if (exchange === 'TAI') return 'TW';
+		if (['NMS', 'NYQ', 'PCX', 'NGM', 'OPR', 'NEO', 'BTS', 'PNK'].includes(exchange)) return 'US';
+	}
+	
+	// 根據股票代號格式判斷（備用）
 	if (OPTION_SYMBOL_REGEX.test(symbol)) return 'US';
 	if (/^\d{5}$/.test(symbol)) return 'TW';
 	if (/^\d{4}$/.test(symbol)) return 'TW';
@@ -154,7 +161,7 @@ export async function GET(request: NextRequest) {
                    });
 		}
 
-		// 2) 如果本地沒有結果且啟用 Yahoo Finance，則使用 Yahoo 搜尋
+		// 2) 如果本地沒有結果且啟用 Yahoo Finance，則檢查是否在 Yahoo 中存在但本地資料庫中沒有
 		if (useYahoo && results.length === 0) {
 			try {
 				const yahooResults = await yahooFinanceService.searchStocks(query, limit);
@@ -169,17 +176,22 @@ export async function GET(request: NextRequest) {
 						continue;
 					}
 
-					const name = yahooResult.longname || yahooResult.shortname || yahooResult.name || symbol;
-
-					results.push({
-						symbol,
-						name,
-						market: determineMarket(symbol),
-						category: determineCategory(symbol, name),
-						exchange: exchange,
-						exchangeName: yahooResult.exchDisp || '',
-						source: 'yahoo'
-					});
+					// 檢查是否已存在於本地資料庫中
+					const existingStock = stockDB.getStockBySymbol(symbol);
+					if (existingStock) {
+						// 如果存在於本地資料庫，加入結果
+						results.push({
+							symbol: existingStock.代號,
+							name: existingStock.名稱,
+							market: existingStock.市場,
+							category: stockDB.getStockCategory(existingStock),
+							exchange: existingStock.交易所 || (existingStock.市場 === '上市' ? 'TW' : 'US'),
+							exchangeName: (existingStock.交易所 || (existingStock.市場 === '上市' ? 'TW' : 'US')) === 'TW' ? '台灣證券交易所' : '美國證券交易所',
+							yahoo_symbol: existingStock.yahoo_symbol,
+							source: 'local'
+						});
+					}
+					// 如果不存在於本地資料庫，不加入結果（不自動新增）
 				}
 			} catch (e) {
 				logger.api.warn('Yahoo Finance search failed', e);

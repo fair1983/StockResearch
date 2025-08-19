@@ -33,25 +33,29 @@ export default function CompanyInfo({ market, symbol, data }: CompanyInfoProps) 
       title: `${stockInfo?.name || symbol} 最新財報表現亮眼`,
       summary: '公司公布最新季度財報，營收和獲利均優於市場預期，股價有望持續上漲。',
       date: '2025-08-18',
-      source: '財經日報'
+      source: '財經日報',
+      url: 'https://www.cmoney.tw/finance/f00025.aspx'
     },
     {
       title: `${stockInfo?.name || symbol} 宣布新產品線擴展計畫`,
       summary: '公司宣布將投入新產品研發，預計將為未來營收帶來新的成長動能。',
       date: '2025-08-17',
-      source: '科技新聞'
+      source: '科技新聞',
+      url: 'https://technews.tw/'
     },
     {
       title: `${stockInfo?.name || symbol} 與國際大廠簽署合作協議`,
       summary: '公司與國際知名企業簽署戰略合作協議，將共同開發新技術和市場。',
       date: '2025-08-16',
-      source: '商業週刊'
+      source: '商業週刊',
+      url: 'https://www.businessweekly.com.tw/'
     },
     {
       title: `${stockInfo?.name || symbol} 股價創新高，分析師看好後市`,
       summary: '在強勁的基本面支撐下，分析師紛紛調高目標價，看好公司未來發展。',
       date: '2025-08-15',
-      source: '投資分析'
+      source: '投資分析',
+      url: 'https://www.moneydj.com/'
     }
   ];
 
@@ -231,22 +235,22 @@ export default function CompanyInfo({ market, symbol, data }: CompanyInfoProps) 
             </div>
 
             {/* 價格範圍 */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-3 gap-2">
               <div className="bg-white border border-gray-200 rounded-lg p-2">
-                <div className="text-xs text-gray-500 mb-1 truncate">開盤</div>
-                <div className="text-sm font-semibold truncate">${stats.open.toFixed(2)}</div>
+                <div className="text-xs text-gray-500 mb-1 break-words">開盤</div>
+                <div className="text-sm font-semibold break-words">${stats.open.toFixed(2)}</div>
               </div>
               <div className="bg-white border border-gray-200 rounded-lg p-2">
-                <div className="text-xs text-gray-500 mb-1 truncate">成交量</div>
-                <div className="text-sm font-semibold truncate">{formatNumber(stats.volume)}</div>
+                <div className="text-xs text-gray-500 mb-1 break-words">成交量</div>
+                <div className="text-sm font-semibold break-words">{formatNumber(stats.volume)}</div>
               </div>
               <div className="bg-white border border-gray-200 rounded-lg p-2">
-                <div className="text-xs text-gray-500 mb-1 truncate">20日最高</div>
-                <div className="text-sm font-semibold truncate">${stats.high.toFixed(2)}</div>
+                <div className="text-xs text-gray-500 mb-1 break-words">20日最高</div>
+                <div className="text-sm font-semibold break-words">${stats.high.toFixed(2)}</div>
               </div>
               <div className="bg-white border border-gray-200 rounded-lg p-2">
-                <div className="text-xs text-gray-500 mb-1 truncate">20日最低</div>
-                <div className="text-sm font-semibold truncate">${stats.low.toFixed(2)}</div>
+                <div className="text-xs text-gray-500 mb-1 break-words">20日最低</div>
+                <div className="text-sm font-semibold break-words">${stats.low.toFixed(2)}</div>
               </div>
             </div>
 
@@ -258,22 +262,22 @@ export default function CompanyInfo({ market, symbol, data }: CompanyInfoProps) 
               <div className="text-sm text-red-500">{fundError}</div>
             )}
             {fundamentals && (
-              <div className="grid grid-cols-2 gap-2">
+              <div className="grid grid-cols-3 gap-2">
                 <div className="bg-white border border-gray-200 rounded-lg p-2">
-                  <div className="text-xs text-gray-500 mb-1 truncate">市值</div>
-                  <div className="text-sm font-semibold truncate">{formatNumber(extractNumber(fundamentals.marketCap) || 0)}</div>
+                  <div className="text-xs text-gray-500 mb-1 break-words">市值</div>
+                  <div className="text-sm font-semibold break-words">{formatNumber(extractNumber(fundamentals.marketCap) || 0)}</div>
                 </div>
                 <div className="bg-white border border-gray-200 rounded-lg p-2">
-                  <div className="text-xs text-gray-500 mb-1 truncate">本益比 (TTM)</div>
-                  <div className="text-sm font-semibold truncate">{extractNumber(fundamentals.trailingPE)?.toFixed(2) || '-'}</div>
+                  <div className="text-xs text-gray-500 mb-1 break-words">本益比 (TTM)</div>
+                  <div className="text-sm font-semibold break-words">{extractNumber(fundamentals.trailingPE)?.toFixed(2) || '-'}</div>
                 </div>
                 <div className="bg-white border border-gray-200 rounded-lg p-2">
-                  <div className="text-xs text-gray-500 mb-1 truncate">股價淨值比 (P/B)</div>
-                  <div className="text-sm font-semibold truncate">{extractNumber(fundamentals.priceToBook)?.toFixed(2) || '-'}</div>
+                  <div className="text-xs text-gray-500 mb-1 break-words">股價淨值比 (P/B)</div>
+                  <div className="text-sm font-semibold break-words">{extractNumber(fundamentals.priceToBook)?.toFixed(2) || '-'}</div>
                 </div>
                 <div className="bg-white border border-gray-200 rounded-lg p-2">
-                  <div className="text-xs text-gray-500 mb-1 truncate">股利率</div>
-                  <div className="text-sm font-semibold truncate">{formatPercent(extractNumber(fundamentals.dividendYield))}</div>
+                  <div className="text-xs text-gray-500 mb-1 break-words">股利率</div>
+                  <div className="text-sm font-semibold break-words">{formatPercent(extractNumber(fundamentals.dividendYield))}</div>
                 </div>
               </div>
             )}
@@ -328,38 +332,38 @@ export default function CompanyInfo({ market, symbol, data }: CompanyInfoProps) 
               {fundLoading && <div className="text-xs text-gray-500">載入中...</div>}
               {fundError && <div className="text-xs text-red-500">{fundError}</div>}
               {fundamentals && (
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">市值</div>
-                    <div className="text-sm font-semibold truncate">{formatNumber(extractNumber(fundamentals.marketCap) || 0)}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">市值</div>
+                    <div className="text-sm font-semibold break-words">{formatNumber(extractNumber(fundamentals.marketCap) || 0)}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">企業價值 (EV)</div>
-                    <div className="text-sm font-semibold truncate">{formatNumber(extractNumber(fundamentals.enterpriseValue) || 0)}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">企業價值 (EV)</div>
+                    <div className="text-sm font-semibold break-words">{formatNumber(extractNumber(fundamentals.enterpriseValue) || 0)}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">本益比 (TTM)</div>
-                    <div className="text-sm font-semibold truncate">{extractNumber(fundamentals.trailingPE)?.toFixed(2) || '-'}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">本益比 (TTM)</div>
+                    <div className="text-sm font-semibold break-words">{extractNumber(fundamentals.trailingPE)?.toFixed(2) || '-'}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">預估本益比 (Forward)</div>
-                    <div className="text-sm font-semibold truncate">{extractNumber(fundamentals.forwardPE)?.toFixed(2) || '-'}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">預估本益比 (Forward)</div>
+                    <div className="text-sm font-semibold break-words">{extractNumber(fundamentals.forwardPE)?.toFixed(2) || '-'}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">股價淨值比 (P/B)</div>
-                    <div className="text-sm font-semibold truncate">{extractNumber(fundamentals.priceToBook)?.toFixed(2) || '-'}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">股價淨值比 (P/B)</div>
+                    <div className="text-sm font-semibold break-words">{extractNumber(fundamentals.priceToBook)?.toFixed(2) || '-'}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">PEG</div>
-                    <div className="text-sm font-semibold truncate">{extractNumber(fundamentals.pegRatio)?.toFixed(2) || '-'}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">PEG</div>
+                    <div className="text-sm font-semibold break-words">{extractNumber(fundamentals.pegRatio)?.toFixed(2) || '-'}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">股利率</div>
-                    <div className="text-sm font-semibold truncate">{formatPercent(extractNumber(fundamentals.dividendYield))}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">股利率</div>
+                    <div className="text-sm font-semibold break-words">{formatPercent(extractNumber(fundamentals.dividendYield))}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">配發率</div>
-                    <div className="text-sm font-semibold truncate">{formatPercent(extractNumber(fundamentals.payoutRatio))}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">配發率</div>
+                    <div className="text-sm font-semibold break-words">{formatPercent(extractNumber(fundamentals.payoutRatio))}</div>
                   </div>
                 </div>
               )}
@@ -369,34 +373,34 @@ export default function CompanyInfo({ market, symbol, data }: CompanyInfoProps) 
             {fundamentals && (
               <div>
                 <h4 className="text-sm font-semibold text-gray-900 mb-3">營運表現</h4>
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-3 gap-2">
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">營收 (Total Revenue)</div>
-                    <div className="text-sm font-semibold truncate">{formatNumber(extractNumber(fundamentals.totalRevenue) || 0)}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">營收 (Total Revenue)</div>
+                    <div className="text-sm font-semibold break-words">{formatNumber(extractNumber(fundamentals.totalRevenue) || 0)}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">營收成長</div>
-                    <div className="text-sm font-semibold truncate">{formatPercent(extractNumber(fundamentals.revenueGrowth))}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">營收成長</div>
+                    <div className="text-sm font-semibold break-words">{formatPercent(extractNumber(fundamentals.revenueGrowth))}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">毛利率</div>
-                    <div className="text-sm font-semibold truncate">{formatPercent(extractNumber(fundamentals.grossMargins))}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">毛利率</div>
+                    <div className="text-sm font-semibold break-words">{formatPercent(extractNumber(fundamentals.grossMargins))}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">營業利益率</div>
-                    <div className="text-sm font-semibold truncate">{formatPercent(extractNumber(fundamentals.operatingMargins))}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">營業利益率</div>
+                    <div className="text-sm font-semibold break-words">{formatPercent(extractNumber(fundamentals.operatingMargins))}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">淨利率</div>
-                    <div className="text-sm font-semibold truncate">{formatPercent(extractNumber(fundamentals.profitMargins))}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">淨利率</div>
+                    <div className="text-sm font-semibold break-words">{formatPercent(extractNumber(fundamentals.profitMargins))}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">EPS (TTM)</div>
-                    <div className="text-sm font-semibold truncate">{extractNumber(fundamentals.epsTrailingTwelveMonths)?.toFixed(2) || '-'}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">EPS (TTM)</div>
+                    <div className="text-sm font-semibold break-words">{extractNumber(fundamentals.epsTrailingTwelveMonths)?.toFixed(2) || '-'}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
-                    <div className="text-xs text-gray-500 mb-1 truncate">EBITDA</div>
-                    <div className="text-sm font-semibold truncate">{formatNumber(extractNumber(fundamentals.ebitda) || 0)}</div>
+                    <div className="text-xs text-gray-500 mb-1 break-words">EBITDA</div>
+                    <div className="text-sm font-semibold break-words">{formatNumber(extractNumber(fundamentals.ebitda) || 0)}</div>
                   </div>
                   <div className="bg-gray-50 p-2 rounded">
                     <div className="text-xs text-gray-500 mb-1 truncate">自由現金流</div>
@@ -435,17 +439,32 @@ export default function CompanyInfo({ market, symbol, data }: CompanyInfoProps) 
             {news.map((item, index) => (
               <div key={index} className="border-b border-gray-100 pb-3 last:border-b-0">
                 <div className="flex justify-between items-start mb-1">
-                  <h4 className="text-sm font-medium text-gray-900 hover:text-blue-600 cursor-pointer line-clamp-2">
+                  <a 
+                    href={item.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-sm font-medium text-gray-900 hover:text-blue-600 cursor-pointer line-clamp-2 flex-1 mr-2 transition-colors"
+                  >
                     {item.title}
-                  </h4>
-                  <span className="text-xs text-gray-400 ml-2 flex-shrink-0">{item.date}</span>
+                  </a>
+                  <span className="text-xs text-gray-400 flex-shrink-0">{item.date}</span>
                 </div>
                 <p className="text-xs text-gray-600 mb-1 line-clamp-2">{item.summary}</p>
-                <div className="text-xs text-gray-400">來源: {item.source}</div>
+                <div className="flex justify-between items-center">
+                  <span className="text-xs text-gray-400">來源: {item.source}</span>
+                  <a 
+                    href={item.url} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-xs text-blue-500 hover:text-blue-700 transition-colors"
+                  >
+                    閱讀全文 →
+                  </a>
+                </div>
               </div>
             ))}
             <div className="text-center pt-2">
-              <button className="text-blue-500 hover:text-blue-700 text-xs">
+              <button className="text-blue-500 hover:text-blue-700 text-xs transition-colors">
                 查看更多新聞 →
               </button>
             </div>

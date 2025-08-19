@@ -291,12 +291,12 @@ export function calculateOBV(data: Candle[]): number[] {
   
   for (let i = 0; i < data.length; i++) {
     if (i === 0) {
-      obv.push(data[i].volume);
+      obv.push(data[i].volume || 0);
     } else {
       const prevOBV = obv[i - 1];
       const currentClose = data[i].close;
       const prevClose = data[i - 1].close;
-      const currentVolume = data[i].volume;
+      const currentVolume = data[i].volume || 0;
       
       if (currentClose > prevClose) {
         obv.push(prevOBV + currentVolume);

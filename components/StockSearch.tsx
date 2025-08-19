@@ -141,11 +141,11 @@ export default function StockSearch({
     setShowResults(false);
     setSelectedIndex(-1);
     
-    // 使用新的交易所地區分類
-    const exchange = stock.exchange || (stock.market === '上市' || stock.market === '上櫃' ? 'TW' : 'US');
+    // 使用交易所代號進行導航
+    const exchangeCode = stock.exchange || (stock.market === '上市' || stock.market === '上櫃' ? 'TW' : 'US');
     
     // 導航到股票頁面
-    router.push(`/${exchange}/${stock.symbol}`);
+    router.push(`/${exchangeCode}/${stock.symbol}`);
   };
 
   const addStocksToLocal = async () => {
@@ -274,26 +274,17 @@ export default function StockSearch({
         </div>
       )}
 
-      {/* 新增到本地資料庫按鈕 */}
-      {showAddToLocal && showResults && yahooStocksCount > 0 && (
-        <div className="mt-2 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div className="flex items-center justify-between">
-            <div className="text-sm text-yellow-800">
-              發現 {yahooStocksCount} 支 Yahoo Finance 股票
-            </div>
-            <button
-              onClick={addStocksToLocal}
-              disabled={addingStocks}
-              className="px-3 py-1 text-xs bg-yellow-600 text-white rounded hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              {addingStocks ? '新增中...' : '新增到本地'}
-            </button>
+      {/* 搜尋結果統計 */}
+      {showResults && results.length > 0 && (
+        <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+          <div className="text-sm text-blue-800">
+            找到 {results.length} 支股票
+            {useYahoo && (
+              <span className="text-xs ml-2">
+                (已包含 Yahoo Finance 比對)
+              </span>
+            )}
           </div>
-          {addMessage && (
-            <div className="mt-2 text-xs text-yellow-700">
-              {addMessage}
-            </div>
-          )}
         </div>
       )}
 
@@ -315,11 +306,6 @@ export default function StockSearch({
                     <span className="text-xs px-2 py-1 bg-gray-100 text-gray-600 rounded">
                       {getCategoryDisplay(stock.category)}
                     </span>
-                    {stock.source === 'yahoo' && (
-                      <span className="text-xs px-2 py-1 bg-yellow-100 text-yellow-700 rounded">
-                        Yahoo
-                      </span>
-                    )}
                   </div>
                   <div className="text-sm text-gray-600 mt-1">{stock.name}</div>
                   {stock.exchange && (

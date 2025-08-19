@@ -319,20 +319,20 @@ export class StockDatabase {
   }
 
   /**
-   * 根據交易所和市場獲取交易所地區
+   * 根據股票資料獲取交易所代號
    */
   getExchange(stock: StockData): string {
-    return stock.交易所 || (stock.市場 === '上市' ? 'TW' : 'US');
+    return stock.市場 === '上市' || stock.市場 === '上櫃' ? 'TW' : 'US';
   }
 
   /**
-   * 根據交易所地區獲取市場列表
+   * 根據交易所代號獲取次級市場列表
    */
   getMarketsByExchange(exchange: string): string[] {
     if (exchange === 'TW') {
-      return ['上市', '上櫃'];
+      return ['上市', '上櫃', '興櫃']; // 台股的次級市場
     } else if (exchange === 'US') {
-      return ['NASDAQ', 'Other', 'SEC'];
+      return ['NASDAQ', 'NYSE', 'NYSEARCA', 'NMS', 'NYQ', 'PCX', 'NGM', 'OPR', 'NEO', 'BTS', 'PNK', 'Other', 'SEC']; // 美股的次級市場
     }
     return [];
   }
@@ -344,7 +344,15 @@ export class StockDatabase {
     if (!this.loaded) this.loadStocks();
 
     const lowerQuery = query.toLowerCase();
-    const markets = this.getMarketsByExchange(exchange);
+    
+    // 如果沒有指定交易所，搜尋所有股票
+    if (!exchange || exchange === '') {
+      return this.stocks.filter(stock => {
+        return stock.代號.toLowerCase().includes(lowerQuery) ||
+               stock.名稱.toLowerCase().includes(lowerQuery) ||
+               stock.yahoo_symbol.toLowerCase().includes(lowerQuery);
+      });
+    }
     
     return this.stocks.filter(stock => {
       const matchesQuery = 
@@ -352,7 +360,9 @@ export class StockDatabase {
         stock.名稱.toLowerCase().includes(lowerQuery) ||
         stock.yahoo_symbol.toLowerCase().includes(lowerQuery);
       
-      const matchesExchange = stock.交易所 === exchange || markets.includes(stock.市場);
+      // 優先使用 stock.交易所 欄位，如果不存在則使用市場推斷
+      const stockExchange = stock.交易所 || this.getExchange(stock);
+      const matchesExchange = stockExchange === exchange;
       
       return matchesQuery && matchesExchange;
     });
