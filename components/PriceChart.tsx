@@ -858,24 +858,20 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         </>
       )}
 
-      {/* 技術指標圖表：只顯示指標 */}
-      {!isMainChart && selectedIndicators.length > 0 && (
+      {/* 技術指標圖表：始終顯示 */}
+      {!isMainChart && (
         <>
           <div className="mb-2">
-            <h3 className="text-sm font-semibold text-gray-700">技術指標</h3>
+            <h3 className="text-sm font-semibold text-gray-700">技術指標圖表</h3>
+            {selectedIndicators.length === 0 && (
+              <p className="text-xs text-gray-500">請在上方選擇技術指標以顯示圖表</p>
+            )}
           </div>
           <div 
             ref={indicatorChartContainerRef} 
-            className="w-full h-full border border-gray-200 rounded-lg overflow-hidden"
+            className="w-full h-full border border-gray-200 rounded-lg overflow-hidden bg-gray-50"
           />
         </>
-      )}
-
-      {/* 空狀態 */}
-      {!isMainChart && selectedIndicators.length === 0 && (
-        <div className="w-full h-full flex items-center justify-center text-gray-400">
-          <p className="text-sm">請選擇技術指標</p>
-        </div>
       )}
 
       {/* 十字線資訊面板 */}
