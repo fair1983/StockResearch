@@ -28,6 +28,7 @@ export default function TechnicalIndicators({
     isVisible: false,
     position: { x: 0, y: 0 }
   });
+  const [isCollapsed, setIsCollapsed] = useState(false);
   
   const indicators = [
     { 
@@ -166,8 +167,28 @@ export default function TechnicalIndicators({
         </div>
       )}
 
+      {/* 收縮/展開按鈕 */}
+      <div className="flex items-center justify-between mb-2">
+        <h4 className="text-sm font-semibold text-gray-700">技術指標</h4>
+        <button
+          onClick={() => setIsCollapsed(!isCollapsed)}
+          className="flex items-center space-x-1 px-2 py-1 text-xs text-gray-600 hover:text-gray-800 transition-colors"
+        >
+          <span>{isCollapsed ? '展開' : '收縮'}</span>
+          <svg 
+            className={`w-3 h-3 transition-transform ${isCollapsed ? 'rotate-180' : ''}`}
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+      </div>
+
       {/* 收縮式技術指標選擇器 */}
-      <div className="flex flex-wrap gap-2">
+      <div className={`transition-all duration-300 overflow-hidden ${isCollapsed ? 'max-h-0 opacity-0' : 'max-h-96 opacity-100'}`}>
+        <div className="flex flex-wrap gap-2">
         {indicators.map((indicator) => (
           <label
             key={indicator.type}
@@ -195,10 +216,10 @@ export default function TechnicalIndicators({
             </span>
           </label>
         ))}
-      </div>
+        </div>
 
-      {/* 操作按鈕 */}
-      <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
+        {/* 操作按鈕 */}
+        <div className="flex items-center justify-between mt-3 pt-3 border-t border-gray-100">
         <div className="flex space-x-2">
           <button
             onClick={handleSelectAll}
@@ -221,6 +242,7 @@ export default function TechnicalIndicators({
             已選擇 {selectedIndicators.length} 個指標
           </div>
         )}
+        </div>
       </div>
     </div>
   );

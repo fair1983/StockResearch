@@ -269,7 +269,6 @@ export default function StockPage() {
                   />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-semibold text-gray-700 mb-2">技術指標</h4>
                   <TechnicalIndicators 
                     selectedIndicators={selectedIndicators} 
                     onIndicatorChange={setSelectedIndicators}
