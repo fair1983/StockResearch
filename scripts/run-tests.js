@@ -56,6 +56,7 @@ function checkTestFiles() {
     '__tests__/watchlist.test.ts',
     '__tests__/hot-stocks.test.ts',
     '__tests__/api.test.ts',
+    '__tests__/technical-indicators.test.ts',
     'lib/performance-monitor.ts',
     'lib/test-utils.ts',
     'jest.config.js',
@@ -103,6 +104,12 @@ function runUnitTests() {
   testResults.push(runCommand(
     'npm run test:api',
     '測試 API 端點'
+  ));
+  
+  // 測試技術指標功能
+  testResults.push(runCommand(
+    'npm run test:indicators',
+    '測試技術指標功能'
   ));
   
   return testResults;

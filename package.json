@@ -14,6 +14,7 @@
     "test:api": "jest --testPathPattern='api.test'",
     "test:watchlist": "jest --testPathPattern='watchlist.test'",
     "test:hot-stocks": "jest --testPathPattern='hot-stocks.test'",
+    "test:indicators": "jest --testPathPattern='technical-indicators.test'",
     "test:all": "jest --coverage --verbose",
     "test:run": "node scripts/run-tests.js"
   },
