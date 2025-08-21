@@ -21,17 +21,17 @@
 - **🤖 AI 混合分析**: 規則基礎 + 機器學習的智能分析引擎
 
 #### 🔧 新增 API 端點
-- `POST /api/screener` - 全市場多因子選股
-- `GET /api/rebound-radar` - 反轉雷達偵測
-- `POST /api/what-if` - 回測模擬分析
-- `POST /api/hybrid-analysis` - AI 混合分析
-- `GET /api/stock-recommendations` - 智能股票推薦
+- `POST /api/screener` - 全市場多因子選股 ✅
+- `GET /api/rebound-radar` - 反轉雷達偵測 ✅
+- `POST /api/what-if` - 回測模擬分析 ✅
+- `POST /api/hybrid-analysis` - AI 混合分析 ⚠️ (開發中)
+- `GET /api/stock-recommendations` - 智能股票推薦 ✅
 
 #### 🎨 新增前端頁面
-- `/market-screener` - 全市場掃描器主頁面
-- `/intelligent-strategy` - 智能策略分析頁面
-- `/ai-analysis` - AI 分析引擎頁面
-- `/data-collection-monitor` - 數據收集監控
+- `/market-screener` - 全市場掃描器主頁面 ✅
+- `/intelligent-strategy` - 智能策略分析頁面 ✅
+- `/ai-analysis` - AI 分析引擎頁面 ⚠️ (開發中)
+- `/data-collection-monitor` - 數據收集監控 ✅
 
 #### 🧠 AI 分析引擎
 - **混合算法**: 規則基礎 + 機器學習
@@ -39,6 +39,8 @@
 - **風險評估**: 波動率、最大回撤、流動性評分
 - **智能建議**: Buy/Hold/Avoid 策略建議
 - **信心度評分**: 基於歷史數據的預測信心度
+
+> ⚠️ **注意**: AI 混合分析和 AI 分析引擎頁面目前還在開發中，暫時無法使用。
 
 #### 📊 數據管理系統
 - **Yahoo Finance 整合**: 實時數據收集和快取
@@ -105,6 +107,8 @@
 - **智能建議**: Buy/Hold/Avoid 策略
 - **信心度評分**: 基於歷史數據的預測
 - **自然語言摘要**: 人類可讀的分析報告
+
+> ⚠️ **注意**: AI 混合分析功能目前還在開發中，暫時無法使用。
 
 ### 🔍 股票搜尋與管理
 - **即時搜尋**: 支援股票代碼和名稱搜尋
@@ -198,9 +202,9 @@ npm run dev
 ### 🚀 全市場掃描器（新功能）
 
 #### 訪問掃描器
-- **主頁面**: `http://localhost:3000/market-screener`
-- **智能策略**: `http://localhost:3000/intelligent-strategy`
-- **AI 分析**: `http://localhost:3000/ai-analysis`
+- **主頁面**: `http://localhost:3000/market-screener` ✅
+- **智能策略**: `http://localhost:3000/intelligent-strategy` ✅
+- **AI 分析**: `http://localhost:3000/ai-analysis` ⚠️ (開發中)
 
 #### 使用流程
 1. **選擇市場**: 美股（US）或台股（TW）或全部（ALL）
@@ -232,13 +236,13 @@ curl -X POST "http://localhost:3000/api/what-if" \
     }
   }'
 
-# AI 混合分析
-curl -X POST "http://localhost:3000/api/hybrid-analysis" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "symbol": "AAPL",
-    "market": "US"
-  }'
+# AI 混合分析 (開發中)
+# curl -X POST "http://localhost:3000/api/hybrid-analysis" \
+#   -H "Content-Type: application/json" \
+#   -d '{
+#     "symbol": "AAPL",
+#     "market": "US"
+#   }'
 ```
 
 ### 查看股票圖表
@@ -432,11 +436,11 @@ node scripts/test-new-apis.js
 - `GET /api/ohlc/paged` - 分頁 K線資料
 
 ### 全市場掃描器（新）
-- `GET /api/screener` - 全市場多因子選股
-- `GET /api/rebound-radar` - 反轉雷達偵測
-- `POST /api/what-if` - 回測模擬分析
-- `POST /api/hybrid-analysis` - AI 混合分析
-- `GET /api/stock-recommendations` - 智能股票推薦
+- `GET /api/screener` - 全市場多因子選股 ✅
+- `GET /api/rebound-radar` - 反轉雷達偵測 ✅
+- `POST /api/what-if` - 回測模擬分析 ✅
+- `POST /api/hybrid-analysis` - AI 混合分析 ⚠️ (開發中)
+- `GET /api/stock-recommendations` - 智能股票推薦 ✅
 
 ### 歷史資料
 - `POST /api/historical/collect` - 收集單一股票歷史資料
@@ -648,6 +652,8 @@ const WEIGHTS = {
 - **基本面**: PE、PS、毛利率、ROE、負債比
 - **動量分析**: 價格動量、ROC、動量指標
 - **量能分析**: 成交量Z-score、OBV斜率
+
+> ⚠️ **注意**: AI 分析功能目前還在開發中，暫時無法使用。
 
 ## 🚀 部署
 
