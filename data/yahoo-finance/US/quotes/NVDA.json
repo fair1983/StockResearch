@@ -1,0 +1,15 @@
+{
+  "symbol": "NVDA",
+  "name": "NVIDIA Corporation",
+  "market": "US",
+  "currency": "USD",
+  "exchange": "NMS",
+  "timestamp": 1755720001,
+  "regularMarketPrice": 175.4,
+  "regularMarketChange": -0.23999999999998067,
+  "regularMarketChangePercent": -0.13664313368252146,
+  "regularMarketVolume": 213099811,
+  "fiftyTwoWeekHigh": 184.48,
+  "fiftyTwoWeekLow": 86.62,
+  "lastUpdated": "2025-08-21T06:19:32.037Z"
+}

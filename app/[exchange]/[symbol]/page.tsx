@@ -3,8 +3,10 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import ResizableChartLayout from '@/components/ResizableChartLayout';
+import MultiChartLayout from '@/components/MultiChartLayout';
 import DateRangeSelector, { TimeFrame } from '@/components/DateRangeSelector';
 import TechnicalIndicators, { IndicatorType } from '@/components/TechnicalIndicators';
+import TradingViewIndicatorSelector from '@/components/TradingViewIndicatorSelector';
 import CompanyInfo from '@/components/CompanyInfo';
 import { Candle, Market } from '@/types';
 import { logger } from '@/lib/logger';
@@ -71,11 +73,13 @@ export default function StockPage() {
         const stockInfoResult = await stockInfoResponse.json();
         
         let apiMarket = exchange; // 預設使用 URL 中的交易所
+        let stockFound = false;
         
         if (stockInfoResult.success && stockInfoResult.data.length > 0) {
           const stockInfo = stockInfoResult.data[0];
           apiMarket = stockInfo.exchange; // 使用資料庫中的實際交易所
           setActualExchange(stockInfo.exchange);
+          stockFound = true;
           console.log('🚀 DEBUG: Found stock info:', stockInfo);
           console.log('🚀 DEBUG: Using actual exchange:', apiMarket);
         } else {
@@ -88,6 +92,12 @@ export default function StockPage() {
             apiMarket = exchange; // 使用 URL 中的交易所
             console.log('🚀 DEBUG: No stock info found, using URL exchange:', exchange);
           }
+        }
+        
+        // 檢查股票是否在正確的市場
+        if (stockFound && apiMarket !== exchange) {
+          // 如果找到的股票不在當前市場，顯示錯誤
+          throw new Error(`股票 ${symbol} 不在 ${exchange === 'TW' ? '台股' : '美股'} 市場中`);
         }
         
         console.log('🚀 DEBUG: About to fetch data');
@@ -107,6 +117,9 @@ export default function StockPage() {
         
         if (!response.ok) {
           console.error('🚀 DEBUG: Response not OK:', response.status, response.statusText);
+          if (response.status === 404) {
+            throw new Error(`找不到股票: ${symbol} (${exchange})`);
+          }
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         
@@ -259,17 +272,42 @@ export default function StockPage() {
   }
 
   if (error) {
+    // 檢查是否為找不到股票的錯誤
+    const isNotFoundError = error.includes('找不到股票') || error.includes('不在') || error.includes('市場中');
+    
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="text-red-500 text-lg mb-2">載入失敗</div>
+          <div className="text-red-500 text-lg mb-2">
+            {isNotFoundError ? '找不到股票' : '載入失敗'}
+          </div>
           <p className="text-gray-600 mb-4">{error}</p>
-          <button 
-            onClick={() => window.location.reload()} 
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
-          >
-            重新載入
-          </button>
+          {isNotFoundError ? (
+            <div className="space-y-2">
+              <p className="text-sm text-gray-500">
+                請檢查股票代號是否正確，或嘗試搜尋其他股票
+              </p>
+              <button 
+                onClick={() => window.history.back()} 
+                className="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 mr-2"
+              >
+                返回
+              </button>
+              <button 
+                onClick={() => window.location.href = '/symbols'} 
+                className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+              >
+                瀏覽股票列表
+              </button>
+            </div>
+          ) : (
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+              重新載入
+            </button>
+          )}
         </div>
       </div>
     );
@@ -330,27 +368,37 @@ export default function StockPage() {
         <div className="grid grid-cols-1 lg:grid-cols-7 gap-4">
           {/* 左側圖表區域 - 佔 5/7 */}
           <div className="lg:col-span-5">
-            {/* 控制面板 - 緊湊設計 */}
+            {/* 控制面板 - TradingView 風格 */}
             <div className="bg-white border border-gray-200 rounded-t-lg p-3 border-b-0">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div>
-                    <span className="text-xs text-gray-500">時間範圍</span>
+                  {/* 時間範圍選擇器 */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 font-medium">時間範圍</span>
                     <DateRangeSelector 
                       currentTimeFrame={timeFrame} 
                       onTimeFrameChange={setTimeFrame} 
                     />
                   </div>
-                  <div className="flex-1">
-                    <span className="text-xs text-gray-500">技術指標</span>
-                    <TechnicalIndicators 
+                  
+                  {/* 技術指標選擇器 - TradingView 風格 */}
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs text-gray-500 font-medium">技術指標</span>
+                    <TradingViewIndicatorSelector 
                       selectedIndicators={selectedIndicators} 
-                      onIndicatorChange={setSelectedIndicators}
-                      loading={false}
-                      floating={false}
+                      onIndicatorChange={(newIndicators) => {
+                        console.log('📊 股票頁面指標更新:', {
+                          oldIndicators: selectedIndicators,
+                          newIndicators
+                        });
+                        setSelectedIndicators(newIndicators);
+                      }}
+                      loading={loading}
                     />
                   </div>
                 </div>
+                
+                {/* 資料資訊 */}
                 <div className="text-right text-xs text-gray-500">
                   <div>資料來源: {dataSource}</div>
                   <div>資料筆數: {data.length}</div>
@@ -358,14 +406,15 @@ export default function StockPage() {
               </div>
             </div>
 
-            {/* 圖表區域 - 無邊框，緊貼控制面板 */}
-            <div className="h-[700px]">
-              <ResizableChartLayout 
+            {/* 圖表區域 - 多圖表佈局 */}
+            <div className="bg-white border border-gray-200 rounded-b-lg p-4">
+              <MultiChartLayout 
                 data={data} 
                 selectedIndicators={selectedIndicators}
                 symbol={symbol}
                 market={exchange}
                 timeframe={timeFrame}
+                loading={loading}
               />
             </div>
           </div>

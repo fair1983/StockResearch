@@ -129,7 +129,7 @@ export class YahooFinanceService {
    */
   public async getQuote(symbol: string, market: string = 'TW'): Promise<any> {
     try {
-      const formattedSymbol = this.formatSymbol(symbol);
+      const formattedSymbol = this.formatSymbol(symbol, market);
       logger.yahooFinance.request(`Fetching quote for ${symbol}`, { market });
 
       const quote = await yahooFinance.quote(formattedSymbol);
@@ -208,7 +208,7 @@ export class YahooFinanceService {
    */
   public async getFundamentals(symbol: string, market: string = 'TW'): Promise<{[key: string]: any}> {
     try {
-      const formattedSymbol = this.formatSymbol(symbol);
+      const formattedSymbol = this.formatSymbol(symbol, market);
       logger.yahooFinance.request(`Fetching fundamentals for ${symbol}`, { market });
 
       const modules = ['price','summaryDetail','financialData','defaultKeyStatistics'] as const;

@@ -1,0 +1,141 @@
+{
+  "generatedAt": "2025-08-21T12:58:20.999Z",
+  "market": "US",
+  "total": 4,
+  "buy": 4,
+  "hold": 0,
+  "avoid": 0,
+  "avgScore": 82.75,
+  "results": [
+    {
+      "symbol": "MA",
+      "market": "US",
+      "name": "MA",
+      "quote": {
+        "price": 592.68,
+        "change": 7.169999999999959,
+        "changePct": 1.224573448788229,
+        "volume": 2884403
+      },
+      "score": 90,
+      "action": "Buy",
+      "confidence": 100,
+      "summary": {
+        "signals": [
+          "多頭趨勢",
+          "RSI 中高區間",
+          "MACD 柱轉強",
+          "波動受控"
+        ],
+        "reasons": [
+          "建議停損 551.19",
+          "目標價 681.58"
+        ],
+        "stop": 551.19,
+        "target": 681.58
+      },
+      "rebound": {
+        "score": 15,
+        "rules": [
+          "MACD 轉多"
+        ]
+      }
+    },
+    {
+      "symbol": "BRK-B",
+      "market": "US",
+      "name": "BRK-B",
+      "quote": {
+        "price": 488.68,
+        "change": 3.3700000000000045,
+        "changePct": 0.6944015165564288,
+        "volume": 4766960
+      },
+      "score": 82,
+      "action": "Buy",
+      "confidence": 100,
+      "summary": {
+        "signals": [
+          "多頭趨勢",
+          "RSI 中高區間",
+          "MACD 柱轉強",
+          "波動受控"
+        ],
+        "reasons": [
+          "建議停損 454.47",
+          "目標價 561.98"
+        ],
+        "stop": 454.47,
+        "target": 561.98
+      },
+      "rebound": {
+        "score": 15,
+        "rules": [
+          "MACD 轉多"
+        ]
+      }
+    },
+    {
+      "symbol": "HD",
+      "market": "US",
+      "name": "HD",
+      "quote": {
+        "price": 401.74,
+        "change": -5.4599999999999795,
+        "changePct": -1.3408644400785805,
+        "volume": 3491240
+      },
+      "score": 81,
+      "action": "Buy",
+      "confidence": 100,
+      "summary": {
+        "signals": [
+          "多頭趨勢",
+          "RSI 中高區間",
+          "波動受控"
+        ],
+        "reasons": [
+          "建議停損 373.62",
+          "目標價 462"
+        ],
+        "stop": 373.62,
+        "target": 462
+      },
+      "rebound": {
+        "score": 0,
+        "rules": []
+      }
+    },
+    {
+      "symbol": "AAPL",
+      "market": "US",
+      "name": "AAPL",
+      "quote": {
+        "price": 226.01,
+        "change": -4.550000000000011,
+        "changePct": -1.9734559333796025,
+        "volume": 42145912
+      },
+      "score": 78,
+      "action": "Buy",
+      "confidence": 100,
+      "summary": {
+        "signals": [
+          "多頭趨勢",
+          "RSI 中高區間",
+          "波動受控"
+        ],
+        "reasons": [
+          "建議停損 210.19",
+          "目標價 259.91"
+        ],
+        "stop": 210.19,
+        "target": 259.91
+      },
+      "rebound": {
+        "score": 0,
+        "rules": []
+      }
+    }
+  ]
+}

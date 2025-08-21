@@ -186,9 +186,90 @@ export class HistoricalDataManager {
   }
 
   /**
+   * 智能獲取歷史資料：如果資料不足則即時計算並保存
+   */
+  public async getHistoricalDataWithRealTimeCalculation(
+    market: string,
+    symbol: string,
+    interval: string,
+    minDataPoints: number = 100
+  ): Promise<Candle[]> {
+    try {
+      logger.system.performance(`智能獲取歷史資料: ${market}/${symbol}/${interval}`);
+      
+      // 1. 首先嘗試從快取獲取
+      const cachedData = await this.cache.getCachedData(market, symbol, interval);
+      if (cachedData && cachedData.length >= minDataPoints) {
+        logger.system.cache(`使用快取資料: ${cachedData.length} 筆`);
+        return cachedData;
+      }
+      
+      // 2. 嘗試從歷史資料檔案獲取
+      const historicalData = await this.getExistingData(market, symbol, interval);
+      if (historicalData && historicalData.length >= minDataPoints) {
+        logger.system.cache(`使用歷史檔案資料: ${historicalData.length} 筆`);
+        // 更新快取
+        await this.cache.setCachedData(market, symbol, interval, historicalData);
+        return historicalData;
+      }
+      
+      // 3. 資料不足，即時獲取並保存
+      logger.system.performance(`資料不足 (${historicalData?.length || 0} 筆)，開始即時獲取...`);
+      
+      // 設定合理的時間範圍來獲取足夠的資料
+      const endDate = new Date();
+      let startDate: Date;
+      
+      switch (interval) {
+        case '1d':
+          // 日K：獲取 3 年資料
+          startDate = new Date(Date.now() - 3 * 365 * 24 * 60 * 60 * 1000);
+          break;
+        case '1w':
+          // 週K：獲取 5 年資料
+          startDate = new Date(Date.now() - 5 * 365 * 24 * 60 * 60 * 1000);
+          break;
+        case '1M':
+          // 月K：獲取 10 年資料
+          startDate = new Date(Date.now() - 10 * 365 * 24 * 60 * 60 * 1000);
+          break;
+        default:
+          // 預設獲取 2 年資料
+          startDate = new Date(Date.now() - 2 * 365 * 24 * 60 * 60 * 1000);
+      }
+      
+      const freshData = await this.yahooService.getKlineData(
+        symbol, 
+        market, 
+        interval, 
+        startDate, 
+        endDate
+      );
+      
+      if (freshData && freshData.length > 0) {
+        logger.system.performance(`即時獲取成功: ${freshData.length} 筆資料`);
+        
+        // 4. 保存到歷史資料檔案
+        await this.saveHistoricalData(market, symbol, interval, freshData);
+        
+        // 5. 更新快取
+        await this.cache.setCachedData(market, symbol, interval, freshData);
+        
+        return freshData;
+      } else {
+        throw new Error(`找不到股票資料: ${market}/${symbol}`);
+      }
+      
+    } catch (error) {
+      logger.api.error(`智能獲取歷史資料失敗: ${market}/${symbol}/${interval}`, error);
+      throw error;
+    }
+  }
+
+  /**
    * 儲存歷史資料到檔案
    */
-  private async saveHistoricalData(market: string, symbol: string, interval: string, data: Candle[]): Promise<void> {
+  public async saveHistoricalData(market: string, symbol: string, interval: string, data: Candle[]): Promise<void> {
     try {
       const symbolDir = path.join(this.dataDir, market, symbol);
       if (!fs.existsSync(symbolDir)) {

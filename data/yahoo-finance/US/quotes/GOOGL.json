@@ -1,0 +1,15 @@
+{
+  "symbol": "GOOGL",
+  "name": "Alphabet Inc.",
+  "market": "US",
+  "currency": "USD",
+  "exchange": "NMS",
+  "timestamp": 1755720001,
+  "regularMarketPrice": 199.32,
+  "regularMarketChange": -2.25,
+  "regularMarketChangePercent": -1.116237535347522,
+  "regularMarketVolume": 28732138,
+  "fiftyTwoWeekHigh": 207.05,
+  "fiftyTwoWeekLow": 140.53,
+  "lastUpdated": "2025-08-21T06:19:32.208Z"
+}

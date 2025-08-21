@@ -42,6 +42,83 @@ jest.mock('next/server', () => ({
 // Mock fetch
 global.fetch = jest.fn()
 
+// Mock logger
+jest.mock('@/lib/logger', () => ({
+  logger: {
+    api: {
+      request: jest.fn(),
+      response: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      timing: jest.fn(),
+    },
+    yahooFinance: {
+      request: jest.fn(),
+      response: jest.fn(),
+      error: jest.fn(),
+      warn: jest.fn(),
+      dataRange: jest.fn(),
+    },
+    frontend: {
+      dataFetch: jest.fn(),
+      chartRender: jest.fn(),
+      error: jest.fn(),
+    },
+    system: {
+      cache: jest.fn(),
+      performance: jest.fn(),
+    },
+    stockMetadata: {
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+    },
+    ai: {
+      analysis: jest.fn(),
+      error: jest.fn(),
+    },
+    configuration: {
+      info: jest.fn(),
+      error: jest.fn(),
+    },
+    monitor: {
+      info: jest.fn(),
+      progress: jest.fn(),
+      complete: jest.fn(),
+    },
+    scheduler: {
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+      start: jest.fn(),
+      stop: jest.fn(),
+      complete: jest.fn(),
+    },
+    dataCollection: {
+      start: jest.fn(),
+      progress: jest.fn(),
+      complete: jest.fn(),
+      error: jest.fn(),
+      request: jest.fn(),
+      success: jest.fn(),
+      info: jest.fn(),
+    },
+    stockList: {
+      info: jest.fn(),
+      warn: jest.fn(),
+      error: jest.fn(),
+    },
+    updateConfig: jest.fn(),
+    getConfig: jest.fn(),
+    resetConfig: jest.fn(),
+    getLogs: jest.fn(() => []),
+    clearLogs: jest.fn(),
+    exportLogs: jest.fn(() => '[]'),
+  },
+}))
+
+
+
 // Mock localStorage
 const localStorageMock = {
   getItem: jest.fn(),

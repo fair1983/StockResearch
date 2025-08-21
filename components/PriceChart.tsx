@@ -1,87 +1,16 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { createChart, IChartApi, ISeriesApi, CandlestickData, LineData } from 'lightweight-charts';
-import { CandlestickSeries, LineSeries, HistogramSeries } from 'lightweight-charts';
+import { createChart, IChartApi, ISeriesApi, CandlestickData } from 'lightweight-charts';
+import { CandlestickSeries } from 'lightweight-charts';
 import { Candle } from '@/types';
 import { logger } from '@/lib/logger';
-import { calculateAllIndicators } from '@/lib/technical-indicators';
 import { IndicatorType } from './TechnicalIndicators';
 import { getStockName } from '@/lib/stock-utils';
-
-// 取得時間框架顯示名稱
-function getTimeframeDisplayName(timeframe: string): string {
-  const timeframeMap: { [key: string]: string } = {
-    '1m': '1分鐘K',
-    '5m': '5分鐘K',
-    '15m': '15分鐘K',
-    '30m': '30分鐘K',
-    '60m': '60分鐘K',
-    '1d': '日K',
-    '1w': '週K',
-    '1M': '月K',
-  };
-  return timeframeMap[timeframe] || `${timeframe}K`;
-}
-
-// 根據時間框架取得時間軸設定
-function getTimeScaleOptions(timeframe: string) {
-  // X軸標籤格式：yyyy MM/dd
-  const formatXAxisLabel = (time: number) => {
-    const date = new Date(time * 1000);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    return `${year} ${month}/${day}`;
-  };
-
-  // 十字線下方格式：yyyy MM/dd HH:mm
-  const formatCrosshairLabel = (time: number) => {
-    const date = new Date(time * 1000);
-    const year = date.getFullYear();
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    return `${year} ${month}/${day} ${hours}:${minutes}`;
-  };
-
-  switch (timeframe) {
-    case '1m':
-    case '5m':
-    case '15m':
-    case '30m':
-    case '60m':
-      return {
-        timeVisible: true,
-        secondsVisible: true,
-        tickMarkFormatter: formatXAxisLabel,
-        crosshairLabelFormatter: formatCrosshairLabel,
-      };
-    case '1w':
-      return {
-        timeVisible: true,
-        secondsVisible: false,
-        tickMarkFormatter: formatXAxisLabel,
-        crosshairLabelFormatter: formatCrosshairLabel,
-      };
-    case '1M':
-      return {
-        timeVisible: true,
-        secondsVisible: false,
-        tickMarkFormatter: formatXAxisLabel,
-        crosshairLabelFormatter: formatCrosshairLabel,
-      };
-    case '1d':
-    default:
-      return {
-        timeVisible: true,
-        secondsVisible: false,
-        tickMarkFormatter: formatXAxisLabel,
-        crosshairLabelFormatter: formatCrosshairLabel,
-      };
-  }
-}
+import { TechnicalIndicatorRenderer, IndicatorData } from './charts/TechnicalIndicatorRenderer';
+import { ChartConfigManager } from './charts/ChartConfigManager';
+import { DataTransformer } from './charts/DataTransformer';
+import { IndicatorDataManager } from './charts/IndicatorDataManager';
 
 interface PriceChartProps {
   data: Candle[];
@@ -102,6 +31,7 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
   const [hoverInfo, setHoverInfo] = useState<any>(null);
 
   useEffect(() => {
+    const initializeChart = async () => {
     if (!chartContainerRef.current) return;
 
     // 清理舊的圖表
@@ -125,116 +55,41 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
       }
     }
 
-    // 確保容器存在且沒有舊圖表
-    if (!chartContainerRef.current || chartRef.current) {
-      return;
-    }
-
     // 驗證資料
-    if (!data || data.length === 0) {
+      if (!DataTransformer.validateData(data)) {
       logger.frontend.chartRender('No data available for chart');
       return;
     }
 
     // 轉換資料格式
-    const chartData: CandlestickData[] = data.map(candle => {
-      let time: any;
-      
-      if (timeframe === '1d' || timeframe === '1w' || timeframe === '1M') {
-        // 日K/週K/月K：將 YYYY-MM-DD 轉換為 Unix timestamp
-        const date = new Date(candle.time + 'T00:00:00');
-        time = Math.floor(date.getTime() / 1000);
-      } else {
-        // 分K：將 YYYY-MM-DD HH:MM 轉換為 Unix timestamp
-        const date = new Date(candle.time);
-        time = Math.floor(date.getTime() / 1000);
-      }
-      
-      return {
-        time,
-        open: candle.open,
-        high: candle.high,
-        low: candle.low,
-        close: candle.close,
-      };
-    });
-
-    // 建立時間對索引的映射，便於十字線查詢各指標值
-    const timeToIndex = new Map<number, number>();
-    chartData.forEach((d, i) => {
-      if (typeof d.time === 'number') {
-        timeToIndex.set(d.time as number, i);
-      }
-    });
+      const chartData = DataTransformer.transformCandleData(data, timeframe);
+      const dataRangeInfo = DataTransformer.getDataRangeInfo(data);
 
     logger.frontend.chartRender('Chart data prepared', { 
       sampleData: chartData.slice(0, 3), 
-      dataLength: chartData.length 
+        dataLength: chartData.length,
+        dataRange: dataRangeInfo.dateRange
     });
 
     // 建立K線圖表
-    const chart = createChart(chartContainerRef.current, {
-      width: chartContainerRef.current.clientWidth,
-      height: 400,
-      layout: {
-        background: { color: '#ffffff' },
-        textColor: '#333',
-      },
-      grid: {
-        vertLines: { color: '#f0f0f0' },
-        horzLines: { color: '#f0f0f0' },
-      },
-      crosshair: {
-        mode: 1,
-      },
-      rightPriceScale: {
-        borderColor: '#cccccc',
-        scaleMargins: {
-          top: 0.1,
-          bottom: 0.1,
-        },
-        autoScale: true,
-      },
-      timeScale: {
-        borderColor: '#cccccc',
-        ...getTimeScaleOptions(timeframe),
-        fixLeftEdge: true,
-        fixRightEdge: true,
-      },
-    });
+      const chart = createChart(chartContainerRef.current, 
+        ChartConfigManager.getMainChartConfig(
+          chartContainerRef.current.clientWidth,
+          400,
+          timeframe
+        )
+      );
 
     // 建立技術指標圖表（如果有選擇指標）
     let indicatorChart: IChartApi | null = null;
     if (selectedIndicators.length > 0 && indicatorChartContainerRef.current) {
-      indicatorChart = createChart(indicatorChartContainerRef.current, {
-        width: indicatorChartContainerRef.current.clientWidth,
-        height: 250,
-        layout: {
-          background: { color: '#ffffff' },
-          textColor: '#333',
-        },
-        grid: {
-          vertLines: { color: '#f0f0f0' },
-          horzLines: { color: '#f0f0f0' },
-        },
-        crosshair: {
-          mode: 1,
-        },
-        rightPriceScale: {
-          borderColor: '#cccccc',
-          scaleMargins: {
-            top: 0.1,
-            bottom: 0.1,
-          },
-          autoScale: true,
-        },
-        timeScale: {
-          borderColor: '#cccccc',
-          ...getTimeScaleOptions(timeframe),
-          fixLeftEdge: true,
-          fixRightEdge: true,
-        },
-      });
+        indicatorChart = createChart(indicatorChartContainerRef.current, 
+          ChartConfigManager.getIndicatorChartConfig(
+            indicatorChartContainerRef.current.clientWidth,
+            250,
+            timeframe
+          )
+        );
     }
 
     // 建立 K 線圖系列
@@ -249,417 +104,49 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
     // 設定K線資料
     candlestickSeries.setData(chartData);
 
-    // 計算並添加技術指標到獨立的指標圖表
+      // 計算並添加技術指標
     if (selectedIndicators.length > 0 && data.length > 0 && indicatorChart) {
-      const indicators = calculateAllIndicators(data);
-      
-      // 清除舊的指標線
-      Object.values(indicatorSeriesRef.current).forEach(series => {
         try {
-          indicatorChart!.removeSeries(series);
+          // 獲取指標資料
+          const indicators = await IndicatorDataManager.getIndicatorData(market, symbol, timeframe, data);
+          
+          // 驗證指標資料
+          if (IndicatorDataManager.validateIndicatorData(indicators)) {
+            // 使用技術指標渲染器
+            const indicatorRenderer = new TechnicalIndicatorRenderer({
+              chart: indicatorChart,
+              chartData,
+              indicators,
+              selectedIndicators,
+              indicatorSeriesRef
+            });
+
+            // 渲染所有指標
+            indicatorRenderer.renderAllIndicators();
+
+            // 取得指標統計資訊
+            const stats = IndicatorDataManager.getIndicatorStats(indicators);
+            logger.frontend.chartRender(`Rendered ${stats.totalIndicators} indicators with ${stats.dataPoints} data points`);
+          } else {
+            logger.frontend.chartRender('No valid indicator data available');
+          }
         } catch (error) {
-          // 忽略已移除的系列錯誤
+          logger.frontend.chartRender('Failed to render indicators', error);
         }
-      });
-      indicatorSeriesRef.current = {};
-      
-      // 添加移動平均線到指標圖表
-      if (selectedIndicators.includes('MA')) {
-        const ma5Data: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.ma5[i] && !isNaN(indicators.ma5[i]) ? indicators.ma5[i] : 0
-        })).filter(item => item.value !== 0);
-        const ma10Data: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.ma10[i] && !isNaN(indicators.ma10[i]) ? indicators.ma10[i] : 0
-        })).filter(item => item.value !== 0);
-        const ma20Data: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.ma20[i] && !isNaN(indicators.ma20[i]) ? indicators.ma20[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const ma5Series = indicatorChart.addSeries(LineSeries, { 
-          color: '#FF6B6B', 
-          lineWidth: 2, 
-          title: 'MA5'
-        });
-        const ma10Series = indicatorChart.addSeries(LineSeries, { 
-          color: '#4ECDC4', 
-          lineWidth: 2, 
-          title: 'MA10'
-        });
-        const ma20Series = indicatorChart.addSeries(LineSeries, { 
-          color: '#45B7D1', 
-          lineWidth: 2, 
-          title: 'MA20'
-        });
-        
-        ma5Series.setData(ma5Data);
-        ma10Series.setData(ma10Data);
-        ma20Series.setData(ma20Data);
-        
-        indicatorSeriesRef.current['MA5'] = ma5Series;
-        indicatorSeriesRef.current['MA10'] = ma10Series;
-        indicatorSeriesRef.current['MA20'] = ma20Series;
       }
-      
-      // 添加指數移動平均線到指標圖表
-      if (selectedIndicators.includes('EMA')) {
-        const ema12Data: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.ema12[i] && !isNaN(indicators.ema12[i]) ? indicators.ema12[i] : 0
-        })).filter(item => item.value !== 0);
-        const ema26Data: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.ema26[i] && !isNaN(indicators.ema26[i]) ? indicators.ema26[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const ema12Series = indicatorChart.addSeries(LineSeries, { 
-          color: '#FF6B6B', 
-          lineWidth: 2, 
-          title: 'EMA12'
-        });
-        const ema26Series = indicatorChart.addSeries(LineSeries, { 
-          color: '#4ECDC4', 
-          lineWidth: 2, 
-          title: 'EMA26'
-        });
-        
-        ema12Series.setData(ema12Data);
-        ema26Series.setData(ema26Data);
-        
-        indicatorSeriesRef.current['EMA12'] = ema12Series;
-        indicatorSeriesRef.current['EMA26'] = ema26Series;
-      }
-      
-      // 添加布林通道到指標圖表
-      if (selectedIndicators.includes('BOLL')) {
-        const upperData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.bollinger.upper[i] && !isNaN(indicators.bollinger.upper[i]) ? indicators.bollinger.upper[i] : 0
-        })).filter(item => item.value !== 0);
-        const middleData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.bollinger.middle[i] && !isNaN(indicators.bollinger.middle[i]) ? indicators.bollinger.middle[i] : 0
-        })).filter(item => item.value !== 0);
-        const lowerData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.bollinger.lower[i] && !isNaN(indicators.bollinger.lower[i]) ? indicators.bollinger.lower[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const upperSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#FFEAA7', 
-          lineWidth: 1, 
-          title: 'BOLL Upper'
-        });
-        const middleSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#96CEB4', 
-          lineWidth: 2, 
-          title: 'BOLL Middle'
-        });
-        const lowerSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#FFEAA7', 
-          lineWidth: 1, 
-          title: 'BOLL Lower'
-        });
-        
-        upperSeries.setData(upperData);
-        middleSeries.setData(middleData);
-        lowerSeries.setData(lowerData);
-        
-        indicatorSeriesRef.current['BOLL Upper'] = upperSeries;
-        indicatorSeriesRef.current['BOLL Middle'] = middleSeries;
-        indicatorSeriesRef.current['BOLL Lower'] = lowerSeries;
-      }
-      
-      // 添加 KDJ 指標到指標圖表
-      if (selectedIndicators.includes('KDJ')) {
-        const kData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.kdj.k[i] && !isNaN(indicators.kdj.k[i]) ? indicators.kdj.k[i] : 0
-        })).filter(item => item.value !== 0);
-        const dData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.kdj.d[i] && !isNaN(indicators.kdj.d[i]) ? indicators.kdj.d[i] : 0
-        })).filter(item => item.value !== 0);
-        const jData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.kdj.j[i] && !isNaN(indicators.kdj.j[i]) ? indicators.kdj.j[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const kSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#FF6B6B', 
-          lineWidth: 2, 
-          title: 'KDJ-K'
-        });
-        const dSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#4ECDC4', 
-          lineWidth: 2, 
-          title: 'KDJ-D'
-        });
-        const jSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#45B7D1', 
-          lineWidth: 2, 
-          title: 'KDJ-J'
-        });
-        
-        kSeries.setData(kData);
-        dSeries.setData(dData);
-        jSeries.setData(jData);
-        
-        indicatorSeriesRef.current['KDJ-K'] = kSeries;
-        indicatorSeriesRef.current['KDJ-D'] = dSeries;
-        indicatorSeriesRef.current['KDJ-J'] = jSeries;
-      }
-      
-      // 添加 MACD 指標到指標圖表
-      if (selectedIndicators.includes('MACD')) {
-        const macdData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.macd.macd[i] && !isNaN(indicators.macd.macd[i]) ? indicators.macd.macd[i] : 0
-        })).filter(item => item.value !== 0);
-        const signalData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.macd.signal[i] && !isNaN(indicators.macd.signal[i]) ? indicators.macd.signal[i] : 0
-        })).filter(item => item.value !== 0);
-        const histogramData = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.macd.histogram[i] && !isNaN(indicators.macd.histogram[i]) ? indicators.macd.histogram[i] : 0,
-          color: indicators.macd.histogram[i] >= 0 ? '#26a69a' : '#ef5350'
-        })).filter(item => item.value !== 0);
-        
-        const macdSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#FF6B6B', 
-          lineWidth: 2, 
-          title: 'MACD'
-        });
-        const signalSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#4ECDC4', 
-          lineWidth: 2, 
-          title: 'Signal'
-        });
-        const histogramSeries = indicatorChart.addSeries(HistogramSeries, {
-          title: 'Histogram',
-        });
-        
-        macdSeries.setData(macdData);
-        signalSeries.setData(signalData);
-        histogramSeries.setData(histogramData);
-        
-        indicatorSeriesRef.current['MACD'] = macdSeries;
-        indicatorSeriesRef.current['Signal'] = signalSeries;
-        indicatorSeriesRef.current['Histogram'] = histogramSeries;
-      }
-      
-      // 添加 RSI 指標到指標圖表
-      if (selectedIndicators.includes('RSI')) {
-        const rsiData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.rsi[i] && !isNaN(indicators.rsi[i]) ? indicators.rsi[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const rsiSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#FFEAA7', 
-          lineWidth: 2, 
-          title: 'RSI'
-        });
-        
-        rsiSeries.setData(rsiData);
-        indicatorSeriesRef.current['RSI'] = rsiSeries;
-      }
-      
-      // 添加隨機指標到指標圖表
-      if (selectedIndicators.includes('STOCH')) {
-        const kData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.stochastic.k[i] && !isNaN(indicators.stochastic.k[i]) ? indicators.stochastic.k[i] : 0
-        })).filter(item => item.value !== 0);
-        const dData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.stochastic.d[i] && !isNaN(indicators.stochastic.d[i]) ? indicators.stochastic.d[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const kSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#DDA0DD', 
-          lineWidth: 2, 
-          title: 'Stoch-K'
-        });
-        const dSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#98D8C8', 
-          lineWidth: 2, 
-          title: 'Stoch-D'
-        });
-        
-        kSeries.setData(kData);
-        dSeries.setData(dData);
-        
-        indicatorSeriesRef.current['Stoch-K'] = kSeries;
-        indicatorSeriesRef.current['Stoch-D'] = dSeries;
-      }
-      
-      // 添加 CCI 指標到指標圖表
-      if (selectedIndicators.includes('CCI')) {
-        const cciData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.cci[i] && !isNaN(indicators.cci[i]) ? indicators.cci[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const cciSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#F7DC6F', 
-          lineWidth: 2, 
-          title: 'CCI'
-        });
-        
-        cciSeries.setData(cciData);
-        indicatorSeriesRef.current['CCI'] = cciSeries;
-      }
-      
-      // 添加 ATR 指標到指標圖表
-      if (selectedIndicators.includes('ATR')) {
-        const atrData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.atr[i] && !isNaN(indicators.atr[i]) ? indicators.atr[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const atrSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#BB8FCE', 
-          lineWidth: 2, 
-          title: 'ATR'
-        });
-        
-        atrSeries.setData(atrData);
-        indicatorSeriesRef.current['ATR'] = atrSeries;
-      }
-      
-      // 添加 ADX 指標到指標圖表
-      if (selectedIndicators.includes('ADX')) {
-        const adxData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.adx[i] && !isNaN(indicators.adx[i]) ? indicators.adx[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const adxSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#85C1E9', 
-          lineWidth: 2, 
-          title: 'ADX'
-        });
-        
-        adxSeries.setData(adxData);
-        indicatorSeriesRef.current['ADX'] = adxSeries;
-      }
-      
-      // 添加 OBV 指標到指標圖表
-      if (selectedIndicators.includes('OBV')) {
-        const obvData: LineData[] = chartData.map((candle, i) => ({
-          time: candle.time,
-          value: indicators.obv[i] && !isNaN(indicators.obv[i]) ? indicators.obv[i] : 0
-        })).filter(item => item.value !== 0);
-        
-        const obvSeries = indicatorChart.addSeries(LineSeries, { 
-          color: '#F8C471', 
-          lineWidth: 2, 
-          title: 'OBV'
-        });
-        
-        obvSeries.setData(obvData);
-        indicatorSeriesRef.current['OBV'] = obvSeries;
-      }
-      
-      // 添加成交量到指標圖表
-      if (selectedIndicators.includes('VOL')) {
-        // 計算成交量的最大值，用於比例計算
-        const validVolumes = indicators.volume.filter(v => typeof v === 'number' && v > 0) as number[];
-        const maxVolume = validVolumes.length > 0 ? Math.max(...validVolumes) : 1;
-        const volumeData = chartData.map((candle, i) => {
-          const volume = indicators.volume[i] || 0;
-          // 將成交量轉換為 0-100 的比例值
-          const volumeRatio = maxVolume > 0 ? (volume / maxVolume) * 100 : 0;
-          return {
-            time: candle.time,
-            value: volumeRatio,
-            color: candle.close >= candle.open ? '#26a69a' : '#ef5350'
-          };
-        });
-        
-        const volumeSeries = indicatorChart.addSeries(HistogramSeries, {
-          title: '成交量 (比例)',
-        });
-        
-        volumeSeries.setData(volumeData);
-        indicatorSeriesRef.current['VOL'] = volumeSeries;
-        volumeSeriesRef.current = volumeSeries;
-      }
+
+      // 同步時間軸（在指標渲染完成後）
+      if (indicatorChart) {
+        // 延遲同步，確保圖表完全載入
+        setTimeout(() => {
+          ChartConfigManager.syncTimeScales(chart, indicatorChart, timeframe);
+        }, 100);
     }
 
     // 儲存參考
     chartRef.current = chart;
     indicatorChartRef.current = indicatorChart;
     seriesRef.current = candlestickSeries;
-
-    // 時間軸同步功能
-    if (indicatorChart) {
-      // 主圖表時間軸變化時，同步到指標圖表
-      const mainToIndicatorTimeRangeHandler = () => {
-        try {
-          const visibleRange = chart.timeScale().getVisibleRange();
-          if (visibleRange) {
-            indicatorChart!.timeScale().setVisibleRange(visibleRange);
-          }
-        } catch (error) {
-          logger.frontend.chartRender('Time scale sync error (main to indicator)', error);
-        }
-      };
-
-      // 指標圖表時間軸變化時，同步到主圖表
-      const indicatorToMainTimeRangeHandler = () => {
-        try {
-          const visibleRange = indicatorChart!.timeScale().getVisibleRange();
-          if (visibleRange) {
-            chart.timeScale().setVisibleRange(visibleRange);
-          }
-        } catch (error) {
-          logger.frontend.chartRender('Time scale sync error (indicator to main)', error);
-        }
-      };
-
-      // 主圖表邏輯時間軸變化時，同步到指標圖表
-      const mainToIndicatorLogicalRangeHandler = () => {
-        try {
-          const logicalRange = chart.timeScale().getVisibleLogicalRange();
-          if (logicalRange) {
-            indicatorChart!.timeScale().setVisibleLogicalRange(logicalRange);
-          }
-        } catch (error) {
-          logger.frontend.chartRender('Logical time scale sync error (main to indicator)', error);
-        }
-      };
-
-      // 指標圖表邏輯時間軸變化時，同步到主圖表
-      const indicatorToMainLogicalRangeHandler = () => {
-        try {
-          const logicalRange = indicatorChart!.timeScale().getVisibleLogicalRange();
-          if (logicalRange) {
-            chart.timeScale().setVisibleLogicalRange(logicalRange);
-          }
-        } catch (error) {
-          logger.frontend.chartRender('Logical time scale sync error (indicator to main)', error);
-        }
-      };
-
-      // 訂閱事件
-      chart.timeScale().subscribeVisibleTimeRangeChange(mainToIndicatorTimeRangeHandler);
-      indicatorChart.timeScale().subscribeVisibleTimeRangeChange(indicatorToMainTimeRangeHandler);
-      chart.timeScale().subscribeVisibleLogicalRangeChange(mainToIndicatorLogicalRangeHandler);
-      indicatorChart.timeScale().subscribeVisibleLogicalRangeChange(indicatorToMainLogicalRangeHandler);
-
-      // 儲存處理器引用以便清理
-      (chart as any)._timeRangeHandlers = {
-        mainToIndicatorTimeRange: mainToIndicatorTimeRangeHandler,
-        indicatorToMainTimeRange: indicatorToMainTimeRangeHandler,
-        mainToIndicatorLogical: mainToIndicatorLogicalRangeHandler,
-        indicatorToMainLogical: indicatorToMainLogicalRangeHandler,
-      };
-    }
 
     // 響應式調整
     const handleResize = () => {
@@ -727,17 +214,9 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         try { indicatorChart.unsubscribeCrosshairMove(handleCrosshairMove); } catch {}
       }
 
-      // 移除時間軸同步事件監聽器
-      if (indicatorChart && (chart as any)._timeRangeHandlers) {
-        try {
-          const handlers = (chart as any)._timeRangeHandlers;
-          chart.timeScale().unsubscribeVisibleTimeRangeChange(handlers.mainToIndicatorTimeRange);
-          chart.timeScale().unsubscribeVisibleLogicalRangeChange(handlers.mainToIndicatorLogical);
-          indicatorChart.timeScale().unsubscribeVisibleTimeRangeChange(handlers.indicatorToMainTimeRange);
-          indicatorChart.timeScale().unsubscribeVisibleLogicalRangeChange(handlers.indicatorToMainLogical);
-        } catch (error) {
-          logger.frontend.chartRender('Time scale sync cleanup error', error);
-        }
+        // 清理時間軸同步
+        if (indicatorChart) {
+          ChartConfigManager.cleanupTimeScaleSync(chart, indicatorChart);
       }
 
       if (chartRef.current) {
@@ -759,7 +238,11 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         }
       }
     };
-  }, [data, selectedIndicators, timeframe]);
+    };
+
+    // 呼叫初始化函數
+    initializeChart();
+  }, [data, selectedIndicators, timeframe, market, symbol]);
 
   if (!data || data.length === 0) {
     return (
@@ -772,6 +255,8 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
     );
   }
 
+  const dataRangeInfo = DataTransformer.getDataRangeInfo(data);
+
   return (
     <div className="w-full">
       <div className="mb-4">
@@ -779,8 +264,8 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
           {getStockName(market, symbol)}
         </h2>
         <p className="text-sm text-gray-600">
-          資料期間: {data[0]?.time} 至 {data[data.length - 1]?.time} ({data.length} 筆資料)
-          {timeframe !== '1d' && ` • ${getTimeframeDisplayName(timeframe)}`}
+          資料期間: {dataRangeInfo.dateRange} ({dataRangeInfo.totalRecords} 筆資料)
+          {timeframe !== '1d' && ` • ${ChartConfigManager.getTimeframeDisplayName(timeframe)}`}
         </p>
       </div>
       

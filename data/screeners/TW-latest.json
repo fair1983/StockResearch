@@ -1,0 +1,46 @@
+{
+  "generatedAt": "2025-08-21T12:58:21.001Z",
+  "market": "TW",
+  "total": 1,
+  "buy": 0,
+  "hold": 1,
+  "avoid": 0,
+  "avgScore": 81,
+  "results": [
+    {
+      "symbol": "1301.TW",
+      "market": "TW",
+      "name": "1301.TW",
+      "quote": {
+        "price": 40.55,
+        "change": 2.4499999999999957,
+        "changePct": 6.43044619422571,
+        "volume": 50760141
+      },
+      "score": 81,
+      "action": "Hold",
+      "confidence": 100,
+      "summary": {
+        "signals": [
+          "多頭趨勢",
+          "RSI 中高區間",
+          "MACD 柱轉強"
+        ],
+        "reasons": [
+          "建議停損 37.71",
+          "目標價 46.63"
+        ],
+        "stop": 37.71,
+        "target": 46.63
+      },
+      "rebound": {
+        "score": 45,
+        "rules": [
+          "MACD 轉多",
+          "連續下跌後首次收陽",
+          "價格站上短期均線"
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,197 @@
+{
+  "timestamp": "2025-08-20T08:47:00.436Z",
+  "individualResults": [
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "strategyResult": {
+        "strategy": "買入持有策略",
+        "confidence": 80.16417005637183,
+        "reasoning": "高成長率(20.2%)和高波動率(42.4%) → 成長股適合長期持有，避免頻繁交易錯失複利效應",
+        "parameters": {},
+        "expectedReturn": 0.1814775305073465,
+        "expectedRisk": 0.46680748577768405,
+        "recommendedAllocation": 0.05
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "strategyResult": {
+        "strategy": "買入持有策略",
+        "confidence": 80.76152992301854,
+        "reasoning": "高成長率(20.8%)和高波動率(31.5%) → 成長股適合長期持有，避免頻繁交易錯失複利效應",
+        "parameters": {},
+        "expectedReturn": 0.18685376930716688,
+        "expectedRisk": 0.34621603680889845,
+        "recommendedAllocation": 0.05
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "IBM",
+      "name": "International Business Machines",
+      "strategyResult": {
+        "strategy": "AI分析策略",
+        "confidence": 50,
+        "reasoning": "特徵不明顯，需要更多數據 → ",
+        "parameters": {},
+        "expectedReturn": 0.04737926152975329,
+        "expectedRisk": 0.21877881444042369,
+        "recommendedAllocation": 0.05
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "INTC",
+      "name": "Intel Corporation",
+      "strategyResult": {
+        "strategy": "動量策略",
+        "confidence": 79.02832163483401,
+        "reasoning": "高Beta值(1.38)和高波動率(39.0%) → 週期股適合動量策略",
+        "parameters": {},
+        "expectedReturn": 0.07309115012890022,
+        "expectedRisk": 0.4683398596180081,
+        "recommendedAllocation": 0.05
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corporation",
+      "strategyResult": {
+        "strategy": "買入持有策略",
+        "confidence": 90,
+        "reasoning": "高成長率(37.1%)和高波動率(60.0%) → 成長股適合長期持有，避免頻繁交易錯失複利效應",
+        "parameters": {},
+        "expectedReturn": 0.3335113864134231,
+        "expectedRisk": 0.6596931660497299,
+        "recommendedAllocation": 0.05
+      },
+      "dataPoints": 6685
+    },
+    {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co.",
+      "strategyResult": {
+        "strategy": "動量策略",
+        "confidence": 76.64902700914396,
+        "reasoning": "高Beta值(1.33)和高波動率(36.6%) → 週期股適合動量策略",
+        "parameters": {},
+        "expectedReturn": 0.07939398195981938,
+        "expectedRisk": 0.43978832410972757,
+        "recommendedAllocation": 0.05
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "BAC",
+      "name": "Bank of America Corporation",
+      "strategyResult": {
+        "strategy": "動量策略",
+        "confidence": 80,
+        "reasoning": "高Beta值(1.41)和高波動率(40.5%) → 週期股適合動量策略",
+        "parameters": {},
+        "expectedReturn": 0.03247513035315457,
+        "expectedRisk": 0.48618719827011564,
+        "recommendedAllocation": 0.05
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "WFC",
+      "name": "Wells Fargo & Company",
+      "strategyResult": {
+        "strategy": "動量策略",
+        "confidence": 75.71194239188858,
+        "reasoning": "高Beta值(1.31)和高波動率(35.7%) → 週期股適合動量策略",
+        "parameters": {},
+        "expectedReturn": 0.0779501003599016,
+        "expectedRisk": 0.42854330870266305,
+        "recommendedAllocation": 0.05
+      },
+      "dataPoints": 8974
+    }
+  ],
+  "portfolioAllocations": [
+    {
+      "stock": "NVDA",
+      "strategy": "買入持有策略",
+      "allocation": 0.12500000000000003,
+      "reasoning": "高成長率(37.1%)和高波動率(60.0%) → 成長股適合長期持有，避免頻繁交易錯失複利效應",
+      "expectedReturn": 0.3335113864134231,
+      "expectedRisk": 0.6596931660497299
+    },
+    {
+      "stock": "MSFT",
+      "strategy": "買入持有策略",
+      "allocation": 0.12500000000000003,
+      "reasoning": "高成長率(20.8%)和高波動率(31.5%) → 成長股適合長期持有，避免頻繁交易錯失複利效應",
+      "expectedReturn": 0.18685376930716688,
+      "expectedRisk": 0.34621603680889845
+    },
+    {
+      "stock": "AAPL",
+      "strategy": "買入持有策略",
+      "allocation": 0.12500000000000003,
+      "reasoning": "高成長率(20.2%)和高波動率(42.4%) → 成長股適合長期持有，避免頻繁交易錯失複利效應",
+      "expectedReturn": 0.1814775305073465,
+      "expectedRisk": 0.46680748577768405
+    },
+    {
+      "stock": "JPM",
+      "strategy": "動量策略",
+      "allocation": 0.12500000000000003,
+      "reasoning": "高Beta值(1.33)和高波動率(36.6%) → 週期股適合動量策略",
+      "expectedReturn": 0.07939398195981938,
+      "expectedRisk": 0.43978832410972757
+    },
+    {
+      "stock": "WFC",
+      "strategy": "動量策略",
+      "allocation": 0.12500000000000003,
+      "reasoning": "高Beta值(1.31)和高波動率(35.7%) → 週期股適合動量策略",
+      "expectedReturn": 0.0779501003599016,
+      "expectedRisk": 0.42854330870266305
+    },
+    {
+      "stock": "INTC",
+      "strategy": "動量策略",
+      "allocation": 0.12500000000000003,
+      "reasoning": "高Beta值(1.38)和高波動率(39.0%) → 週期股適合動量策略",
+      "expectedReturn": 0.07309115012890022,
+      "expectedRisk": 0.4683398596180081
+    },
+    {
+      "stock": "IBM",
+      "strategy": "AI分析策略",
+      "allocation": 0.12500000000000003,
+      "reasoning": "特徵不明顯，需要更多數據 → ",
+      "expectedReturn": 0.04737926152975329,
+      "expectedRisk": 0.21877881444042369
+    },
+    {
+      "stock": "BAC",
+      "strategy": "動量策略",
+      "allocation": 0.12500000000000003,
+      "reasoning": "高Beta值(1.41)和高波動率(40.5%) → 週期股適合動量策略",
+      "expectedReturn": 0.03247513035315457,
+      "expectedRisk": 0.48618719827011564
+    }
+  ],
+  "riskAnalysis": {
+    "totalExpectedReturn": 0.1265165388199332,
+    "totalExpectedRisk": 0.4392942742221564,
+    "diversificationScore": 0.4375,
+    "recommendations": [
+      "⚠️ 投資組合風險較高，建議增加防禦性資產",
+      "📊 分散化程度較低，建議增加不同策略的配置"
+    ]
+  },
+  "strategyDistribution": {
+    "買入持有策略": 3,
+    "動量策略": 4,
+    "AI分析策略": 1
+  }
+}

@@ -285,39 +285,66 @@ export function calculateADX(data: Candle[], period: number = 14) {
   return adx;
 }
 
-// OBV (On Balance Volume)
-export function calculateOBV(data: Candle[]): number[] {
+// ✅ OBV：預設從 0 起算；可選擇量的倍率（例如把股→張除以1000）
+export function calculateOBV(
+  data: Candle[],
+  opts?: {
+    startFromZero?: boolean;       // 預設 true：從 0 起算
+    volumeMultiplier?: number;     // 預設 1：若要把股→張，可給 1/1000
+  }
+): number[] {
+  const startFromZero = opts?.startFromZero ?? true;
+  const volMul = opts?.volumeMultiplier ?? 1;
+
   const obv: number[] = [];
-  
   for (let i = 0; i < data.length; i++) {
+    const v = (data[i].volume ?? 0) * volMul;
+
     if (i === 0) {
-      obv.push(data[i].volume || 0);
+      // 多數實作：第一根從 0 開始，避免把整條 OBV 往上抬
+      obv.push(startFromZero ? 0 : v);
+      continue;
+    }
+
+    const prevOBV = obv[i - 1];
+    const currClose = data[i].close;
+    const prevClose = data[i - 1].close;
+
+    if (currClose > prevClose) {
+      obv.push(prevOBV + v);
+    } else if (currClose < prevClose) {
+      obv.push(prevOBV - v);
     } else {
-      const prevOBV = obv[i - 1];
-      const currentClose = data[i].close;
-      const prevClose = data[i - 1].close;
-      const currentVolume = data[i].volume || 0;
-      
-      if (currentClose > prevClose) {
-        obv.push(prevOBV + currentVolume);
-      } else if (currentClose < prevClose) {
-        obv.push(prevOBV - currentVolume);
-      } else {
-        obv.push(prevOBV);
-      }
+      obv.push(prevOBV);
     }
   }
-  
   return obv;
 }
 
-// 成交量
-export function calculateVolume(data: Candle[]) {
-  return data.map(candle => candle.volume);
+// ✅ 成交量：可選擇輸出為「股」或「張」
+export function calculateVolume(
+  data: Candle[],
+  opts?: {
+    toLots?: boolean;  // true 代表把股轉成張（除以 lotSize）
+    lotSize?: number;  // 預設 1000
+  }
+): number[] {
+  const toLots = opts?.toLots ?? false;
+  const lotSize = opts?.lotSize ?? 1000;
+
+  return data.map(c =>
+    toLots ? (c.volume ?? 0) / lotSize : (c.volume ?? 0)
+  );
 }
 
 // 主函數：計算所有技術指標
-export function calculateAllIndicators(data: Candle[]) {
+export function calculateAllIndicators(
+  data: Candle[], 
+  market?: string
+) {
+  // 根據市場類型決定成交量單位
+  const isTaiwanMarket = market === 'TW' || market?.toUpperCase().includes('TW');
+  
   return {
     ma5: calculateMA(data, 5),
     ma10: calculateMA(data, 10),
@@ -332,7 +359,14 @@ export function calculateAllIndicators(data: Candle[]) {
     cci: calculateCCI(data),
     atr: calculateATR(data),
     adx: calculateADX(data),
-    obv: calculateOBV(data),
-    volume: calculateVolume(data)
+    // 台股用「張」，美股用「股」
+    obv: calculateOBV(data, { 
+      startFromZero: true,
+      volumeMultiplier: isTaiwanMarket ? 1/1000 : 1 
+    }),
+    volume: calculateVolume(data, { 
+      toLots: isTaiwanMarket,
+      lotSize: 1000 
+    })
   };
 }

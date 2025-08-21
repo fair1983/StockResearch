@@ -1,6 +1,8 @@
 import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
+import Link from 'next/link'
 import './globals.css'
+import ConsoleSilencer from '@/components/ConsoleSilencer'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -17,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="zh-TW">
       <body className={inter.className}>
+        <ConsoleSilencer />
         <div className="min-h-screen bg-gray-50">
           <header className="bg-white shadow-sm border-b">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -25,15 +28,21 @@ export default function RootLayout({
                   股票研究圖表系統
                 </h1>
                 <nav className="flex space-x-4">
-                  <a href="/" className="text-gray-600 hover:text-gray-900">
+                  <Link href="/" className="text-gray-600 hover:text-gray-900">
                     首頁
-                  </a>
-                  <a href="/symbols" className="text-gray-600 hover:text-gray-900">
+                  </Link>
+                  <Link href="/symbols" className="text-gray-600 hover:text-gray-900">
                     股票列表
-                  </a>
-                  <a href="/admin" className="text-gray-600 hover:text-gray-900">
+                  </Link>
+                  <Link href="/intelligent-strategy" className="text-gray-600 hover:text-gray-900">
+                    智能策略
+                  </Link>
+                  <Link href="/market-screener" className="text-gray-600 hover:text-gray-900">
+                    全市場掃描
+                  </Link>
+                  <Link href="/admin" className="text-gray-600 hover:text-gray-900">
                     後台管理
-                  </a>
+                  </Link>
                 </nav>
               </div>
             </div>

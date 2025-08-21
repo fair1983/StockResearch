@@ -1,0 +1,15 @@
+{
+  "symbol": "MSFT",
+  "name": "Microsoft Corporation",
+  "market": "US",
+  "currency": "USD",
+  "exchange": "NMS",
+  "timestamp": 1755720001,
+  "regularMarketPrice": 505.72,
+  "regularMarketChange": -4.0499999999999545,
+  "regularMarketChangePercent": -0.7944759401298536,
+  "regularMarketVolume": 27565695,
+  "fiftyTwoWeekHigh": 555.45,
+  "fiftyTwoWeekLow": 344.79,
+  "lastUpdated": "2025-08-21T06:19:31.857Z"
+}

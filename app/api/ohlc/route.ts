@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { YahooFinanceService } from '@/lib/yahoo-finance';
+import { HistoricalDataManager } from '@/lib/historical-data-manager';
 import { Market, TimeFrame, OHLCResponse, ErrorResponse } from '@/types';
 import { logger } from '@/lib/logger';
 
@@ -44,30 +45,53 @@ export async function GET(request: NextRequest) {
     let candles: any[] = [];
     let dataSource = '';
 
-    // 使用新的 Yahoo Finance 服務
-    const yahooFinance = new YahooFinanceService();
+    // 使用智能資料管理器
+    const dataManager = new HistoricalDataManager();
     
     try {
-      logger.yahooFinance.request(`Fetching data for ${market} symbol: ${symbol}`, { timeframe: tf });
+      logger.yahooFinance.request(`智能獲取資料 for ${market} symbol: ${symbol}`, { timeframe: tf });
       
-      // 轉換日期格式
-      let period1: Date | undefined;
-      let period2: Date | undefined;
-      
-      if (from) {
-        period1 = new Date(from);
+      // 如果有指定日期範圍，使用傳統方式
+      if (from || to) {
+        const yahooFinance = new YahooFinanceService();
+        let period1: Date | undefined;
+        let period2: Date | undefined;
+        
+        if (from) {
+          period1 = new Date(from);
+        }
+        if (to) {
+          period2 = new Date(to);
+        }
+        
+        candles = await yahooFinance.getKlineData(symbol, market, tf, period1, period2);
+        dataSource = 'Yahoo Finance (指定日期)';
+      } else {
+        // 使用智能資料獲取：自動判斷資料是否足夠，不足則即時計算並保存
+        candles = await dataManager.getHistoricalDataWithRealTimeCalculation(
+          market,
+          symbol,
+          tf,
+          200 // 最少需要 200 個資料點以確保技術指標計算準確
+        );
+        dataSource = '智能資料管理器';
       }
-      if (to) {
-        period2 = new Date(to);
-      }
       
-      candles = await yahooFinance.getKlineData(symbol, market, tf, period1, period2);
-      logger.yahooFinance.response(`Yahoo Finance returned ${candles.length} candles for ${market}`);
-      dataSource = 'Yahoo Finance';
+      logger.yahooFinance.response(`資料獲取成功: ${candles.length} candles from ${dataSource}`);
     } catch (error) {
-      logger.yahooFinance.error(`Yahoo Finance failed for ${market}`, error);
+      logger.yahooFinance.error(`智能資料獲取失敗 for ${market}`, error);
+      
+      // 檢查是否為找不到股票的錯誤
+      const errorMessage = error instanceof Error ? error.message : '未知錯誤';
+      if (errorMessage.includes('找不到股票資料') || errorMessage.includes('No data found')) {
+        return NextResponse.json<ErrorResponse>(
+          { error: `找不到股票: ${symbol} (${market})` },
+          { status: 404 }
+        );
+      }
+      
       return NextResponse.json<ErrorResponse>(
-        { error: `無法從 Yahoo Finance 取得資料: ${error instanceof Error ? error.message : '未知錯誤'}` },
+        { error: `無法取得資料: ${errorMessage}` },
         { status: 500 }
       );
     }

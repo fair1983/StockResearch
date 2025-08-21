@@ -1,0 +1,15 @@
+{
+  "symbol": "AAPL",
+  "name": "Apple Inc.",
+  "market": "US",
+  "currency": "USD",
+  "exchange": "NMS",
+  "timestamp": 1755720001,
+  "regularMarketPrice": 226.01,
+  "regularMarketChange": -4.550000000000011,
+  "regularMarketChangePercent": -1.9734559333796025,
+  "regularMarketVolume": 42145912,
+  "fiftyTwoWeekHigh": 260.1,
+  "fiftyTwoWeekLow": 169.21,
+  "lastUpdated": "2025-08-21T06:14:02.763Z"
+}

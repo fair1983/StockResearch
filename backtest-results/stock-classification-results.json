@@ -1,0 +1,261 @@
+{
+  "timestamp": "2025-08-20T08:40:58.708Z",
+  "results": [
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "classification": {
+        "type": "growth",
+        "confidence": 80.16417005637183,
+        "characteristics": {
+          "volatility": 0.4243704416160764,
+          "growthRate": 0.20164170056371833,
+          "dividendYield": 0,
+          "marketCap": 0,
+          "beta": 1.4487408832321527,
+          "sector": "unknown",
+          "age": 35.611111111111114
+        },
+        "reasoning": "高成長率(20.2%)和高波動率(42.4%)"
+      },
+      "recommendation": {
+        "strategy": "buy_and_hold",
+        "confidence": 80.16417005637183,
+        "reasoning": "成長股適合長期持有，避免頻繁交易錯失複利效應",
+        "parameters": {
+          "maxPositionSize": 0.3,
+          "stopLoss": 0.25,
+          "takeProfit": 0.5,
+          "rsiThreshold": 85,
+          "maPeriod": 50
+        }
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "MSFT",
+      "name": "Microsoft Corporation",
+      "classification": {
+        "type": "growth",
+        "confidence": 80.76152992301854,
+        "characteristics": {
+          "volatility": 0.3147418516444531,
+          "growthRate": 0.2076152992301854,
+          "dividendYield": 0,
+          "marketCap": 0,
+          "beta": 1.2294837032889063,
+          "sector": "unknown",
+          "age": 35.611111111111114
+        },
+        "reasoning": "高成長率(20.8%)和高波動率(31.5%)"
+      },
+      "recommendation": {
+        "strategy": "buy_and_hold",
+        "confidence": 80.76152992301854,
+        "reasoning": "成長股適合長期持有，避免頻繁交易錯失複利效應",
+        "parameters": {
+          "maxPositionSize": 0.3,
+          "stopLoss": 0.25,
+          "takeProfit": 0.5,
+          "rsiThreshold": 85,
+          "maPeriod": 50
+        }
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "IBM",
+      "name": "International Business Machines",
+      "classification": {
+        "type": "unknown",
+        "confidence": 50,
+        "characteristics": {
+          "volatility": 0.2734735180505296,
+          "growthRate": 0.06768465932821899,
+          "dividendYield": 0,
+          "marketCap": 0,
+          "beta": 1.1469470361010592,
+          "sector": "unknown",
+          "age": 35.611111111111114
+        },
+        "reasoning": "特徵不明顯，需要更多數據"
+      },
+      "recommendation": {
+        "strategy": "ai_analysis",
+        "confidence": 50,
+        "reasoning": "使用默認策略，建議進一步分析",
+        "parameters": {
+          "maxPositionSize": 0.2,
+          "stopLoss": 0.15,
+          "takeProfit": 0.3,
+          "rsiThreshold": 70,
+          "maPeriod": 20
+        }
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "INTC",
+      "name": "Intel Corporation",
+      "classification": {
+        "type": "cyclical",
+        "confidence": 79.02832163483401,
+        "characteristics": {
+          "volatility": 0.3902832163483401,
+          "growthRate": 0.09136393766112527,
+          "dividendYield": 0,
+          "marketCap": 0,
+          "beta": 1.3805664326966802,
+          "sector": "unknown",
+          "age": 35.611111111111114
+        },
+        "reasoning": "高Beta值(1.38)和高波動率(39.0%)"
+      },
+      "recommendation": {
+        "strategy": "ai_analysis",
+        "confidence": 79.02832163483401,
+        "reasoning": "週期股波動較大，適合主動交易策略",
+        "parameters": {
+          "maxPositionSize": 0.15,
+          "stopLoss": 0.1,
+          "takeProfit": 0.25,
+          "rsiThreshold": 65,
+          "maPeriod": 10
+        }
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA Corporation",
+      "classification": {
+        "type": "growth",
+        "confidence": 90,
+        "characteristics": {
+          "volatility": 0.599721060045209,
+          "growthRate": 0.3705682071260257,
+          "dividendYield": 0,
+          "marketCap": 0,
+          "beta": 1.799442120090418,
+          "sector": "unknown",
+          "age": 26.52777777777778
+        },
+        "reasoning": "高成長率(37.1%)和高波動率(60.0%)"
+      },
+      "recommendation": {
+        "strategy": "buy_and_hold",
+        "confidence": 90,
+        "reasoning": "成長股適合長期持有，避免頻繁交易錯失複利效應",
+        "parameters": {
+          "maxPositionSize": 0.3,
+          "stopLoss": 0.25,
+          "takeProfit": 0.5,
+          "rsiThreshold": 85,
+          "maPeriod": 50
+        }
+      },
+      "dataPoints": 6685
+    },
+    {
+      "symbol": "JPM",
+      "name": "JPMorgan Chase & Co.",
+      "classification": {
+        "type": "cyclical",
+        "confidence": 76.64902700914396,
+        "characteristics": {
+          "volatility": 0.36649027009143964,
+          "growthRate": 0.09924247744977421,
+          "dividendYield": 0,
+          "marketCap": 0,
+          "beta": 1.3329805401828794,
+          "sector": "unknown",
+          "age": 35.611111111111114
+        },
+        "reasoning": "高Beta值(1.33)和高波動率(36.6%)"
+      },
+      "recommendation": {
+        "strategy": "ai_analysis",
+        "confidence": 76.64902700914396,
+        "reasoning": "週期股波動較大，適合主動交易策略",
+        "parameters": {
+          "maxPositionSize": 0.15,
+          "stopLoss": 0.1,
+          "takeProfit": 0.25,
+          "rsiThreshold": 65,
+          "maPeriod": 10
+        }
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "BAC",
+      "name": "Bank of America Corporation",
+      "classification": {
+        "type": "cyclical",
+        "confidence": 80,
+        "characteristics": {
+          "volatility": 0.4051559985584297,
+          "growthRate": 0.04059391294144321,
+          "dividendYield": 0,
+          "marketCap": 0,
+          "beta": 1.4103119971168594,
+          "sector": "unknown",
+          "age": 35.611111111111114
+        },
+        "reasoning": "高Beta值(1.41)和高波動率(40.5%)"
+      },
+      "recommendation": {
+        "strategy": "ai_analysis",
+        "confidence": 80,
+        "reasoning": "週期股波動較大，適合主動交易策略",
+        "parameters": {
+          "maxPositionSize": 0.15,
+          "stopLoss": 0.1,
+          "takeProfit": 0.25,
+          "rsiThreshold": 65,
+          "maPeriod": 10
+        }
+      },
+      "dataPoints": 8974
+    },
+    {
+      "symbol": "WFC",
+      "name": "Wells Fargo & Company",
+      "classification": {
+        "type": "cyclical",
+        "confidence": 75.71194239188858,
+        "characteristics": {
+          "volatility": 0.3571194239188859,
+          "growthRate": 0.097437625449877,
+          "dividendYield": 0,
+          "marketCap": 0,
+          "beta": 1.3142388478377718,
+          "sector": "unknown",
+          "age": 35.611111111111114
+        },
+        "reasoning": "高Beta值(1.31)和高波動率(35.7%)"
+      },
+      "recommendation": {
+        "strategy": "ai_analysis",
+        "confidence": 75.71194239188858,
+        "reasoning": "週期股波動較大，適合主動交易策略",
+        "parameters": {
+          "maxPositionSize": 0.15,
+          "stopLoss": 0.1,
+          "takeProfit": 0.25,
+          "rsiThreshold": 65,
+          "maPeriod": 10
+        }
+      },
+      "dataPoints": 8974
+    }
+  ],
+  "summary": {
+    "totalStocks": 8,
+    "typeDistribution": {
+      "growth": 3,
+      "unknown": 1,
+      "cyclical": 4
+    }
+  }
+}
