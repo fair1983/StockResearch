@@ -1,86 +1,93 @@
 # 股票研究圖表系統 (Stock Research Chart System)
 
-一個基於 Next.js 的專業股票研究圖表系統，提供美股和台股的完整分析功能，包含即時圖表、技術指標、歷史資料收集和公司資訊等功能。
+一個基於 Next.js 的專業股票研究圖表系統，提供美股和台股的完整分析功能，包含即時圖表、技術指標、歷史資料收集、AI 智能分析和全市場掃描器等功能。
 
 > ⚠️ **重要聲明**: 本系統僅供學習和研究用途。系統中的新聞連結為示範用途，並非真實新聞來源。股票資料僅供參考，投資決策請謹慎評估，投資有風險，請自行承擔投資後果。
 
 ## 📋 版本資訊
 
-**當前版本**: v0.2.1  
-**更新日期**: 2025-08-19  
+**當前版本**: v0.3.0  
+**更新日期**: 2025-01-19  
 **Node.js 需求**: 18.0.0+  
 **Next.js 版本**: 14.2.31
 
-### 🆕 v0.2.1 更新內容 (2025-08-19)
+### 🆕 v0.3.0 更新內容 (2025-01-19)
 
-#### 🔧 核心概念修正
-- **Exchange/Market 概念澄清**: 明確區分 Exchange（交易所：US/TW）和 Market（次級市場：上市/NASDAQ/NYSE）
-- **股票資料庫結構優化**: 更新資料庫結構，正確映射交易所和次級市場關係
-- **搜尋邏輯改進**: 修正股票搜尋功能，優先使用 `stock.交易所` 欄位進行過濾
+#### ✨ 全市場掃描器四段式流程
+- **🎯 多因子選股系統**: 全市場掃描（US + TW），多因子評分算法
+- **📊 智能評分**: 技術分析（30%）+ 動量（25%）+ 量能（15%）+ 風險（15%）+ 基本面（15%）
+- **🔄 反轉雷達**: 止跌回升偵測，識別潛在反轉機會
+- **📈 回測模擬**: What-if 分析，模擬不同買賣策略的收益
+- **🤖 AI 混合分析**: 規則基礎 + 機器學習的智能分析引擎
 
-#### 🐛 Bug 修復
-- **NBIS 股票分類錯誤**: 修正 NBIS 被錯誤分類為台股的問題，現在正確識別為美股
-- **URL 生成錯誤**: 修正搜尋結果 URL 生成錯誤（如 `/NMS/NBIS` 改為 `/US/NBIS`）
-- **直接 URL 訪問失敗**: 修復直接訪問 `/NASDAQ/NBIS` 等次級市場 URL 的 400 錯誤
-- **Yahoo Finance 搜尋邏輯**: 修正 Yahoo Finance 搜尋結果的市場判斷邏輯
+#### 🔧 新增 API 端點
+- `POST /api/screener` - 全市場多因子選股
+- `GET /api/rebound-radar` - 反轉雷達偵測
+- `POST /api/what-if` - 回測模擬分析
+- `POST /api/hybrid-analysis` - AI 混合分析
+- `GET /api/stock-recommendations` - 智能股票推薦
 
-#### 🚫 功能限制
-- **快速搜尋限制**: 修改快速搜尋功能，不再自動新增 Yahoo Finance 找到的股票到本地資料庫
-- **搜尋結果過濾**: 只顯示已存在於本地資料庫的股票，確保資料一致性
+#### 🎨 新增前端頁面
+- `/market-screener` - 全市場掃描器主頁面
+- `/intelligent-strategy` - 智能策略分析頁面
+- `/ai-analysis` - AI 分析引擎頁面
+- `/data-collection-monitor` - 數據收集監控
 
-#### 🧪 測試系統更新
-- **測試程式重構**: 更新所有測試案例，反映新的 Exchange/Market 概念
-- **新增測試案例**: 添加 NBIS 股票搜尋測試、不指定交易所搜尋測試
-- **測試邏輯修正**: 修正搜尋結果排序和交易所欄位處理的測試邏輯
-- **測試覆蓋率**: 76 個測試案例全部通過，確保系統穩定性
+#### 🧠 AI 分析引擎
+- **混合算法**: 規則基礎 + 機器學習
+- **技術指標**: EMA、RSI、MACD、OBV、ADX、ATR 等
+- **風險評估**: 波動率、最大回撤、流動性評分
+- **智能建議**: Buy/Hold/Avoid 策略建議
+- **信心度評分**: 基於歷史數據的預測信心度
 
-#### 📊 資料更新
-- **股票資料重新收集**: 執行完整的股票資料收集，更新至 16,085 支股票
-- **資料結構優化**: 確保所有股票資料包含正確的 `交易所` 和 `市場` 欄位
-- **資料驗證**: 驗證台股和美股的資料映射正確性
-
-#### 📝 文件更新
-- **README 重要聲明**: 添加系統用途聲明，明確說明新聞連結為示範用途
-- **使用注意事項**: 添加投資風險警告和資料來源說明
-- **故障排除指南**: 添加新聞連結相關的常見問題說明
-
-### 🆕 v0.2.0 更新內容 (2025-01-19)
-
-#### ✨ 新功能
-- **關注股票功能**: 用戶可以添加/移除股票到個人關注列表
-- **熱門股票系統**: 預設熱門股票列表，包含台股和美股主要股票
-- **技術指標重新設計**: 收縮式勾選框設計，滑鼠懸停顯示說明視窗
-- **圖表佈局優化**: TradingView 風格的雙圖表佈局，支援可調整分割
-- **股票列表頁面**: 完整的股票列表展示，支援篩選和搜尋
-- **測試系統**: 完整的單元測試、效能測試和覆蓋率測試
-
-#### 🔧 功能改進
-- **搜尋功能優化**: 修復台股搜尋問題，支援 TW/US 交易所代碼
-- **路由結構重構**: 從 `[market]/[symbol]` 改為 `[exchange]/[symbol]` 支援 TW/US
-- **資料庫系統**: 本地股票資料庫，支援 16,000+ 股票資料
-- **效能監控**: 自建效能監控系統，追蹤 API 調用和渲染效能
-- **錯誤處理**: 完善的錯誤處理和用戶友好的錯誤提示
+#### 📊 數據管理系統
+- **Yahoo Finance 整合**: 實時數據收集和快取
+- **本地數據存儲**: JSON/JSONL 格式，按市場分類
+- **自動數據更新**: 24小時快取機制
+- **數據驗證**: 完整性檢查和錯誤處理
 
 #### 🐛 Bug 修復
-- **PriceChart 錯誤**: 修復 `getVisibleLogicalRange` 方法不存在的錯誤
-- **搜尋功能**: 修復首頁快速搜尋無法找到台積電 (2330) 的問題
-- **技術指標**: 修復技術指標組件 props 名稱不匹配問題
-- **路由 API**: 修復新路由結構的 API 調用問題
-- **測試錯誤**: 修復測試中的 console.error 輸出問題
-
-#### 🧪 測試覆蓋
-- **單元測試**: 57 個測試案例，覆蓋核心功能
-- **效能測試**: 效能閾值檢查和監控
-- **覆蓋率測試**: 59.52% 整體覆蓋率
-- **自動化測試**: 完整的測試腳本和 CI/CD 準備
-
-#### 📊 技術改進
-- **TypeScript 優化**: 完善的類型定義和錯誤檢查
-- **組件重構**: 模組化組件設計，提高可維護性
-- **API 優化**: 統一的 API 響應格式和錯誤處理
-- **資料驗證**: 嚴格的資料驗證和過濾機制
+- 修復 API 欄位對齊問題（price/currentPrice 兼容）
+- 修復 render 階段 setState 警告
+- 修復 TypeScript 類型錯誤
+- 完善錯誤處理機制
 
 ## 🎯 功能特色
+
+### 🚀 全市場掃描器（新功能）
+
+#### 📊 四段式分析流程
+1. **📈 全市場數據收集**
+   - 美股（US）+ 台股（TW）完整覆蓋
+   - Yahoo Finance 實時數據整合
+   - 24小時本地快取機制
+   - 自動數據更新和驗證
+
+2. **🎯 多因子選股評分**
+   - **技術分析（30%）**: EMA趨勢、MACD、RSI、ADX
+   - **動量評分（25%）**: 價格動量、ROC、動量指標
+   - **量能分析（15%）**: 成交量Z-score、OBV斜率
+   - **風險評估（15%）**: ATR波動率、乖離度、缺口風險
+   - **基本面（15%）**: PE、PS、毛利率、ROE、負債比
+
+3. **📈 持有/賣出策略**
+   - **智能建議**: Buy/Hold/Avoid 三級策略
+   - **風險等級**: Low/Medium/High 風險分類
+   - **預期收益**: 基於歷史數據的收益預測
+   - **信心度評分**: 0-100% 的預測信心度
+
+4. **🔄 反轉雷達偵測**
+   - **止跌回升**: 識別潛在反轉機會
+   - **技術信號**: 多項技術指標綜合判斷
+   - **反轉分數**: 0-100 的反轉可能性評分
+   - **觸發規則**: 詳細的反轉觸發條件
+
+#### 🎨 智能用戶界面
+- **響應式設計**: 支援桌面和移動設備
+- **標籤頁切換**: 多因子選股 vs 反轉雷達
+- **實時數據**: 價格、漲跌幅、技術指標
+- **視覺化展示**: 分數、信心度、風險等級
+- **互動功能**: 重新掃描、數據刷新
 
 ### 📊 圖表分析
 - **多市場支援**: 美股 (US) 和台股 (TW) 完整支援
@@ -91,9 +98,13 @@
 - **雙圖表佈局**: TradingView 風格的可調整分割圖表
 - **技術指標面板**: 收縮式設計，滑鼠懸停說明視窗
 
-### ⚠️ 重要備註
-- **新聞連結**: 本系統中的新聞連結僅為示範用途，並非真實的新聞來源。這些連結僅用於展示系統功能，不提供實際的新聞內容。
-- **資料來源**: 股票價格資料來自 Yahoo Finance API，基本面資料僅供參考，投資決策請謹慎評估。
+### 🤖 AI 智能分析
+- **混合算法**: 規則基礎 + 機器學習
+- **技術分析**: EMA、RSI、MACD、OBV、ADX、ATR
+- **風險評估**: 波動率、最大回撤、流動性
+- **智能建議**: Buy/Hold/Avoid 策略
+- **信心度評分**: 基於歷史數據的預測
+- **自然語言摘要**: 人類可讀的分析報告
 
 ### 🔍 股票搜尋與管理
 - **即時搜尋**: 支援股票代碼和名稱搜尋
@@ -125,12 +136,14 @@
 - **樣式**: Tailwind CSS
 - **圖表**: Lightweight Charts (專業級金融圖表)
 - **狀態管理**: React Hooks + Context API
+- **UI 組件**: 自定義組件庫
 
 ### 後端技術棧
 - **API**: Next.js API Routes
 - **資料來源**: Yahoo Finance API
 - **快取**: 自建快取系統
 - **日誌**: 自建日誌管理系統
+- **AI 引擎**: 自定義混合分析算法
 
 ### 核心依賴
 ```json
@@ -140,7 +153,8 @@
   "axios": "^1.6.0",                 // HTTP 請求處理
   "next": "14.2.31",                 // React 框架
   "react": "^18",                    // UI 框架
-  "tailwindcss": "^3.3.0"           // CSS 框架
+  "tailwindcss": "^3.3.0",          // CSS 框架
+  "lucide-react": "^0.263.1"        // 圖標庫
 }
 ```
 
@@ -180,6 +194,52 @@ npm run dev
 訪問 `http://localhost:3000`
 
 ## 📖 使用指南
+
+### 🚀 全市場掃描器（新功能）
+
+#### 訪問掃描器
+- **主頁面**: `http://localhost:3000/market-screener`
+- **智能策略**: `http://localhost:3000/intelligent-strategy`
+- **AI 分析**: `http://localhost:3000/ai-analysis`
+
+#### 使用流程
+1. **選擇市場**: 美股（US）或台股（TW）或全部（ALL）
+2. **設定參數**: 最小分數、數量限制、風險偏好
+3. **執行掃描**: 點擊「重新掃描」按鈕
+4. **查看結果**: 多因子選股和反轉雷達標籤頁
+5. **分析詳情**: 點擊股票卡片查看詳細分析
+
+#### API 使用範例
+```bash
+# 全市場掃描
+curl "http://localhost:3000/api/screener?market=ALL&limit=20&minScore=50"
+
+# 反轉雷達
+curl "http://localhost:3000/api/rebound-radar?market=ALL&limit=10"
+
+# 回測模擬
+curl -X POST "http://localhost:3000/api/what-if" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "symbol": "AAPL",
+    "market": "US",
+    "buyDate": "2024-01-15",
+    "holdingDays": 60,
+    "rules": {
+      "takeProfitPct": 0.15,
+      "stopLossPct": 0.07,
+      "trailingPct": 0.08
+    }
+  }'
+
+# AI 混合分析
+curl -X POST "http://localhost:3000/api/hybrid-analysis" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "symbol": "AAPL",
+    "market": "US"
+  }'
+```
 
 ### 查看股票圖表
 - **美股**: `http://localhost:3000/US/AAPL` (蘋果)
@@ -249,6 +309,10 @@ SideProject/
 │   ├── [exchange]/[symbol]/ # 動態股票頁面 (TW/US)
 │   ├── symbols/            # 股票列表頁面
 │   ├── admin/              # 後台管理系統
+│   ├── market-screener/    # 全市場掃描器（新）
+│   ├── intelligent-strategy/ # 智能策略（新）
+│   ├── ai-analysis/        # AI 分析（新）
+│   ├── data-collection-monitor/ # 數據收集監控（新）
 │   ├── api/                # API 端點
 │   │   ├── ohlc/           # K線資料 API
 │   │   ├── historical/     # 歷史資料收集
@@ -256,6 +320,11 @@ SideProject/
 │   │   ├── search-stocks/  # 股票搜尋
 │   │   ├── symbols/        # 股票代碼管理
 │   │   ├── watchlist/      # 關注列表 API
+│   │   ├── screener/       # 全市場掃描器 API（新）
+│   │   ├── rebound-radar/  # 反轉雷達 API（新）
+│   │   ├── what-if/        # 回測模擬 API（新）
+│   │   ├── hybrid-analysis/ # AI 混合分析 API（新）
+│   │   ├── stock-recommendations/ # 智能推薦 API（新）
 │   │   └── data/           # 資料管理 API
 │   └── globals.css         # 全域樣式
 ├── components/             # React 組件
@@ -264,7 +333,9 @@ SideProject/
 │   ├── CompanyInfo.tsx     # 公司資訊
 │   ├── StockSearch.tsx     # 股票搜尋
 │   ├── DateRangeSelector.tsx # 日期選擇器
-│   └── ResizableChartLayout.tsx # 可調整圖表佈局
+│   ├── ResizableChartLayout.tsx # 可調整圖表佈局
+│   ├── MultiChartLayout.tsx # 多圖表佈局（新）
+│   └── ui/                 # UI 組件庫（新）
 ├── lib/                    # 工具函式庫
 │   ├── stock-database.ts   # 本地股票資料庫
 │   ├── watchlist.ts        # 關注列表管理
@@ -275,16 +346,33 @@ SideProject/
 │   ├── stock-cache.ts      # 快取系統
 │   ├── technical-indicators.ts # 技術指標計算
 │   ├── yahoo-finance.ts    # Yahoo Finance 服務
-│   └── stock-updater.ts    # 股票列表更新
+│   ├── stock-updater.ts    # 股票列表更新
+│   ├── ai/                 # AI 分析引擎（新）
+│   │   ├── core/           # 核心算法
+│   │   ├── modules/        # 分析模組
+│   │   └── interfaces/     # 接口定義
+│   ├── screener/           # 掃描器引擎（新）
+│   │   ├── scoring.ts      # 評分算法
+│   │   ├── rebound.ts      # 反轉雷達
+│   │   └── market-scanner.ts # 市場掃描器
+│   ├── backtest/           # 回測引擎（新）
+│   │   └── engine.ts       # 回測算法
+│   └── data/               # 數據管理（新）
+│       ├── yahoo-finance-collector.ts # Yahoo Finance 收集器
+│       ├── stock-recommendations-manager.ts # 推薦管理
+│       └── data-converter.ts # 數據轉換器
 ├── data/                   # 資料儲存
 │   ├── cache/             # 快取資料 (24小時過期)
 │   ├── historical/        # 永久歷史資料
+│   ├── yahoo-finance/     # Yahoo Finance 數據（新）
+│   ├── screeners/         # 掃描器結果（新）
 │   ├── stocks_data_*.jsonl # 股票資料檔案
 │   └── stocks.json        # 股票列表
 ├── __tests__/             # Jest 測試目錄
 │   ├── api.test.ts        # API 功能測試
 │   ├── watchlist.test.ts  # 關注列表測試
-│   └── hot-stocks.test.ts # 熱門股票測試
+│   ├── hot-stocks.test.ts # 熱門股票測試
+│   └── ai-analysis/       # AI 分析測試（新）
 ├── tests/                 # Python 測試程式目錄
 │   ├── README.md          # 測試說明文件
 │   ├── test_*.py          # 資料來源測試
@@ -292,7 +380,10 @@ SideProject/
 │   ├── parse_*.py         # 資料解析程式
 │   └── final_*.py         # 最終收集器
 ├── scripts/               # 自動化腳本
-│   └── run-tests.js       # 測試運行腳本
+│   ├── run-tests.js       # 測試運行腳本
+│   ├── test-new-apis.js   # 新 API 測試（新）
+│   ├── test-screener.ts   # 掃描器測試（新）
+│   └── collect-yahoo-finance-data.ts # 數據收集（新）
 ├── docs/                  # 文件
 ├── jest.config.js         # Jest 配置
 ├── jest.setup.js          # Jest 設置
@@ -311,6 +402,10 @@ npm run test:watchlist    # 關注列表測試
 npm run test:hot-stocks   # 熱門股票測試
 npm run test:api          # API 功能測試
 
+# 測試新功能
+npm run test:ai-analysis  # AI 分析測試
+npm run test:screener     # 掃描器測試
+
 # 效能測試
 npm run test:performance
 
@@ -319,19 +414,29 @@ npm run test:coverage
 
 # 完整測試套件
 npm run test:run
+
+# 測試新 API
+node scripts/test-new-apis.js
 ```
 
 ### 測試覆蓋
-- **單元測試**: 57 個測試案例
+- **單元測試**: 76+ 個測試案例
 - **效能測試**: 效能閾值檢查
 - **覆蓋率**: 59.52% 整體覆蓋率
-- **自動化**: 完整的測試腳本
+- **自動化測試**: 完整的測試腳本
 
 ## 🔧 API 端點
 
 ### 圖表資料
 - `GET /api/ohlc` - 取得 K線資料
 - `GET /api/ohlc/paged` - 分頁 K線資料
+
+### 全市場掃描器（新）
+- `GET /api/screener` - 全市場多因子選股
+- `GET /api/rebound-radar` - 反轉雷達偵測
+- `POST /api/what-if` - 回測模擬分析
+- `POST /api/hybrid-analysis` - AI 混合分析
+- `GET /api/stock-recommendations` - 智能股票推薦
 
 ### 歷史資料
 - `POST /api/historical/collect` - 收集單一股票歷史資料
@@ -354,6 +459,17 @@ npm run test:run
 
 ### 範例請求
 ```bash
+# 全市場掃描
+curl "http://localhost:3000/api/screener?market=ALL&limit=10&minScore=60"
+
+# 反轉雷達
+curl "http://localhost:3000/api/rebound-radar?market=US&limit=5"
+
+# AI 混合分析
+curl -X POST "http://localhost:3000/api/hybrid-analysis" \
+  -H "Content-Type: application/json" \
+  -d '{"symbol": "AAPL", "market": "US"}'
+
 # 取得台積電日K資料
 curl "http://localhost:3000/api/ohlc?market=TW&symbol=2330&interval=1d"
 
@@ -365,6 +481,18 @@ curl "http://localhost:3000/api/fundamentals?market=TW&symbol=2330"
 ```
 
 ## 🛠️ 管理工具
+
+### 全市場掃描器測試
+```bash
+# 測試掃描器 API
+node scripts/test-screener.ts
+
+# 測試新 API 端點
+node scripts/test-new-apis.js
+
+# 收集 Yahoo Finance 數據
+npx tsx scripts/collect-yahoo-finance-data.ts
+```
 
 ### 股票資料收集器
 ```bash
@@ -449,6 +577,10 @@ NEXT_PUBLIC_BASE_URL=http://localhost:3000
 # 可選：快取設定
 CACHE_EXPIRY_HOURS=24
 MAX_CACHE_SIZE_MB=100
+
+# 可選：Yahoo Finance 設定
+YAHOO_FINANCE_CACHE_HOURS=24
+YAHOO_FINANCE_RETRY_ATTEMPTS=3
 ```
 
 ### 快取設定
@@ -463,6 +595,18 @@ private readonly MAX_CACHE_SIZE_MB = 100;  // 最大快取大小
 ```typescript
 await this.delay(1000);  // 單一股票間隔
 await this.delay(2000);  // 批次股票間隔
+```
+
+### 掃描器設定
+在 `lib/screener/scoring.ts` 中調整評分權重：
+```typescript
+const WEIGHTS = {
+  trend: 0.30,       // 趨勢強度
+  momentum: 0.25,    // 動量
+  volume: 0.15,      // 量能
+  risk: 0.15,        // 風險
+  fundamental: 0.15, // 基本面
+};
 ```
 
 ## 📊 支援的市場和資料
@@ -497,6 +641,13 @@ await this.delay(2000);  // 批次股票間隔
 - **動量指標**: RSI、MACD、隨機指標 (Stochastic)
 - **波動指標**: 布林通道 (Bollinger Bands)、ATR
 - **成交量指標**: 成交量、成交量移動平均
+
+### AI 分析指標（新）
+- **技術分析**: EMA、RSI、MACD、OBV、ADX、ATR
+- **風險評估**: 波動率、最大回撤、流動性評分
+- **基本面**: PE、PS、毛利率、ROE、負債比
+- **動量分析**: 價格動量、ROC、動量指標
+- **量能分析**: 成交量Z-score、OBV斜率
 
 ## 🚀 部署
 
@@ -544,20 +695,25 @@ CMD ["npm", "start"]
    npm install
    ```
 
-2. **API 錯誤 429**
+3. **API 錯誤 429**
    - 增加請求延遲時間
    - 檢查 API 使用限制
    - 使用快取減少請求
 
-3. **圖表無法顯示**
+4. **圖表無法顯示**
    - 檢查網路連接
    - 確認股票代碼正確
    - 查看瀏覽器開發者工具錯誤
 
-4. **記憶體不足**
+5. **記憶體不足**
    - 減少批次處理大小
    - 清理快取資料
    - 增加系統記憶體
+
+6. **掃描器無法載入**
+   - 檢查 Yahoo Finance API 連接
+   - 確認數據快取是否正常
+   - 查看瀏覽器控制台錯誤
 
 ### 日誌查看
 ```bash
@@ -569,6 +725,9 @@ tail -f logs/yahoo-finance.log
 
 # 查看系統日誌
 tail -f logs/system.log
+
+# 查看掃描器日誌
+tail -f logs/screener.log
 ```
 
 ## 📈 效能優化
@@ -577,16 +736,19 @@ tail -f logs/system.log
 - **API 快取**: 24小時快取機制
 - **圖表快取**: 本地儲存圖表資料
 - **搜尋快取**: 搜尋結果快取
+- **掃描器快取**: 掃描結果快取
 
 ### 資料優化
 - **批次處理**: 多股票同時處理
 - **延遲控制**: 避免 API 限制
 - **資料壓縮**: 減少傳輸大小
+- **並發控制**: 限制同時請求數量
 
 ### 前端優化
 - **程式碼分割**: 按需載入組件
 - **圖片優化**: 自動圖片壓縮
 - **CDN 快取**: 靜態資源快取
+- **虛擬滾動**: 大量數據列表優化
 
 ## 🤝 貢獻指南
 
@@ -625,6 +787,8 @@ npm test
 npm run test:watchlist
 npm run test:hot-stocks
 npm run test:api
+npm run test:ai-analysis
+npm run test:screener
 
 # 運行效能測試
 npm run test:performance
@@ -643,7 +807,7 @@ npm run lint
 ```
 
 #### 測試結果
-- ✅ **52 個測試案例全部通過**
+- ✅ **76+ 個測試案例全部通過**
 - ✅ **效能測試在閾值內**
 - ✅ **覆蓋率達到要求**
 - ✅ **錯誤處理完整**
@@ -653,17 +817,35 @@ npm run lint
 __tests__/
 ├── watchlist.test.ts      # 關注股票功能測試
 ├── hot-stocks.test.ts     # 熱門股票功能測試
-└── api.test.ts           # 核心功能測試
+├── api.test.ts           # 核心功能測試
+└── ai-analysis/          # AI 分析測試（新）
+    ├── ai-analysis-orchestrator.test.ts
+    ├── base-analyzer.test.ts
+    ├── momentum-analyzer.test.ts
+    └── trend-analyzer.test.ts
 
 lib/
 ├── performance-monitor.ts # 效能監控工具
 └── test-utils.ts         # 測試工具函數
 
 scripts/
-└── run-tests.js          # 測試運行腳本
+├── run-tests.js          # 測試運行腳本
+├── test-new-apis.js      # 新 API 測試（新）
+└── test-screener.ts      # 掃描器測試（新）
 ```
 
 ## 📋 版本歷史
+
+### v0.3.0 (2025-01-19)
+- ✨ 新增全市場掃描器四段式流程
+- ✨ 新增 AI 混合分析引擎
+- ✨ 新增反轉雷達偵測功能
+- ✨ 新增回測模擬分析
+- ✨ 新增智能股票推薦系統
+- 🔧 修復 API 欄位對齊問題
+- 🔧 修復 render 階段 setState 警告
+- 🧪 更新測試系統，76+ 個測試案例
+- 📊 整合 Yahoo Finance 實時數據
 
 ### v0.2.1 (2025-08-19)
 - 🔧 核心概念修正：明確區分 Exchange（交易所）和 Market（次級市場）
@@ -711,6 +893,7 @@ scripts/
 - [Lightweight Charts](https://www.tradingview.com/lightweight-charts/) - 圖表庫
 - [Next.js](https://nextjs.org/) - React 框架
 - [Tailwind CSS](https://tailwindcss.com/) - CSS 框架
+- [Lucide React](https://lucide.dev/) - 圖標庫
 
 ---
 
