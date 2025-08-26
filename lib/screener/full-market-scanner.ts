@@ -1,4 +1,4 @@
-import yahooFinance from 'yahoo-finance2';
+import { YahooFinanceService } from '@/lib/yahoo-finance';
 import { YahooFinanceCollector } from '@/lib/data/yahoo-finance-collector';
 import { DataConverter } from '@/lib/data/data-converter';
 import { MarketStock, MarketCollectionResult } from '../data-collection/full-market-collector';
@@ -9,6 +9,7 @@ import { backtest, ExitPolicy, generateBacktestSummary } from '@/lib/backtest/en
 import { Candle } from '@/types';
 import path from 'path';
 import fs from 'fs/promises';
+import { scoreStorageManager, StockScore } from './score-storage';
 
 // 簡化的 logger 實作
 const logger = {
@@ -81,6 +82,7 @@ export interface FullMarketScannerConfig {
 export class FullMarketScanner {
   private collector: YahooFinanceCollector;
   private fullMarketCollector: FullMarketCollector;
+  private yahooFinanceService: YahooFinanceService;
   
   constructor() {
     this.collector = new YahooFinanceCollector({
@@ -94,19 +96,20 @@ export class FullMarketScanner {
       }
     });
     this.fullMarketCollector = new FullMarketCollector();
+    this.yahooFinanceService = new YahooFinanceService();
   }
 
   /**
    * 全市場掃描
    */
-  async scanFullMarkets(mode: string, filters?: any, limit?: number): Promise<{ stocks: any[] }> {
-    logger.info(`開始全市場掃描: 模式=${mode}, 限制=${limit}`);
+  async scanFullMarkets(mode: string, filters?: any, limit?: number, markets?: string[]): Promise<{ stocks: any[] }> {
+    logger.info(`開始全市場掃描: 模式=${mode}, 限制=${limit}, 市場=${markets?.join(',') || 'US,TW'}`);
     
     // 簡化的配置
     const config: FullMarketScannerConfig = {
-      markets: ['US', 'TW'],
+      markets: markets || ['US', 'TW'],
       mode: mode as any,
-      limit: limit || 200, // 使用傳入的limit或預設200支（100美股+100台股）
+      limit: limit, // 不設預設限制，顯示所有股票
       includeBacktest: false,
       filters: filters || {}
     };
@@ -121,8 +124,8 @@ export class FullMarketScanner {
     // 按分數降序排列
     results.sort((a, b) => b.score - a.score);
     
-    // 限制結果數量
-    if (config.limit) {
+    // 限制結果數量（只有在明確指定 limit 時才限制）
+    if (config.limit && config.limit > 0) {
       return { stocks: results.slice(0, config.limit) };
     }
     
@@ -134,6 +137,36 @@ export class FullMarketScanner {
    */
   private async scanFullMarket(market: string, config: FullMarketScannerConfig): Promise<FullMarketScreenerResult[]> {
     logger.info(`開始掃描 ${market} 全市場`);
+    
+    // 檢查今日是否已有評分結果
+    // const hasTodayScores = await scoreStorageManager.hasTodayScores(market);
+    // if (hasTodayScores && config.mode === 'quick') {
+    //   logger.info(`${market} 市場今日已有評分結果，直接讀取`);
+    //   const todayScores = await scoreStorageManager.loadLatestScores(market);
+    //   return todayScores.map(score => ({
+    //     symbol: score.symbol,
+    //     market: score.market,
+    //     name: score.name,
+    //     quote: score.quote || { price: 0, change: 0, changePct: 0 },
+    //     score: score.overallScore,
+    //     action: score.recommendedStrategy,
+    //     confidence: score.confidence,
+    //     summary: { signals: [], reasons: [], stop: 0, target: 0 },
+    //     rebound: {
+    //       symbol: score.symbol,
+    //       market: score.market,
+    //       reboundScore: 50,
+    //       rules: [],
+    //       currentPrice: score.quote?.price || 0,
+    //       priceChange: score.quote?.change || 0,
+    //       priceChangePercent: score.quote?.changePct || 0
+    //     },
+    //     metadata: {
+    //       sector: score.sector,
+    //       industry: score.industry
+    //     }
+    //   }));
+    // }
     
     // 讀取完整股票列表
     const stocks = await this.loadMarketStocks(market);
@@ -167,10 +200,11 @@ export class FullMarketScanner {
         stocksToScan = filteredStocks;
     }
     
-    // 測試模式：限制股票數量
-    if (config.limit && stocksToScan.length > config.limit) {
+    // 移除測試模式限制，讓每個市場掃描所有股票
+    // 只有在明確指定 limit 且 limit 小於可用股票數量時才限制
+    if (config.limit && config.limit > 0 && stocksToScan.length > config.limit) {
       stocksToScan = stocksToScan.slice(0, config.limit);
-      logger.info(`測試模式：限制掃描 ${config.limit} 支股票`);
+      logger.info(`限制掃描 ${config.limit} 支股票（用戶指定限制）`);
     }
     
     logger.info(`${market} 市場將掃描 ${stocksToScan.length} 支股票`);
@@ -178,7 +212,7 @@ export class FullMarketScanner {
     const results: FullMarketScreenerResult[] = [];
     
     // 分批處理股票，避免API限制
-    const batchSize = 5; // 每次處理5支股票
+    const batchSize = 5; // 減少批次大小到5支股票，避免API限制
     const batches = this.chunkArray(stocksToScan, batchSize);
     
     for (let i = 0; i < batches.length; i++) {
@@ -198,11 +232,36 @@ export class FullMarketScanner {
       
       // 批次間延遲，避免API限制
       if (i < batches.length - 1) {
-        await this.delay(2000); // 2秒延遲
+        await this.delay(2000); // 增加到2秒延遲，避免API限制
       }
     }
     
     logger.info(`${market} 市場掃描完成，成功分析 ${results.length} 支股票`);
+    
+    // 儲存評分結果
+    try {
+      const stockScores: StockScore[] = results.map(result => ({
+        symbol: result.symbol,
+        market: result.market,
+        name: result.name,
+        overallScore: result.score,
+        fundamentalScore: result.score * 0.4, // 估算基本面評分
+        technicalScore: result.score * 0.6,   // 估算技術面評分
+        riskLevel: result.action === 'Buy' ? 'low' : result.action === 'Hold' ? 'medium' : 'high',
+        recommendedStrategy: result.action,
+        confidence: result.confidence,
+        sector: result.metadata?.sector,
+        industry: result.metadata?.industry,
+        lastUpdated: new Date().toISOString(),
+        quote: result.quote
+      }));
+
+      await scoreStorageManager.saveDailyScores(market, stockScores);
+      logger.info(`${market} 市場評分結果已儲存`);
+    } catch (error) {
+      logger.error(`儲存 ${market} 市場評分結果失敗:`, error);
+    }
+    
     return results;
   }
 
@@ -227,16 +286,48 @@ export class FullMarketScanner {
         // 構建正確的股票代號
         const symbol = stock.market === 'TW' ? `${stock.symbol}.TW` : stock.symbol;
         
-        // 獲取實時報價
-        quote = await yahooFinance.quote(symbol);
-        logger.info(`成功獲取 ${symbol} 報價數據`);
-        
-        // 獲取歷史數據（過去30天）
-        historicalData = await yahooFinance.historical(symbol, {
-          period1: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000),
-          period2: new Date(),
-          interval: '1d'
-        });
+        // 獲取實時報價和歷史數據
+        try {
+          // 添加延遲避免API限制
+          await this.delay(100);
+          
+          // 使用現有的 API 端點獲取資料
+          const [ohlcResponse, fundamentalResponse] = await Promise.all([
+            fetch(`http://localhost:3000/api/ohlc?market=${stock.market}&symbol=${stock.symbol}&tf=1d`),
+            fetch(`http://localhost:3000/api/fundamentals?symbol=${stock.symbol}&market=${stock.market}`)
+          ]);
+
+          const ohlcData = await ohlcResponse.json();
+          const fundamentalData = await fundamentalResponse.json();
+
+          if (ohlcData.success && fundamentalData.success) {
+            // 轉換為需要的格式
+            historicalData = ohlcData.data.slice(-30); // 取最近30天
+            const newSector = fundamentalData.data.sector || stock.sector || this.getDefaultSector(stock.symbol, stock.name);
+            const newIndustry = fundamentalData.data.industry || stock.industry || this.getDefaultIndustry(stock.symbol, stock.name);
+            
+            quote = {
+              regularMarketPrice: fundamentalData.data.regularMarketPrice || 0,
+              regularMarketChange: fundamentalData.data.regularMarketChange || 0,
+              regularMarketChangePercent: fundamentalData.data.regularMarketChangePercent || 0,
+              regularMarketVolume: fundamentalData.data.regularMarketVolume || 0,
+              marketCap: fundamentalData.data.marketCap || 0,
+              sector: newSector,
+              industry: newIndustry
+            };
+            
+            // 如果獲取到新的產業信息，更新本地數據（非阻塞）
+            if (newSector !== 'Unknown' && newIndustry !== 'Unknown') {
+              this.updateStockIndustryInfo(stock.symbol, stock.market, newSector, newIndustry).catch(err => 
+                logger.warn(`更新 ${symbol} 產業信息失敗:`, err)
+              );
+            }
+          } else {
+            throw new Error('API 調用失敗');
+          }
+        } catch (error) {
+          throw error;
+        }
         logger.info(`成功獲取 ${symbol} 歷史數據，共 ${historicalData.length} 天`);
         
       } catch (error) {
@@ -248,8 +339,8 @@ export class FullMarketScanner {
           regularMarketChangePercent: (Math.random() - 0.5) * 5,
           regularMarketVolume: Math.floor(Math.random() * 1000000),
           marketCap: Math.floor(Math.random() * 1000000000),
-          sector: stock.sector || 'Technology',
-          industry: stock.industry || 'Software'
+          sector: stock.sector !== 'Unknown' ? stock.sector : this.getDefaultSector(stock.symbol, stock.name),
+          industry: stock.industry !== 'Unknown' ? stock.industry : this.getDefaultIndustry(stock.symbol, stock.name)
         };
         
         // 生成模擬歷史數據
@@ -348,10 +439,28 @@ export class FullMarketScanner {
    */
   private async loadMarketStocks(market: string): Promise<MarketStock[]> {
     try {
-      const latestFile = path.join('data/full-market', `${market}-stocks-latest.json`);
+      const latestFile = path.join(process.cwd(), 'data', 'full-market', `${market}-stocks-latest.json`);
       const content = await fs.readFile(latestFile, 'utf-8');
       const data = JSON.parse(content);
-      return data.collectedStocks || [];
+      const stocks = data.collectedStocks || [];
+      
+      // 檢查是否需要更新產業信息
+      const stocksToUpdate = stocks.filter((stock: any) => {
+        if (!stock.lastUpdated) return true;
+        
+        const lastUpdated = new Date(stock.lastUpdated);
+        const now = new Date();
+        const hoursDiff = (now.getTime() - lastUpdated.getTime()) / (1000 * 60 * 60);
+        
+        // 如果超過24小時或產業信息為 "Unknown"，需要更新
+        return hoursDiff > 24 || stock.sector === 'Unknown' || stock.industry === 'Unknown';
+      });
+      
+      if (stocksToUpdate.length > 0) {
+        logger.info(`${market} 市場有 ${stocksToUpdate.length} 支股票需要更新產業信息`);
+      }
+      
+      return stocks;
     } catch (error) {
       logger.error(`載入 ${market} 股票列表失敗:`, error);
       return [];
@@ -585,5 +694,228 @@ export class FullMarketScanner {
     const mean = arr.reduce((a, b) => a + b, 0) / arr.length;
     const v = arr.reduce((s, x) => s + (x - mean) ** 2, 0) / arr.length;
     return Math.sqrt(v) / mean; // 以價格為底的波動率
+  }
+
+  /**
+   * 根據股票代號和名稱獲取預設產業分類
+   */
+  private getDefaultSector(symbol: string, name: string): string {
+    const lowerName = name.toLowerCase();
+    const lowerSymbol = symbol.toLowerCase();
+
+    // 科技股
+    if (lowerName.includes('apple') || lowerName.includes('microsoft') || lowerName.includes('google') || 
+        lowerName.includes('amazon') || lowerName.includes('meta') || lowerName.includes('tesla') ||
+        lowerName.includes('nvidia') || lowerName.includes('intel') || lowerName.includes('amd') ||
+        lowerName.includes('netflix') || lowerName.includes('salesforce') || lowerName.includes('oracle')) {
+      return 'Technology';
+    }
+
+    // 金融股
+    if (lowerName.includes('bank') || lowerName.includes('financial') || lowerName.includes('insurance') ||
+        lowerName.includes('jpmorgan') || lowerName.includes('goldman') || lowerName.includes('morgan stanley') ||
+        lowerName.includes('wells fargo') || lowerName.includes('citigroup')) {
+      return 'Financial Services';
+    }
+
+    // 醫療保健
+    if (lowerName.includes('pharma') || lowerName.includes('medical') || lowerName.includes('health') ||
+        lowerName.includes('biotech') || lowerName.includes('johnson') || lowerName.includes('pfizer')) {
+      return 'Healthcare';
+    }
+
+    // 消費品
+    if (lowerName.includes('coca') || lowerName.includes('pepsi') || lowerName.includes('procter') ||
+        lowerName.includes('walmart') || lowerName.includes('target') || lowerName.includes('costco')) {
+      return 'Consumer Defensive';
+    }
+
+    // 能源
+    if (lowerName.includes('exxon') || lowerName.includes('chevron') || lowerName.includes('conocophillips')) {
+      return 'Energy';
+    }
+
+    // 工業
+    if (lowerName.includes('boeing') || lowerName.includes('general electric') || lowerName.includes('3m')) {
+      return 'Industrials';
+    }
+
+    // 通訊服務
+    if (lowerName.includes('verizon') || lowerName.includes('at&t') || lowerName.includes('comcast')) {
+      return 'Communication Services';
+    }
+
+    // 房地產
+    if (lowerName.includes('real estate') || lowerName.includes('reit')) {
+      return 'Real Estate';
+    }
+
+    // 材料
+    if (lowerName.includes('chemical') || lowerName.includes('material') || lowerName.includes('mining')) {
+      return 'Basic Materials';
+    }
+
+    // 公用事業
+    if (lowerName.includes('utility') || lowerName.includes('power') || lowerName.includes('energy')) {
+      return 'Utilities';
+    }
+
+    return 'Technology'; // 預設為科技股
+  }
+
+  /**
+   * 根據股票代號和名稱獲取預設產業
+   */
+  private getDefaultIndustry(symbol: string, name: string): string {
+    const lowerName = name.toLowerCase();
+    const lowerSymbol = symbol.toLowerCase();
+
+    // Apple
+    if (lowerName.includes('apple')) return 'Consumer Electronics';
+
+    // Microsoft
+    if (lowerName.includes('microsoft')) return 'Software - Infrastructure';
+
+    // Google/Alphabet
+    if (lowerName.includes('google') || lowerName.includes('alphabet')) return 'Internet Content & Information';
+
+    // Amazon
+    if (lowerName.includes('amazon')) return 'Internet Retail';
+
+    // Meta/Facebook
+    if (lowerName.includes('meta') || lowerName.includes('facebook')) return 'Internet Content & Information';
+
+    // Tesla
+    if (lowerName.includes('tesla')) return 'Auto Manufacturers';
+
+    // Nvidia
+    if (lowerName.includes('nvidia')) return 'Semiconductors';
+
+    // Intel
+    if (lowerName.includes('intel')) return 'Semiconductors';
+
+    // AMD
+    if (lowerName.includes('amd')) return 'Semiconductors';
+
+    // Netflix
+    if (lowerName.includes('netflix')) return 'Entertainment';
+
+    // Salesforce
+    if (lowerName.includes('salesforce')) return 'Software - Application';
+
+    // Oracle
+    if (lowerName.includes('oracle')) return 'Software - Infrastructure';
+
+    // 銀行
+    if (lowerName.includes('bank') || lowerName.includes('jpmorgan') || lowerName.includes('wells fargo')) {
+      return 'Banks - Global';
+    }
+
+    // 保險
+    if (lowerName.includes('insurance') || lowerName.includes('aig') || lowerName.includes('metlife')) {
+      return 'Insurance - Diversified';
+    }
+
+    // 醫療
+    if (lowerName.includes('pharma') || lowerName.includes('pfizer') || lowerName.includes('merck')) {
+      return 'Drug Manufacturers - General';
+    }
+
+    // 消費品
+    if (lowerName.includes('coca') || lowerName.includes('pepsi')) return 'Beverages - Non-Alcoholic';
+    if (lowerName.includes('procter')) return 'Household & Personal Products';
+    if (lowerName.includes('walmart') || lowerName.includes('target')) return 'Discount Stores';
+
+    // 能源
+    if (lowerName.includes('exxon') || lowerName.includes('chevron')) return 'Oil & Gas Integrated';
+
+    // 工業
+    if (lowerName.includes('boeing')) return 'Aerospace & Defense';
+    if (lowerName.includes('general electric')) return 'Specialty Industrial Machinery';
+
+    // 通訊
+    if (lowerName.includes('verizon') || lowerName.includes('at&t')) return 'Telecom Services';
+
+    return 'Technology'; // 預設
+  }
+
+  /**
+   * 更新股票產業信息到本地數據文件
+   */
+  private async updateStockIndustryInfo(symbol: string, market: string, sector: string, industry: string): Promise<void> {
+    try {
+      const fs = require('fs').promises;
+      const path = require('path');
+      
+      const filePath = path.join(process.cwd(), 'data', 'full-market', `${market}-stocks-latest.json`);
+      
+      // 檢查文件是否存在
+      try {
+        await fs.access(filePath);
+      } catch {
+        logger.warn(`文件不存在: ${filePath}`);
+        return;
+      }
+      
+      // 讀取現有數據
+      let fileContent: string;
+      try {
+        fileContent = await fs.readFile(filePath, 'utf8');
+      } catch (error) {
+        logger.warn(`讀取文件失敗: ${filePath}`, error);
+        return;
+      }
+      
+      // 解析JSON
+      let data: any;
+      try {
+        data = JSON.parse(fileContent);
+      } catch (error) {
+        logger.warn(`JSON解析失敗: ${filePath}`, error);
+        return;
+      }
+      
+      // 檢查數據結構
+      if (!data || !data.collectedStocks || !Array.isArray(data.collectedStocks)) {
+        logger.warn(`數據結構無效: ${filePath}`);
+        return;
+      }
+      
+      // 找到對應的股票並更新
+      const stockIndex = data.collectedStocks.findIndex((s: any) => s.symbol === symbol);
+      if (stockIndex !== -1) {
+        data.collectedStocks[stockIndex].sector = sector;
+        data.collectedStocks[stockIndex].industry = industry;
+        data.collectedStocks[stockIndex].lastUpdated = new Date().toISOString();
+        
+        // 創建備份文件
+        const backupPath = `${filePath}.backup`;
+        try {
+          await fs.copyFile(filePath, backupPath);
+        } catch (error) {
+          logger.warn(`創建備份失敗: ${backupPath}`, error);
+        }
+        
+        // 寫回文件
+        try {
+          await fs.writeFile(filePath, JSON.stringify(data, null, 2), 'utf8');
+          logger.info(`已更新 ${symbol} 產業信息: ${sector} / ${industry}`);
+        } catch (error) {
+          logger.warn(`寫入文件失敗: ${filePath}`, error);
+          // 嘗試恢復備份
+          try {
+            await fs.copyFile(backupPath, filePath);
+            logger.info(`已恢復備份文件`);
+          } catch (restoreError) {
+            logger.error(`恢復備份失敗:`, restoreError);
+          }
+        }
+      } else {
+        logger.warn(`未找到股票 ${symbol} 在 ${market} 市場中`);
+      }
+    } catch (error) {
+      logger.warn(`更新 ${symbol} 產業信息失敗:`, error);
+      // 不拋出錯誤，讓程序繼續執行
+    }
   }
 }

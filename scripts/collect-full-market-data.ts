@@ -16,14 +16,14 @@ async function main() {
   try {
     simpleLogger.info('開始全市場資料收集流程（收集所有股票資料）');
     
-    // 收集美股資料（測試模式：100支）
-    simpleLogger.info('=== 開始收集美股資料（測試模式：100支） ===');
-    const usResult = await collector.collectUSMarketStocks(100); // 處理前100支美股
+    // 收集美股資料（完整模式：全部美股）
+    simpleLogger.info('=== 開始收集美股資料（完整模式：全部美股） ===');
+    const usResult = await collector.collectUSMarketStocks(); // 處理所有美股（約10075支）
     simpleLogger.info(`美股收集完成: ${usResult.collectedStocks.length} 支成功，${usResult.failedStocks.length} 支失敗`);
     
-    // 收集台股資料（測試模式：100支）
-    simpleLogger.info('=== 開始收集台股資料（測試模式：100支） ===');
-    const twResult = await collector.collectTWMarketStocks(100); // 處理前100支台股
+    // 收集台股資料（完整模式：全部台股）
+    simpleLogger.info('=== 開始收集台股資料（完整模式：全部台股） ===');
+    const twResult = await collector.collectTWMarketStocks(); // 處理所有台股（約1057支）
     simpleLogger.info(`台股收集完成: ${twResult.collectedStocks.length} 支成功，${twResult.failedStocks.length} 支失敗`);
     
     // 生成總統計報告

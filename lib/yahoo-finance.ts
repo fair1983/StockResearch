@@ -211,13 +211,22 @@ export class YahooFinanceService {
       const formattedSymbol = this.formatSymbol(symbol, market);
       logger.yahooFinance.request(`Fetching fundamentals for ${symbol}`, { market });
 
-      const modules = ['price','summaryDetail','financialData','defaultKeyStatistics'] as const;
+      // 先獲取 quote 資料（包含產業資訊）
+      let quote = null;
+      try {
+        quote = await yahooFinance.quote(formattedSymbol);
+      } catch (quoteError) {
+        logger.yahooFinance.warn(`Failed to fetch quote for ${symbol}`, quoteError);
+      }
+
+      const modules = ['price','summaryDetail','financialData','defaultKeyStatistics','assetProfile'] as const;
       const qs: any = await yahooFinance.quoteSummary(formattedSymbol, { modules: modules as any });
 
       const price = qs?.price || {};
       const summaryDetail = qs?.summaryDetail || {};
       const financialData = qs?.financialData || {};
       const stats = qs?.defaultKeyStatistics || {};
+      const assetProfile = qs?.assetProfile || {};
 
       const data = {
         currency: price.currency || financialData.financialCurrency || price.currencySymbol || undefined,
@@ -237,6 +246,13 @@ export class YahooFinanceService {
         freeCashflow: financialData.freeCashflow || undefined,
         dividendYield: summaryDetail.dividendYield || undefined,
         payoutRatio: summaryDetail.payoutRatio || undefined,
+        // 添加產業資訊
+        sector: assetProfile?.sector || (quote as any)?.sector || undefined,
+        industry: assetProfile?.industry || (quote as any)?.industry || undefined,
+        regularMarketPrice: quote?.regularMarketPrice || price.regularMarketPrice || undefined,
+        regularMarketChange: quote?.regularMarketChange || undefined,
+        regularMarketChangePercent: quote?.regularMarketChangePercent || undefined,
+        regularMarketVolume: quote?.regularMarketVolume || undefined,
       };
 
       logger.yahooFinance.response(`Fundamentals for ${symbol} fetched`);

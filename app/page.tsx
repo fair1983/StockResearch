@@ -9,13 +9,13 @@ export default function Home() {
         <div className="max-w-4xl mx-auto">
           {/* 標題區域 */}
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold text-gray-900 mb-4">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
               股票研究系統
-            </h1>
+        </h1>
             <p className="text-xl text-gray-600 mb-8">
               專業的股票技術分析和基本面研究工具
-            </p>
-          </div>
+        </p>
+      </div>
 
           {/* 快速導航 */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
@@ -155,7 +155,7 @@ export default function Home() {
                   <p className="text-sm text-gray-500">大規模市場篩選</p>
                 </div>
               </div>
-              <p className="text-gray-600 mb-4">
+          <p className="text-gray-600 mb-4">
                 一次掃描200支股票（美股100支 + 台股100支），快速篩選出符合條件的投資機會，發現市場熱點。
               </p>
               <div className="space-y-2 mb-4">
@@ -223,9 +223,9 @@ export default function Home() {
                     </div>
                     <div className="text-blue-500">→</div>
                   </div>
-                </Link>
-              </div>
-            </div>
+              </Link>
+          </div>
+        </div>
 
             {/* 美股熱門 */}
             <div className="bg-white rounded-lg shadow-sm border p-6">
@@ -269,10 +269,10 @@ export default function Home() {
                     </div>
                     <div className="text-blue-500">→</div>
                   </div>
-                </Link>
-              </div>
-            </div>
+              </Link>
           </div>
+        </div>
+      </div>
 
           {/* 功能特色 */}
           <div className="bg-white rounded-lg shadow-sm border p-8">
@@ -280,34 +280,34 @@ export default function Home() {
               系統特色
             </h3>
             <div className="grid md:grid-cols-3 gap-6">
-              <div className="text-center">
+          <div className="text-center">
                 <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
-                </div>
+              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+              </svg>
+            </div>
                 <h4 className="font-semibold text-gray-900 mb-2">技術分析</h4>
                 <p className="text-gray-600 text-sm">
                   支援多種技術指標，包括 MA、EMA、MACD、RSI、BOLL、KDJ 等
                 </p>
-              </div>
-              <div className="text-center">
+          </div>
+          <div className="text-center">
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-                  </svg>
-                </div>
+              </svg>
+            </div>
                 <h4 className="font-semibold text-gray-900 mb-2">即時資料</h4>
                 <p className="text-gray-600 text-sm">
                   提供即時股價資料，支援日K、週K、月K 等多種時間框架
                 </p>
-              </div>
-              <div className="text-center">
+          </div>
+          <div className="text-center">
                 <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
-                  <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                  </svg>
-                </div>
+              </svg>
+            </div>
                 <h4 className="font-semibold text-gray-900 mb-2">智能搜尋</h4>
                 <p className="text-gray-600 text-sm">
                   支援股票代碼和名稱搜尋，快速找到目標股票

@@ -42,19 +42,28 @@ export class StockDatabase {
     if (this.loaded) return;
 
     const dataDir = path.join(process.cwd(), 'data');
+    console.log('🔍 開始載入股票資料，資料目錄:', dataDir);
     
     try {
       // 尋找最新的完整股票資料檔案
       const files = fs.readdirSync(dataDir);
+      console.log('📁 資料目錄中的檔案:', files.length, '個');
+      
       const stockDataFiles = files
         .filter(file => file.startsWith('stocks_data_') && file.endsWith('.jsonl'))
         .sort()
         .reverse(); // 最新的在前面
       
+      console.log('📊 找到股票資料檔案:', stockDataFiles.length, '個');
+      console.log('📊 檔案列表:', stockDataFiles);
+      
       if (stockDataFiles.length > 0) {
         const mainFile = path.join(dataDir, stockDataFiles[0]);
+        console.log('📖 載入主要檔案:', mainFile);
+        
         const content = fs.readFileSync(mainFile, 'utf-8');
         const lines = content.trim().split('\n');
+        console.log('📄 檔案行數:', lines.length);
         
         this.stocks = lines.map(line => {
           try {
@@ -66,6 +75,14 @@ export class StockDatabase {
         }).filter(Boolean) as StockData[];
         
         console.log(`✅ 已載入 ${this.stocks.length} 支股票資料 (檔案: ${stockDataFiles[0]})`);
+        
+        // 顯示前幾筆資料作為範例
+        if (this.stocks.length > 0) {
+          console.log('📋 前3筆資料範例:');
+          this.stocks.slice(0, 3).forEach((stock, index) => {
+            console.log(`  ${index + 1}. ${stock.代號} - ${stock.名稱} (${stock.市場})`);
+          });
+        }
       } else {
         console.warn('⚠️ 找不到股票資料檔案，嘗試載入其他格式');
         this.loadAlternativeData();
@@ -159,8 +176,54 @@ export class StockDatabase {
       if (fs.existsSync(fallbackFile)) {
         const content = fs.readFileSync(fallbackFile, 'utf-8');
         const data = JSON.parse(content);
-        this.stocks = data.stocks || [];
-        console.log(`✅ 已載入備用資料 ${this.stocks.length} 支股票`);
+        
+        // 處理新格式的 stocks.json
+        if (data.stocks && typeof data.stocks === 'object') {
+          this.stocks = [];
+          
+          // 遍歷所有市場
+          for (const [marketKey, marketData] of Object.entries(data.stocks)) {
+            if (typeof marketData === 'object' && marketData !== null) {
+              const market = marketData as any;
+              
+              // 處理股票
+              if (market.stocks && Array.isArray(market.stocks)) {
+                market.stocks.forEach((stock: any) => {
+                  this.stocks.push({
+                    代號: stock.symbol,
+                    名稱: stock.name,
+                    市場: marketKey === 'TW' ? '上市' : marketKey,
+                    交易所: stock.exchange || (marketKey === 'TW' ? 'TW' : 'US'),
+                    yahoo_symbol: stock.yahoo_symbol || `${stock.symbol}.${marketKey}`,
+                    ETF: stock.category === 'etf',
+                    產業: stock.industry
+                  });
+                });
+              }
+              
+              // 處理 ETF
+              if (market.etfs && Array.isArray(market.etfs)) {
+                market.etfs.forEach((etf: any) => {
+                  this.stocks.push({
+                    代號: etf.symbol,
+                    名稱: etf.name,
+                    市場: marketKey === 'TW' ? '上市' : marketKey,
+                    交易所: etf.exchange || (marketKey === 'TW' ? 'TW' : 'US'),
+                    yahoo_symbol: etf.yahoo_symbol || `${etf.symbol}.${marketKey}`,
+                    ETF: true,
+                    產業: etf.industry
+                  });
+                });
+              }
+            }
+          }
+          
+          console.log(`✅ 已載入新格式備用資料 ${this.stocks.length} 支股票`);
+        } else {
+          // 處理舊格式
+          this.stocks = data.stocks || [];
+          console.log(`✅ 已載入舊格式備用資料 ${this.stocks.length} 支股票`);
+        }
       }
     } catch (error) {
       console.error('❌ 載入備用資料也失敗:', error);

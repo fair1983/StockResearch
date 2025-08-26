@@ -3,6 +3,8 @@ import { YahooFinanceService } from '@/lib/yahoo-finance';
 import { stockDB } from '@/lib/stock-database-v2';
 import { logger } from '@/lib/logger';
 import { Result } from '@/lib/core/result';
+import fs from 'fs/promises';
+import path from 'path';
 
 const yahooFinanceService = new YahooFinanceService();
 
@@ -59,6 +61,161 @@ async function loadStocksJson() {
 	const filePath = path.join(process.cwd(), 'data', 'stocks.json');
 	const raw = await fs.readFile(filePath, 'utf8');
 	return { filePath, data: JSON.parse(raw) } as { filePath: string; data: any };
+}
+
+async function loadFullMarketData(market: string) {
+	try {
+		const filePath = path.join(process.cwd(), 'data', 'full-market', `${market}-stocks-latest.json`);
+		const raw = await fs.readFile(filePath, 'utf8');
+		const data = JSON.parse(raw);
+		return data.collectedStocks || [];
+	} catch (error) {
+		logger.api.warn(`Failed to load full-market data for ${market}`, error);
+		return [];
+	}
+}
+
+/**
+ * 根據股票代號和名稱獲取預設產業分類
+ */
+function getDefaultSector(symbol: string, name: string): string {
+	const lowerName = name.toLowerCase();
+	const lowerSymbol = symbol.toLowerCase();
+
+	// 科技股
+	if (lowerName.includes('apple') || lowerName.includes('microsoft') || lowerName.includes('google') || 
+		lowerName.includes('amazon') || lowerName.includes('meta') || lowerName.includes('tesla') ||
+		lowerName.includes('nvidia') || lowerName.includes('intel') || lowerName.includes('amd') ||
+		lowerName.includes('netflix') || lowerName.includes('salesforce') || lowerName.includes('oracle')) {
+		return 'Technology';
+	}
+
+	// 金融股
+	if (lowerName.includes('bank') || lowerName.includes('financial') || lowerName.includes('insurance') ||
+		lowerName.includes('jpmorgan') || lowerName.includes('goldman') || lowerName.includes('morgan stanley') ||
+		lowerName.includes('wells fargo') || lowerName.includes('citigroup')) {
+		return 'Financial Services';
+	}
+
+	// 醫療保健
+	if (lowerName.includes('pharma') || lowerName.includes('medical') || lowerName.includes('health') ||
+		lowerName.includes('biotech') || lowerName.includes('johnson') || lowerName.includes('pfizer')) {
+		return 'Healthcare';
+	}
+
+	// 消費品
+	if (lowerName.includes('coca') || lowerName.includes('pepsi') || lowerName.includes('procter') ||
+		lowerName.includes('walmart') || lowerName.includes('target') || lowerName.includes('costco')) {
+		return 'Consumer Defensive';
+	}
+
+	// 能源
+	if (lowerName.includes('exxon') || lowerName.includes('chevron') || lowerName.includes('conocophillips')) {
+		return 'Energy';
+	}
+
+	// 工業
+	if (lowerName.includes('boeing') || lowerName.includes('general electric') || lowerName.includes('3m')) {
+		return 'Industrials';
+	}
+
+	// 通訊服務
+	if (lowerName.includes('verizon') || lowerName.includes('at&t') || lowerName.includes('comcast')) {
+		return 'Communication Services';
+	}
+
+	// 房地產
+	if (lowerName.includes('real estate') || lowerName.includes('reit')) {
+		return 'Real Estate';
+	}
+
+	// 材料
+	if (lowerName.includes('chemical') || lowerName.includes('material') || lowerName.includes('mining')) {
+		return 'Basic Materials';
+	}
+
+	// 公用事業
+	if (lowerName.includes('utility') || lowerName.includes('power') || lowerName.includes('energy')) {
+		return 'Utilities';
+	}
+
+	return 'Technology'; // 預設為科技股
+}
+
+/**
+ * 根據股票代號和名稱獲取預設產業
+ */
+function getDefaultIndustry(symbol: string, name: string): string {
+	const lowerName = name.toLowerCase();
+	const lowerSymbol = symbol.toLowerCase();
+
+	// Apple
+	if (lowerName.includes('apple')) return 'Consumer Electronics';
+
+	// Microsoft
+	if (lowerName.includes('microsoft')) return 'Software - Infrastructure';
+
+	// Google/Alphabet
+	if (lowerName.includes('google') || lowerName.includes('alphabet')) return 'Internet Content & Information';
+
+	// Amazon
+	if (lowerName.includes('amazon')) return 'Internet Retail';
+
+	// Meta/Facebook
+	if (lowerName.includes('meta') || lowerName.includes('facebook')) return 'Internet Content & Information';
+
+	// Tesla
+	if (lowerName.includes('tesla')) return 'Auto Manufacturers';
+
+	// Nvidia
+	if (lowerName.includes('nvidia')) return 'Semiconductors';
+
+	// Intel
+	if (lowerName.includes('intel')) return 'Semiconductors';
+
+	// AMD
+	if (lowerName.includes('amd')) return 'Semiconductors';
+
+	// Netflix
+	if (lowerName.includes('netflix')) return 'Entertainment';
+
+	// Salesforce
+	if (lowerName.includes('salesforce')) return 'Software - Application';
+
+	// Oracle
+	if (lowerName.includes('oracle')) return 'Software - Infrastructure';
+
+	// 銀行
+	if (lowerName.includes('bank') || lowerName.includes('jpmorgan') || lowerName.includes('wells fargo')) {
+		return 'Banks - Global';
+	}
+
+	// 保險
+	if (lowerName.includes('insurance') || lowerName.includes('aig') || lowerName.includes('metlife')) {
+		return 'Insurance - Diversified';
+	}
+
+	// 醫療
+	if (lowerName.includes('pharma') || lowerName.includes('pfizer') || lowerName.includes('merck')) {
+		return 'Drug Manufacturers - General';
+	}
+
+	// 消費品
+	if (lowerName.includes('coca') || lowerName.includes('pepsi')) return 'Beverages - Non-Alcoholic';
+	if (lowerName.includes('procter')) return 'Household & Personal Products';
+	if (lowerName.includes('walmart') || lowerName.includes('target')) return 'Discount Stores';
+
+	// 能源
+	if (lowerName.includes('exxon') || lowerName.includes('chevron')) return 'Oil & Gas Integrated';
+
+	// 工業
+	if (lowerName.includes('boeing')) return 'Aerospace & Defense';
+	if (lowerName.includes('general electric')) return 'Specialty Industrial Machinery';
+
+	// 通訊
+	if (lowerName.includes('verizon') || lowerName.includes('at&t')) return 'Telecom Services';
+
+	return 'Technology'; // 預設
 }
 
 function upsertIntoMarketNode(marketNode: any, entry: { symbol: string; name: string; market: string; category: string }) {
@@ -144,12 +301,93 @@ export async function GET(request: NextRequest) {
 
 		const results: any[] = [];
 
-				// 1) 從本地股票資料庫搜尋
-		const localResult = await stockDB.searchStocks(query, market);
-		if (localResult.isOk()) {
-			results.push(...localResult.getData() || []);
-		} else {
-			logger.api.warn('本地搜尋失敗', localResult.getError());
+		// 1) 從本地股票資料庫搜尋
+		const localStocks = stockDB.searchStocks(query, market);
+		if (localStocks && localStocks.length > 0) {
+			results.push(...localStocks.map(stock => ({
+				symbol: stock.代號,
+				name: stock.名稱,
+				market: stock.市場 === '上市' ? 'TW' : stock.市場,
+				category: stock.ETF ? 'etf' : 'stock',
+				exchange: stock.交易所 || (stock.市場 === '上市' ? 'TW' : 'US'),
+				exchangeName: (stock.交易所 || (stock.市場 === '上市' ? 'TW' : 'US')) === 'TW' ? '台灣證券交易所' : '美國證券交易所',
+				yahoo_symbol: stock.yahoo_symbol,
+				source: 'local'
+			})));
+		}
+
+		// 2) 如果本地資料庫沒有結果，從 full-market 資料搜尋
+		if (results.length === 0) {
+			try {
+				const fullMarketData = await loadFullMarketData(market);
+				if (fullMarketData && fullMarketData.length > 0) {
+					const matchingStocks = fullMarketData.filter(stock => {
+						const lowerQuery = query.toLowerCase();
+						return stock.symbol.toLowerCase().includes(lowerQuery) ||
+							   stock.name.toLowerCase().includes(lowerQuery);
+					});
+
+					if (matchingStocks.length > 0) {
+						// 為每個匹配的股票獲取詳細資訊
+						const detailedResults = await Promise.all(
+							matchingStocks.map(async (stock) => {
+								try {
+									// 從基本面 API 獲取詳細資訊
+									const fundamentalResponse = await fetch(`http://localhost:3000/api/fundamentals?symbol=${stock.symbol}&market=${stock.market}`);
+									const fundamentalData = await fundamentalResponse.json();
+									
+									if (fundamentalData.success) {
+										return {
+											symbol: stock.symbol,
+											name: stock.name,
+											market: stock.market,
+											category: 'stock', // 預設為股票
+											exchange: stock.exchange || stock.market,
+											exchangeName: stock.market === 'TW' ? '台灣證券交易所' : '美國證券交易所',
+											yahoo_symbol: stock.symbol,
+											source: 'full-market',
+											sector: fundamentalData.data.sector || stock.sector || getDefaultSector(stock.symbol, stock.name),
+											industry: fundamentalData.data.industry || stock.industry || getDefaultIndustry(stock.symbol, stock.name)
+										};
+									} else {
+										// 如果基本面 API 失敗，使用預設值
+										return {
+											symbol: stock.symbol,
+											name: stock.name,
+											market: stock.market,
+											category: 'stock',
+											exchange: stock.exchange || stock.market,
+											exchangeName: stock.market === 'TW' ? '台灣證券交易所' : '美國證券交易所',
+											yahoo_symbol: stock.symbol,
+											source: 'full-market',
+											sector: stock.sector || getDefaultSector(stock.symbol, stock.name),
+											industry: stock.industry || getDefaultIndustry(stock.symbol, stock.name)
+										};
+									}
+								} catch (error) {
+									// 如果無法獲取詳細資訊，使用預設值
+									return {
+										symbol: stock.symbol,
+										name: stock.name,
+										market: stock.market,
+										category: 'stock',
+										exchange: stock.exchange || stock.market,
+										exchangeName: stock.market === 'TW' ? '台灣證券交易所' : '美國證券交易所',
+										yahoo_symbol: stock.symbol,
+										source: 'full-market',
+										sector: getDefaultSector(stock.symbol, stock.name),
+										industry: getDefaultIndustry(stock.symbol, stock.name)
+									};
+								}
+							})
+						);
+						
+						results.push(...detailedResults);
+					}
+				}
+			} catch (error) {
+				logger.api.warn('Full-market data search failed', error);
+			}
 		}
 
 		// 2) 如果本地沒有結果且啟用 Yahoo Finance，則檢查是否在 Yahoo 中存在但本地資料庫中沒有

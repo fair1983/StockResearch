@@ -1,6 +1,6 @@
 {
   "name": "stock-chart-research",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -18,7 +18,12 @@
     "test:all": "jest --coverage --verbose",
     "test:run": "node scripts/run-tests.js",
     "collect:full-market": "tsx scripts/collect-full-market-data.ts",
-    "screener:full-market": "tsx scripts/test-full-market-screener.ts"
+    "collect:test": "tsx scripts/collect-full-market-data-flexible.ts test",
+    "collect:quick": "tsx scripts/collect-full-market-data-flexible.ts quick",
+    "collect:full": "tsx scripts/collect-full-market-data-flexible.ts full",
+    "collect:custom": "tsx scripts/collect-full-market-data-flexible.ts custom",
+    "screener:full-market": "tsx scripts/test-full-market-screener.ts",
+    "screener:test": "tsx scripts/test-full-market-screener-conservative.ts"
   },
   "dependencies": {
     "@radix-ui/react-label": "^2.1.7",
