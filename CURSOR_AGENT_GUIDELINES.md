@@ -75,6 +75,7 @@ lib/
 - **每次新增功能前先寫測試**
 - **每次修改程式前先更新測試**
 - **測試覆蓋率目標：80%+**
+- **測試與實作同步**: 每次修改 API 或組件時，必須同步更新對應測試
 
 ### 2. 測試分層架構
 
@@ -127,12 +128,25 @@ describe('AI Analysis E2E', () => {
 });
 ```
 
-### 3. 測試資料管理
+### 3. 測試同步性準則
+- **實作變更同步**: 每次修改 API 或組件時，必須同步更新對應測試
+- **測試資料版本控制**: 建立測試資料快照，確保測試穩定性
+- **測試環境隔離**: 每個測試套件使用獨立的測試環境
+- **測試優先級管理**: 建立測試失敗的優先級分類和修復時程
+
+### 4. 測試品質準則
+- **測試可讀性**: 測試名稱必須清楚描述測試目的
+- **測試獨立性**: 每個測試必須能夠獨立執行
+- **測試維護性**: 定期重構測試程式碼，消除重複
+- **測試效能**: 單元測試執行時間 < 100ms，整合測試 < 1s
+
+### 5. 測試資料管理
 - 使用 Factory Pattern 建立測試資料
 - 實作測試資料庫與快照
 - 支援測試環境隔離
+- 建立測試資料工廠和快照測試
 
-### 4. 自動化測試流程
+### 6. 自動化測試流程
 ```bash
 # 開發時執行
 npm run test:watch
@@ -150,17 +164,49 @@ npm run test:performance
 - 使用交易確保資料一致性
 - 實作資料備份與恢復策略
 
-### 2. 效能與延遲要求
+### 2. 資料驗證準則
+```typescript
+// 資料驗證層
+export class DataValidator {
+  static validateOHLCData(data: any[]): ValidationResult {
+    return {
+      isValid: data.every(item => 
+        item.open > 0 && 
+        item.high >= item.low && 
+        item.volume >= 0
+      ),
+      errors: []
+    };
+  }
+
+  static validateTechnicalIndicators(indicators: any): ValidationResult {
+    // 技術指標驗證邏輯
+    return {
+      isValid: true,
+      errors: []
+    };
+  }
+}
+```
+
+### 3. 效能與延遲要求
 - 股票資料處理延遲 < 100ms
 - 技術指標計算延遲 < 50ms
 - 支援高併發請求處理
+- **API 響應時間**: < 200ms (95th percentile)
+- **資料處理時間**: < 100ms (技術指標計算)
+- **記憶體使用**: < 100MB (正常操作)
+- **併發處理**: 支援 100+ 同時請求
 
-### 3. 風險管理
+### 4. 風險管理
 - 實作錯誤邊界與熔斷機制
 - 監控系統健康狀態
 - 實作降級策略
+- **資料完整性測試**: 確保資料不丟失、不重複
+- **錯誤恢復測試**: 系統故障後能正確恢復
+- **降級策略測試**: 當外部 API 失敗時的處理
 
-### 4. 合規性考量
+### 5. 合規性考量
 - 遵循金融資料保護規範
 - 實作審計日誌
 - 支援資料加密與安全傳輸
@@ -172,7 +218,9 @@ npm run test:performance
 - 遵循 ESLint 與 Prettier 規範
 - 實作一致的命名約定
 
-### 2. 錯誤處理
+### 2. 錯誤處理與回應格式標準
+
+#### Result Pattern
 ```typescript
 // 使用 Result Pattern
 export class Result<T, E = Error> {
@@ -191,6 +239,41 @@ export class Result<T, E = Error> {
   }
 }
 ```
+
+#### API 回應格式標準
+```typescript
+// 成功回應格式
+interface ApiSuccessResponse<T> {
+  success: true;
+  data: T;
+  metadata?: {
+    timestamp: string;
+    executionTime: number;
+    version: string;
+  };
+}
+
+// 錯誤回應格式
+interface ApiErrorResponse {
+  success: false;
+  error: {
+    code: string;
+    message: string;
+    details?: any;
+  };
+  metadata?: {
+    timestamp: string;
+    requestId: string;
+  };
+}
+```
+
+#### 錯誤代碼標準
+- **400**: 客戶端錯誤 (參數缺失、格式錯誤)
+- **404**: 資源不存在
+- **405**: 方法不允許
+- **500**: 伺服器內部錯誤
+- **503**: 服務暫時不可用
 
 ### 3. 日誌與監控
 ```typescript
@@ -250,6 +333,42 @@ CMD ["npm", "start"]
 - 監控系統資源使用
 - 設定自動警報機制
 
+### 4. CI/CD 測試準則
+```yaml
+# .github/workflows/test.yml
+name: Test Suite
+on: [push, pull_request]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Run Unit Tests
+        run: npm run test:unit -- --coverage --watchAll=false
+      
+      - name: Run Integration Tests
+        run: npm run test:integration
+      
+      - name: Run E2E Tests
+        run: npm run test:e2e
+      
+      - name: Performance Tests
+        run: npm run test:performance
+      
+      - name: Check Coverage
+        run: |
+          if [ $(npm run test:coverage | grep -o '[0-9]*%' | head -1 | sed 's/%//') -lt 80 ]; then
+            echo "Test coverage below 80%"
+            exit 1
+          fi
+```
+
+### 5. 測試報告準則
+- **測試結果報告**: 自動生成測試報告
+- **覆蓋率追蹤**: 追蹤測試覆蓋率趨勢
+- **效能基準**: 建立效能基準並追蹤變化
+- **失敗分析**: 自動分析測試失敗原因
+
 ## 📚 文件與知識管理
 
 ### 1. 程式碼文件
@@ -273,13 +392,23 @@ CMD ["npm", "start"]
 - 每次提交前進行自我審查
 - 檢查程式碼品質與測試覆蓋率
 - 確保遵循架構原則
+- **測試覆蓋率檢查**: 新功能必須有對應測試
+- **效能影響評估**: 評估程式碼變更對效能的影響
+- **安全性檢查**: 檢查潛在的安全漏洞
+- **可維護性評估**: 評估程式碼的可維護性
 
 ### 2. 重構策略
 - 定期識別技術債務
 - 實作漸進式重構
 - 保持向後相容性
 
-### 3. 效能監控
+### 3. 技術債務管理準則
+- **技術債務識別**: 定期識別和記錄技術債務
+- **重構優先級**: 根據業務影響和技術風險排序
+- **重構策略**: 制定漸進式重構計劃
+- **重構驗證**: 每次重構後確保功能完整性
+
+### 4. 效能監控
 - 持續監控系統效能
 - 識別效能瓶頸
 - 實作效能優化
@@ -314,6 +443,38 @@ CMD ["npm", "start"]
 - 維護 API 文件
 - 記錄架構變更
 
+### 4. 前端組件測試準則
+```typescript
+// 組件測試模板
+describe('ComponentName', () => {
+  // 1. Props 驗證測試
+  it('should validate required props', () => {
+    const requiredProps = ['data', 'onChange'];
+    requiredProps.forEach(prop => {
+      expect(Component.propTypes[prop]).toBeDefined();
+    });
+  });
+
+  // 2. 生命週期測試
+  it('should handle component lifecycle correctly', () => {
+    const { unmount } = render(<Component {...props} />);
+    expect(() => unmount()).not.toThrow();
+  });
+
+  // 3. 錯誤邊界測試
+  it('should handle error states gracefully', () => {
+    const errorProps = { data: null, loading: false };
+    render(<Component {...errorProps} />);
+    expect(screen.getByText(/無資料可顯示/)).toBeInTheDocument();
+  });
+}
+```
+
+### 5. 測試環境設定
+- **Mock 策略**: 建立完整的 Mock 系統
+- **測試資料工廠**: 使用 Factory Pattern 建立測試資料
+- **快照測試**: 對 UI 組件進行快照測試
+
 ---
 
 ## 📋 檢查清單
@@ -327,6 +488,11 @@ CMD ["npm", "start"]
 - [ ] 更新相關文件
 - [ ] 考慮部署與運維需求
 - [ ] 提供完整的解決方案
+- [ ] 檢查 API 回應格式一致性
+- [ ] 驗證錯誤處理機制
+- [ ] 確保測試覆蓋率達標
+- [ ] 評估效能影響
+- [ ] 檢查安全性考量
 
 ---
 

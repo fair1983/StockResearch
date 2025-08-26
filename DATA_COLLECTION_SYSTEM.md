@@ -2,6 +2,230 @@
 
 這是一個專門設計用於高效收集大量股票資料的智能系統，解決了 yfinance 在處理 1萬多支股票時可能遇到的問題。
 
+## 📊 股票資料收集方法統計與整合
+
+### 🔍 目前系統中的資料收集方法
+
+#### 1. **Yahoo Finance API 收集器** (主要資料源)
+- **檔案位置**: `lib/data/yahoo-finance-collector.ts`
+- **API 端點**: `/api/yahoo-finance`
+- **功能**:
+  - 報價資料收集 (`getQuote`)
+  - 歷史資料收集 (`getHistoricalData`)
+  - 批量資料收集 (POST 方法)
+  - 市場列表獲取 (`type=markets`)
+- **支援市場**: US, TW, HK, JP, CN
+- **資料類型**: 即時報價、歷史 OHLC、基本面資料
+
+#### 2. **Yahoo Finance 服務** (核心服務層)
+- **檔案位置**: `lib/yahoo-finance.ts`
+- **功能**:
+  - K線資料獲取 (`getKlineData`)
+  - 分頁資料獲取 (`getKlineDataByPage`)
+  - 股票搜尋 (`searchStocks`)
+  - 基本面資料 (`getFundamentals`)
+  - 股票報價 (`getQuote`)
+- **特色**: 智能快取、錯誤處理、資料轉換
+
+#### 3. **智能資料收集器** (批次處理)
+- **檔案位置**: `lib/data-collection/stock-data-collector.ts`
+- **功能**:
+  - 批次股票資料收集
+  - 智能限流和重試機制
+  - 優先級排序
+  - 錯誤恢復
+- **防護機制**: 並發限制、請求間隔、批次處理
+
+#### 4. **歷史資料管理器** (長期資料)
+- **檔案位置**: `lib/historical-data-manager.ts`
+- **API 端點**: `/api/historical/collect`
+- **功能**:
+  - 長期歷史資料收集
+  - 多時間週期支援 (1d, 1w, 1mo, 3mo, 6mo, 1y)
+  - 資料驗證和清理
+  - 增量更新
+
+#### 5. **OHLC API 端點** (圖表資料)
+- **檔案位置**: `app/api/ohlc/route.ts`
+- **功能**:
+  - 智能資料獲取
+  - 即時計算和快取
+  - 多時間框架支援
+- **特色**: 自動判斷資料是否足夠，不足則即時計算
+
+#### 6. **分頁 OHLC API** (大量資料)
+- **檔案位置**: `app/api/ohlc/paged/route.ts`
+- **功能**:
+  - 分頁資料獲取
+  - 支援現有資料合併
+  - 大量資料處理
+- **適用場景**: 需要大量歷史資料時
+
+#### 7. **股票元資料管理器** (搜尋和分類)
+- **檔案位置**: `lib/stock-metadata.ts`
+- **功能**:
+  - 股票搜尋 (`searchStocks`)
+  - 市場分類 (`getStocksByMarket`)
+  - 類別分類 (`getStocksByCategory`)
+  - 統計資訊 (`getStats`)
+
+#### 8. **股票資料庫** (本地資料)
+- **檔案位置**: `lib/stock-database.ts`
+- **功能**:
+  - 本地股票資料管理
+  - 股票搜尋
+  - 市場篩選
+- **資料來源**: `data/stocks.json`
+
+#### 9. **股票儲存庫實作** (模組化架構)
+- **檔案位置**: `lib/modules/stock-repository-impl.ts`
+- **功能**:
+  - 模組化股票資料管理
+  - 依賴注入架構
+  - 錯誤處理 (Result Pattern)
+- **特色**: 遵循 Cursor Agent 開發準則
+
+#### 10. **基本面資料 API** (財務資料)
+- **檔案位置**: `app/api/fundamentals/route.ts`
+- **功能**:
+  - 基本面資料獲取
+  - 財務指標
+  - 估值資料
+
+#### 11. **股票搜尋 API** (整合搜尋)
+- **檔案位置**: `app/api/search-stocks/route.ts`
+- **功能**:
+  - 本地資料庫搜尋
+  - Yahoo Finance 搜尋整合
+  - 結果持久化
+  - 市場和類別過濾
+
+#### 12. **資料收集腳本** (自動化工具)
+- **檔案位置**: `scripts/collect-yahoo-finance-data.ts`
+- **功能**:
+  - 市場資料收集
+  - 單個股票資料收集
+  - 資料狀態檢查
+  - 批量處理
+
+#### 13. **Python 資料收集器** (備用方案)
+- **檔案位置**: `stock_data_collector.py`
+- **功能**:
+  - 證交所資料收集
+  - ETF 資料收集
+  - 多資料源整合
+- **特色**: Python 實現，可作為備用方案
+
+### 📈 資料收集方法整合策略
+
+#### **主要資料流程**
+```
+1. 前端請求 → 2. API 端點 → 3. 服務層 → 4. 收集器 → 5. Yahoo Finance API
+                ↓
+6. 資料快取 → 7. 本地儲存 → 8. 前端顯示
+```
+
+#### **資料收集優先級**
+1. **即時資料**: Yahoo Finance API (主要)
+2. **歷史資料**: 本地快取 + 增量更新
+3. **搜尋資料**: 本地資料庫 + Yahoo Finance 搜尋
+4. **基本面資料**: Yahoo Finance 基本面 API
+
+#### **資料來源整合**
+- **主要資料源**: Yahoo Finance API
+- **備用資料源**: 證交所 API (台股)
+- **本地資料**: `data/stocks.json`, `data/cache/`
+- **歷史資料**: `data/historical/`
+
+#### **效能優化策略**
+- **快取策略**: 24小時快取過期
+- **批次處理**: 50支股票/批次
+- **並發控制**: 最多3個並發請求
+- **智能更新**: 只更新過期資料
+
+### 🔧 建議的整合改進
+
+#### **1. 統一資料收集介面**
+```typescript
+interface DataCollector {
+  getQuote(symbol: string, market: string): Promise<QuoteData>;
+  getHistorical(symbol: string, market: string, interval: string): Promise<HistoricalData>;
+  searchStocks(query: string, market?: string): Promise<SearchResult[]>;
+  getFundamentals(symbol: string, market: string): Promise<FundamentalData>;
+}
+```
+
+#### **2. 資料源優先級管理**
+```typescript
+const dataSourcePriority = {
+  primary: 'yahoo-finance',
+  fallback: 'local-cache',
+  backup: 'exchange-api'
+};
+```
+
+#### **3. 統一錯誤處理**
+```typescript
+class DataCollectionError extends Error {
+  constructor(
+    message: string,
+    public source: string,
+    public retryable: boolean = true
+  ) {
+    super(message);
+  }
+}
+```
+
+#### **4. 資料驗證層**
+```typescript
+class DataValidator {
+  static validateOHLCData(data: any[]): ValidationResult;
+  static validateQuoteData(data: any): ValidationResult;
+  static validateFundamentalData(data: any): ValidationResult;
+}
+```
+
+### 📊 目前支援的市場和資料類型
+
+| 市場 | 代碼 | 支援狀態 | 主要資料源 | 備用資料源 |
+|------|------|----------|------------|------------|
+| 台灣股市 | TW | ✅ 完整支援 | Yahoo Finance | 證交所 API |
+| 美國股市 | US | ✅ 完整支援 | Yahoo Finance | - |
+| 香港股市 | HK | ⚠️ 部分支援 | Yahoo Finance | - |
+| 日本股市 | JP | ⚠️ 部分支援 | Yahoo Finance | - |
+| 中國股市 | CN | ⚠️ 部分支援 | Yahoo Finance | - |
+
+| 資料類型 | 支援狀態 | 主要 API | 快取策略 |
+|----------|----------|----------|----------|
+| 即時報價 | ✅ 完整 | `/api/yahoo-finance?type=quote` | 5分鐘 |
+| 歷史 OHLC | ✅ 完整 | `/api/ohlc` | 24小時 |
+| 基本面資料 | ✅ 完整 | `/api/fundamentals` | 1小時 |
+| 股票搜尋 | ✅ 完整 | `/api/search-stocks` | 即時 |
+| 技術指標 | ✅ 完整 | 即時計算 | 不快取 |
+
+### 🎯 下一步整合計劃
+
+#### **短期目標 (1-2週)**
+- [ ] 統一所有資料收集器的錯誤處理
+- [ ] 實作資料驗證層
+- [ ] 優化快取策略
+- [ ] 改善 API 回應格式一致性
+
+#### **中期目標 (1個月)**
+- [ ] 實作統一資料收集介面
+- [ ] 增加更多資料源支援
+- [ ] 實作資料品質監控
+- [ ] 優化批次處理效能
+
+#### **長期目標 (3個月)**
+- [ ] 實作分散式資料收集
+- [ ] 增加機器學習預測
+- [ ] 支援即時資料流
+- [ ] 開發完整的監控儀表板
+
+---
+
 ## 🎯 系統目標
 
 - **避免 API 限制**: 通過智能限流和批次處理避免被 yfinance 擋住
