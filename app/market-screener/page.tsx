@@ -87,7 +87,7 @@ export default function MarketScreenerPage() {
   const runScreener = async () => {
     setIsLoading(true);
     try {
-      const response = await fetch('/api/screener?market=ALL&limit=20&minScore=50');
+      const response = await fetch('/api/screener?market=ALL&limit=200&minScore=50');
       
       const result = await response.json();
       if (result.success) {
@@ -169,8 +169,8 @@ export default function MarketScreenerPage() {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">全市場掃描器</h1>
-          <p className="text-gray-600">四段式流程：資料收集 → 多因子選股 → 持有/賣出策略 → 反轉雷達</p>
+          <h1 className="text-3xl font-bold">市場分析</h1>
+          <p className="text-gray-600">深度技術分析 - 支援200支股票分析，提供詳細的買賣建議和風險評估</p>
         </div>
         <div className="flex space-x-2">
           <button 
@@ -281,10 +281,10 @@ export default function MarketScreenerPage() {
                     </div>
                     <div className="text-right">
                       <div className={`text-lg font-bold ${getScoreColor(stock.overallScore || 0)}`}>
-                        分數: {stock.overallScore || '--'}
+                        分數: {(stock.overallScore && stock.overallScore > 0) ? stock.overallScore : '不能評定'}
                       </div>
                       <div className="text-sm text-gray-600">
-                        信心度: {Math.round(stock.confidence || 0)}%
+                        信心度: {(stock.confidence && stock.confidence > 0) ? `${Math.round(stock.confidence)}%` : '不能評定'}
                       </div>
                     </div>
                   </div>

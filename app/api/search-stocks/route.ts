@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { YahooFinanceService } from '@/lib/yahoo-finance';
-import { stockDB } from '@/lib/stock-database';
+import { stockDB } from '@/lib/stock-database-v2';
 import { logger } from '@/lib/logger';
-import path from 'path';
-import fs from 'fs/promises';
+import { Result } from '@/lib/core/result';
 
 const yahooFinanceService = new YahooFinanceService();
 
@@ -145,20 +144,12 @@ export async function GET(request: NextRequest) {
 
 		const results: any[] = [];
 
-		// 1) 從本地股票資料庫搜尋
-		// 使用新的交易所地區搜尋
-		const localResults = stockDB.searchStocksByExchange(query, market);
-		for (const stock of localResults) {
-			                   results.push({
-                       symbol: stock.代號,
-                       name: stock.名稱,
-                       market: stock.市場,
-                       category: stockDB.getStockCategory(stock),
-                       exchange: stock.交易所 || (stock.市場 === '上市' ? 'TW' : 'US'),
-                       exchangeName: (stock.交易所 || (stock.市場 === '上市' ? 'TW' : 'US')) === 'TW' ? '台灣證券交易所' : '美國證券交易所',
-                       yahoo_symbol: stock.yahoo_symbol,
-                       source: 'local'
-                   });
+				// 1) 從本地股票資料庫搜尋
+		const localResult = await stockDB.searchStocks(query, market);
+		if (localResult.isOk()) {
+			results.push(...localResult.getData() || []);
+		} else {
+			logger.api.warn('本地搜尋失敗', localResult.getError());
 		}
 
 		// 2) 如果本地沒有結果且啟用 Yahoo Finance，則檢查是否在 Yahoo 中存在但本地資料庫中沒有
@@ -177,14 +168,15 @@ export async function GET(request: NextRequest) {
 					}
 
 					// 檢查是否已存在於本地資料庫中
-					const existingStock = stockDB.getStockBySymbol(symbol);
-					if (existingStock) {
+					const existingResult = await stockDB.getStockBySymbol(symbol);
+					if (existingResult.isOk() && existingResult.getData()) {
+						const existingStock = existingResult.getData()!;
 						// 如果存在於本地資料庫，加入結果
 						results.push({
 							symbol: existingStock.代號,
 							name: existingStock.名稱,
 							market: existingStock.市場,
-							category: stockDB.getStockCategory(existingStock),
+							category: 'stock', // 簡化處理
 							exchange: existingStock.交易所 || (existingStock.市場 === '上市' ? 'TW' : 'US'),
 							exchangeName: (existingStock.交易所 || (existingStock.市場 === '上市' ? 'TW' : 'US')) === 'TW' ? '台灣證券交易所' : '美國證券交易所',
 							yahoo_symbol: existingStock.yahoo_symbol,
@@ -240,8 +232,9 @@ export async function POST(request: NextRequest) {
 		logger.api.request('Checking stock in database', { symbol, name });
 
 		// 檢查股票是否已存在於資料庫中
-		const existing = stockDB.getStockBySymbol(symbol, market);
-		if (existing) {
+		const existingResult = await stockDB.getStockBySymbol(symbol, market);
+		if (existingResult.isOk() && existingResult.getData()) {
+			const existing = existingResult.getData()!;
 			return NextResponse.json({ 
 				success: true, 
 				message: '股票已存在於資料庫中', 
@@ -249,7 +242,7 @@ export async function POST(request: NextRequest) {
 					symbol: existing.代號, 
 					name: existing.名稱, 
 					market: existing.市場, 
-					category: stockDB.getStockCategory(existing)
+					category: 'stock' // 簡化處理
 				} 
 			});
 		}

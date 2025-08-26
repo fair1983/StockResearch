@@ -1,0 +1,1009 @@
+{
+  "market": "US",
+  "totalStocks": 100,
+  "collectedStocks": [
+    {
+      "symbol": "NVDA",
+      "name": "NVIDIA CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.779Z"
+    },
+    {
+      "symbol": "MSFT",
+      "name": "MICROSOFT CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "AAPL",
+      "name": "Apple Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "GOOGL",
+      "name": "Alphabet Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "AMZN",
+      "name": "AMAZON COM INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "META",
+      "name": "Meta Platforms, Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "AVGO",
+      "name": "Broadcom Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "TSLA",
+      "name": "Tesla, Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "BRK-B",
+      "name": "BERKSHIRE HATHAWAY INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "WMT",
+      "name": "Walmart Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "JPM",
+      "name": "JPMORGAN CHASE & CO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ORCL",
+      "name": "ORACLE CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "LLY",
+      "name": "ELI LILLY & Co",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "V",
+      "name": "VISA INC.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "SPY",
+      "name": "SPDR S&P 500 ETF TRUST",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "MA",
+      "name": "Mastercard Inc",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "NFLX",
+      "name": "NETFLIX INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "XOM",
+      "name": "EXXON MOBIL CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "COST",
+      "name": "COSTCO WHOLESALE CORP /NEW",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "PLTR",
+      "name": "Palantir Technologies Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "JNJ",
+      "name": "JOHNSON & JOHNSON",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "HD",
+      "name": "HOME DEPOT, INC.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "PG",
+      "name": "PROCTER & GAMBLE Co",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ABBV",
+      "name": "AbbVie Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "SAP",
+      "name": "SAP SE",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "BAC",
+      "name": "BANK OF AMERICA CORP /DE/",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "CVX",
+      "name": "CHEVRON CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "KO",
+      "name": "COCA COLA CO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "GE",
+      "name": "GENERAL ELECTRIC CO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "BABA",
+      "name": "Alibaba Group Holding Ltd",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ASML",
+      "name": "ASML HOLDING NV",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "CSCO",
+      "name": "CISCO SYSTEMS, INC.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "TMUS",
+      "name": "T-Mobile US, Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "AMD",
+      "name": "ADVANCED MICRO DEVICES INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "PM",
+      "name": "Philip Morris International Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "WFC",
+      "name": "WELLS FARGO & COMPANY/MN",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "TM",
+      "name": "TOYOTA MOTOR CORP/",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "CRM",
+      "name": "Salesforce, Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "IBM",
+      "name": "INTERNATIONAL BUSINESS MACHINES CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ABT",
+      "name": "ABBOTT LABORATORIES",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "AZN",
+      "name": "ASTRAZENECA PLC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "MS",
+      "name": "MORGAN STANLEY",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "UNH",
+      "name": "UNITEDHEALTH GROUP INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "QQQ",
+      "name": "INVESCO QQQ TRUST, SERIES 1",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "LIN",
+      "name": "LINDE PLC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "MCD",
+      "name": "MCDONALDS CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "NVS",
+      "name": "NOVARTIS AG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "GS",
+      "name": "GOLDMAN SACHS GROUP INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "HSBC",
+      "name": "HSBC HOLDINGS PLC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "INTU",
+      "name": "INTUIT INC.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "SHEL",
+      "name": "Shell plc",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "RTX",
+      "name": "RTX Corp",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "BX",
+      "name": "Blackstone Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "DIS",
+      "name": "Walt Disney Co",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "NVO",
+      "name": "NOVO NORDISK A S",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "AXP",
+      "name": "AMERICAN EXPRESS CO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "CAT",
+      "name": "CATERPILLAR INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "SHOP",
+      "name": "SHOPIFY INC.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "MRK",
+      "name": "Merck & Co., Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "T",
+      "name": "AT&T INC.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "HDB",
+      "name": "HDFC BANK LTD",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "PEP",
+      "name": "PEPSICO INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "NOW",
+      "name": "ServiceNow, Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "RY",
+      "name": "ROYAL BANK OF CANADA",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "UBER",
+      "name": "Uber Technologies, Inc",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "GEV",
+      "name": "GE Vernova Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "VZ",
+      "name": "VERIZON COMMUNICATIONS INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "DTEGY",
+      "name": "DEUTSCHE TELEKOM AG",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "BKNG",
+      "name": "Booking Holdings Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "SCHW",
+      "name": "SCHWAB CHARLES CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ANET",
+      "name": "Arista Networks, Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "FMX",
+      "name": "MEXICAN ECONOMIC DEVELOPMENT INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "BLK",
+      "name": "BlackRock, Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "SPGI",
+      "name": "S&P Global Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ISRG",
+      "name": "INTUITIVE SURGICAL INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "CYATY",
+      "name": "Contemporary Amperex Technology Co., Limited/ADR",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "BA",
+      "name": "BOEING CO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "C",
+      "name": "CITIGROUP INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "TMO",
+      "name": "THERMO FISHER SCIENTIFIC INC.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "TXN",
+      "name": "TEXAS INSTRUMENTS INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "PDD",
+      "name": "PDD Holdings Inc.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "MUFG",
+      "name": "MITSUBISHI UFJ FINANCIAL GROUP INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "QCOM",
+      "name": "QUALCOMM INC/DE",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ACN",
+      "name": "Accenture plc",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "BSX",
+      "name": "BOSTON SCIENTIFIC CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "AMGN",
+      "name": "AMGEN INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "SONY",
+      "name": "Sony Group Corp",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "UL",
+      "name": "UNILEVER PLC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "TJX",
+      "name": "TJX COMPANIES INC /DE/",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "PGR",
+      "name": "PROGRESSIVE CORP/OH/",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ADBE",
+      "name": "ADOBE INC.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "NEE",
+      "name": "NEXTERA ENERGY INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "SYK",
+      "name": "STRYKER CORP",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ARM",
+      "name": "ARM HOLDINGS PLC /UK",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "AMAT",
+      "name": "APPLIED MATERIALS INC /DE",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "ETN",
+      "name": "Eaton Corp plc",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "DHR",
+      "name": "DANAHER CORP /DE/",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "HON",
+      "name": "HONEYWELL INTERNATIONAL INC",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "DE",
+      "name": "DEERE & CO",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    },
+    {
+      "symbol": "GILD",
+      "name": "GILEAD SCIENCES, INC.",
+      "market": "US",
+      "exchange": "NASDAQ",
+      "sector": "Unknown",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.780Z"
+    }
+  ],
+  "failedStocks": [],
+  "collectionTime": 12,
+  "lastUpdated": "2025-08-21T17:44:29.780Z"
+}

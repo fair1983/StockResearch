@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { YahooFinanceCollector } from '@/lib/data/yahoo-finance-collector';
 import { DataConverter } from '@/lib/data/data-converter';
 import { StockRecommendationsManager } from '@/lib/data/stock-recommendations-manager';
+import { FullMarketScanner } from '@/lib/screener/full-market-scanner';
 
 type Mkt = 'US'|'TW';
 type Item = { symbol:string; market:Mkt; name?:string };
@@ -16,6 +17,8 @@ const collector = new YahooFinanceCollector({
     CN: { name: 'CN', symbols: [], currency: 'CNY', timezone: 'Asia/Shanghai' },
   }
 });
+
+const fullMarketScanner = new FullMarketScanner();
 
 // ---- 指標與工具 ----
 function ema(values: number[], period: number) {
@@ -207,95 +210,54 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { markets = ['US', 'TW'], limit = 50, mode = 'full', includeBacktest = false, exitPolicy } = body;
+    const { markets = ['US', 'TW'], limit = 200, mode = 'quick', includeBacktest = false, exitPolicy } = body;
 
     console.log(`開始全市場掃描: ${markets.join(', ')}`);
 
-    await collector.init();
-    const { searchParams } = new URL(request.url);
-    const marketParam = (searchParams.get('market') ?? 'ALL').toUpperCase();
-    const limitParam = parseInt(searchParams.get('limit') ?? '0', 10);
-    const minScore = parseInt(searchParams.get('minScore') ?? '0', 10);
+    // 使用全市場掃描器
+    const scanResult = await fullMarketScanner.scanFullMarkets(mode, {});
+    const results = scanResult.stocks;
 
-    const wantMarkets: Mkt[] = marketParam === 'ALL' ? ['US','TW'] :
-      (['US','TW'].includes(marketParam) ? [marketParam as Mkt] : ['US','TW']);
-
-    const symbols: Item[] = [];
-    for (const m of wantMarkets) {
-      const list = await StockRecommendationsManager.getSymbols(m);
-      symbols.push(...list.map(s => ({ symbol: s.symbol, market: s.market as Mkt, name: s.name })));
-    }
-
-    const settled = await Promise.allSettled(symbols.map(async (s) => {
-      // quote
-      let quote = await collector.loadQuoteData(s.symbol, s.market as any);
-      const isStale = quote ? (collector as any).isTimestampStale?.(quote.lastUpdated) ?? collector.isDataStale(quote.lastUpdated) : true;
-      if (!quote || isStale) {
-        const fresh = await collector.getQuote(s.symbol, s.market as any);
-        if (fresh) { quote = fresh; await collector.saveQuoteData(s.symbol, s.market as any, fresh); }
-      }
-      // historical（自動回補）
-      const hist = await collector.loadHistoricalData(s.symbol, s.market as any);
-      if (!hist?.data?.length) throw new Error('NO_HIST');
-      const candles = normalizeCandles(DataConverter.convertHistoricalToCandles(hist));
-      const closes = candles.map(c => c.close);
-
-      const tech = scoreTechnical(closes);
-      const fund = scoreFundamental(quote);
-      const risk = riskLevelFromVol(closes);
-      const { strategy, overall } = decideStrategy(tech, fund, risk);
-      const expectedReturn = Math.max(0.02, Math.min(0.20, (tech - 50) / 100)); // 0~0.2
-      const confidence = Math.max(0.3, Math.min(0.9, 0.7 - stdevPct(closes))); // 0.3~0.9
-
-      const pct = (quote?.regularMarketChangePercent ?? 0); // Yahoo 已是百分數值(例 5 表示 5%)
-      const currentPrice = quote?.regularMarketPrice ?? 0;
-      const priceChange = quote?.regularMarketChange ?? 0;
-
-      return {
-        ok: true,
-        symbol: s.symbol,
-        market: s.market,
-        name: s.name ?? s.symbol,
-
-        // 你原本的欄位
-        currentPrice,
-        priceChange,
-        priceChangePercent: pct, // 百分數
-
-        // ✅ 兼容 Screener/其它頁面常見欄位（避免 undefined）
-        price: currentPrice,
-        change: priceChange,
-        changePct: pct,
-
-        fundamentalScore: fund,
-        technicalScore: tech,
-        overallScore: overall,
-        riskLevel: risk,
-        expectedReturn,        // 小數 0~1
-        confidence,            // 小數 0~1
-        recommendedStrategy: strategy,
-        isAnalyzed: true,      // 給卡片顯示用
-
-        reasoning: `EMA趨勢、MACD/RSI 綜合評分；波動率${(stdevPct(closes)*100).toFixed(1)}% → ${risk}。`,
-        technicalSignals: {
-          trend: (closes.at(-1)! > (ema(closes, 50).at(-1) ?? closes.at(-1)!)) ? 'bullish' : 'neutral',
-          momentum: Math.max(0, Math.min(1, (macd(closes).hist.at(-1) ?? 0) / (closes.at(-1)! * 0.01))),
-          volatility: stdevPct(closes),
-          support: Math.min(...closes.slice(-20)),
-          resistance: Math.max(...closes.slice(-20)),
-        },
-      };
+    // 轉換格式以兼容舊的API
+    const data = results.map(stock => ({
+      symbol: stock.symbol,
+      market: stock.market,
+      name: stock.name || stock.symbol,
+      currentPrice: stock.quote?.price || 0,
+      priceChange: stock.quote?.change || 0,
+      priceChangePercent: stock.quote?.changePct || 0,
+      price: stock.quote?.price || 0,
+      change: stock.quote?.change || 0,
+      changePct: stock.quote?.changePct || 0,
+      fundamentalScore: stock.score || 50,
+      technicalScore: stock.score || 50,
+      overallScore: stock.score || 50,
+      riskLevel: stock.action === 'Buy' ? 'low' : stock.action === 'Hold' ? 'medium' : 'high',
+      expectedReturn: (stock.score || 50) / 100,
+      confidence: stock.confidence / 100,
+      recommendedStrategy: stock.action,
+      isAnalyzed: true,
+      reasoning: stock.summary?.reasons?.join(', ') || '全市場掃描分析',
+      technicalSignals: {
+        trend: 'neutral',
+        momentum: 0.5,
+        volatility: 0.05,
+        support: 0,
+        resistance: 0,
+      },
+      // 添加產業信息
+      sector: stock.metadata?.sector || '不能評定',
+      industry: stock.metadata?.industry || '不能評定',
     }));
 
-    const rows = settled
-      .filter(r => r.status === 'fulfilled' && (r as any).value.ok)
-      .map((r:any) => r.value)
-      .filter((x:any) => x.overallScore >= minScore)
-      .sort((a:any,b:any) => b.overallScore - a.overallScore);
+    // 過濾和排序
+    const filteredData = data
+      .filter((x: any) => x.overallScore >= 0) // 移除minScore限制，顯示所有股票
+      .sort((a: any, b: any) => b.overallScore - a.overallScore);
 
-    const data = limit > 0 ? rows.slice(0, limit) : rows;
+    const finalData = limit > 0 ? filteredData.slice(0, limit) : filteredData;
 
-    return NextResponse.json({ success: true, total: data.length, data });
+    return NextResponse.json({ success: true, total: finalData.length, data: finalData });
   } catch (e:any) {
     console.error('/api/screener error', e);
     return NextResponse.json({ success:false, error: e?.message ?? 'UNKNOWN' }, { status: 500 });

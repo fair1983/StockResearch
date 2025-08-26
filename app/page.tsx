@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import StockSearch from '@/components/StockSearch';
+import { BarChart3, Check, ArrowRight, Globe } from 'lucide-react';
 
 export default function Home() {
   return (
@@ -104,6 +105,77 @@ export default function Home() {
               <p className="text-sm text-gray-500 text-center">
                 支援台股和美股搜尋，可輸入股票代碼或公司名稱
               </p>
+            </div>
+          </div>
+
+          {/* 功能卡片區域 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
+            {/* 市場分析卡片 */}
+            <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+                  <BarChart3 className="w-6 h-6 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">市場分析</h3>
+                  <p className="text-sm text-gray-500">深度技術分析</p>
+                </div>
+              </div>
+              <p className="text-gray-600 mb-4">
+                針對個別股票進行詳細的技術分析，包含EMA、MACD、RSI等指標，提供具體的買賣建議和風險評估。
+              </p>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center text-sm text-gray-500">
+                  <Check className="w-4 h-4 mr-2 text-green-500" />
+                  支援200支股票分析
+                </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Check className="w-4 h-4 mr-2 text-green-500" />
+                  實時價格和基本面數據
+                </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Check className="w-4 h-4 mr-2 text-green-500" />
+                  詳細技術指標分析
+                </div>
+              </div>
+              <Link href="/market-screener" className="inline-flex items-center text-blue-600 hover:text-blue-700 font-medium">
+                開始分析
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
+            </div>
+
+            {/* 全市場掃描卡片 */}
+            <div className="bg-white rounded-lg shadow-lg p-6 hover:shadow-xl transition-shadow">
+              <div className="flex items-center mb-4">
+                <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+                  <Globe className="w-6 h-6 text-green-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">全市場掃描</h3>
+                  <p className="text-sm text-gray-500">大規模市場篩選</p>
+                </div>
+              </div>
+              <p className="text-gray-600 mb-4">
+                一次掃描200支股票（美股100支 + 台股100支），快速篩選出符合條件的投資機會，發現市場熱點。
+              </p>
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center text-sm text-gray-500">
+                  <Check className="w-4 h-4 mr-2 text-green-500" />
+                  200支股票同時掃描
+                </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Check className="w-4 h-4 mr-2 text-green-500" />
+                  多種掃描模式
+                </div>
+                <div className="flex items-center text-sm text-gray-500">
+                  <Check className="w-4 h-4 mr-2 text-green-500" />
+                  市場趨勢分析
+                </div>
+              </div>
+              <Link href="/full-market-screener" className="inline-flex items-center text-green-600 hover:text-green-700 font-medium">
+                開始掃描
+                <ArrowRight className="w-4 h-4 ml-1" />
+              </Link>
             </div>
           </div>
 

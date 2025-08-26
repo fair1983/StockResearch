@@ -31,35 +31,37 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
   const [hoverInfo, setHoverInfo] = useState<any>(null);
 
   useEffect(() => {
-    const initializeChart = async () => {
-    if (!chartContainerRef.current) return;
-
-    // 清理舊的圖表
-    if (chartRef.current) {
-      try {
-        chartRef.current.remove();
-        chartRef.current = null;
-      } catch (error) {
-        logger.frontend.chartRender('Chart already disposed', error);
-        chartRef.current = null;
-      }
-    }
+    let isComponentMounted = true;
     
-    if (indicatorChartRef.current) {
-      try {
-        indicatorChartRef.current.remove();
-        indicatorChartRef.current = null;
-      } catch (error) {
-        logger.frontend.chartRender('Indicator chart already disposed', error);
-        indicatorChartRef.current = null;
-      }
-    }
+    const initializeChart = async () => {
+      if (!chartContainerRef.current || !isComponentMounted) return;
 
-    // 驗證資料
-      if (!DataTransformer.validateData(data)) {
-      logger.frontend.chartRender('No data available for chart');
-      return;
-    }
+      // 清理舊的圖表
+      if (chartRef.current) {
+        try {
+          chartRef.current.remove();
+          chartRef.current = null;
+        } catch (error) {
+          logger.frontend.chartRender('Chart already disposed', error);
+          chartRef.current = null;
+        }
+      }
+      
+      if (indicatorChartRef.current) {
+        try {
+          indicatorChartRef.current.remove();
+          indicatorChartRef.current = null;
+        } catch (error) {
+          logger.frontend.chartRender('Indicator chart already disposed', error);
+          indicatorChartRef.current = null;
+        }
+      }
+
+      // 驗證資料
+      if (!DataTransformer.validateData(data) || !isComponentMounted) {
+        logger.frontend.chartRender('No data available for chart or component unmounted');
+        return;
+      }
 
     // 轉換資料格式
       const chartData = DataTransformer.transformCandleData(data, timeframe);
@@ -71,7 +73,9 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         dataRange: dataRangeInfo.dateRange
     });
 
-    // 建立K線圖表
+      // 建立K線圖表
+      if (!isComponentMounted) return;
+      
       const chart = createChart(chartContainerRef.current, 
         ChartConfigManager.getMainChartConfig(
           chartContainerRef.current.clientWidth,
@@ -80,9 +84,9 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
         )
       );
 
-    // 建立技術指標圖表（如果有選擇指標）
-    let indicatorChart: IChartApi | null = null;
-    if (selectedIndicators.length > 0 && indicatorChartContainerRef.current) {
+      // 建立技術指標圖表（如果有選擇指標）
+      let indicatorChart: IChartApi | null = null;
+      if (selectedIndicators.length > 0 && indicatorChartContainerRef.current && isComponentMounted) {
         indicatorChart = createChart(indicatorChartContainerRef.current, 
           ChartConfigManager.getIndicatorChartConfig(
             indicatorChartContainerRef.current.clientWidth,
@@ -90,14 +94,16 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
             timeframe
           )
         );
-    }
+      }
 
-    // 建立 K 線圖系列
-    const candlestickSeries = chart.addSeries(CandlestickSeries, {
-      upColor: '#26a69a',
-      downColor: '#ef5350',
-      borderVisible: false,
-      wickUpColor: '#26a69a',
+      // 建立 K 線圖系列
+      if (!isComponentMounted) return;
+      
+      const candlestickSeries = chart.addSeries(CandlestickSeries, {
+        upColor: '#26a69a',
+        downColor: '#ef5350',
+        borderVisible: false,
+        wickUpColor: '#26a69a',
       wickDownColor: '#ef5350',
     });
     
@@ -199,45 +205,57 @@ export default function PriceChart({ data, symbol, market, timeframe = '1d', sel
       setHoverInfo(info);
     };
 
-    // 添加事件監聽器
-    window.addEventListener('resize', handleResize);
-    chart.subscribeCrosshairMove(handleCrosshairMove);
-    if (indicatorChart) {
-      indicatorChart.subscribeCrosshairMove(handleCrosshairMove);
-    }
-
-    return () => {
-      // 移除事件監聽器
-      window.removeEventListener('resize', handleResize);
-      try { chart.unsubscribeCrosshairMove(handleCrosshairMove); } catch {}
-      if (indicatorChart) {
-        try { indicatorChart.unsubscribeCrosshairMove(handleCrosshairMove); } catch {}
+      // 添加事件監聽器
+      if (isComponentMounted) {
+        window.addEventListener('resize', handleResize);
+        chart.subscribeCrosshairMove(handleCrosshairMove);
+        if (indicatorChart) {
+          indicatorChart.subscribeCrosshairMove(handleCrosshairMove);
+        }
       }
+
+      return () => {
+        isComponentMounted = false;
+        
+        // 移除事件監聽器
+        window.removeEventListener('resize', handleResize);
+                 try { 
+           if (chart) {
+             chart.unsubscribeCrosshairMove(handleCrosshairMove); 
+           }
+         } catch {}
+         if (indicatorChart) {
+           try { 
+             if (indicatorChart) {
+               indicatorChart.unsubscribeCrosshairMove(handleCrosshairMove); 
+             }
+           } catch {}
+         }
 
         // 清理時間軸同步
         if (indicatorChart) {
           ChartConfigManager.cleanupTimeScaleSync(chart, indicatorChart);
-      }
+        }
 
-      if (chartRef.current) {
-        try {
-          chartRef.current.remove();
-          chartRef.current = null;
-        } catch (error) {
-          logger.frontend.chartRender('Chart already disposed in cleanup', error);
-          chartRef.current = null;
-        }
-      }
-      if (indicatorChartRef.current) {
-        try {
-          indicatorChartRef.current.remove();
-          indicatorChartRef.current = null;
-        } catch (error) {
-          logger.frontend.chartRender('Indicator chart already disposed in cleanup', error);
-          indicatorChartRef.current = null;
-        }
-      }
-    };
+                 if (chartRef.current) {
+           try {
+             chartRef.current.remove();
+             chartRef.current = null;
+           } catch (error) {
+             logger.frontend.chartRender('Chart already disposed in cleanup', error);
+             chartRef.current = null;
+           }
+         }
+         if (indicatorChartRef.current) {
+           try {
+             indicatorChartRef.current.remove();
+             indicatorChartRef.current = null;
+           } catch (error) {
+             logger.frontend.chartRender('Indicator chart already disposed in cleanup', error);
+             indicatorChartRef.current = null;
+           }
+         }
+      };
     };
 
     // 呼叫初始化函數

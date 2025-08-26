@@ -4,12 +4,12 @@
   "market": "TW",
   "currency": "TWD",
   "exchange": "TAI",
-  "timestamp": 1755754201,
-  "regularMarketPrice": 206,
-  "regularMarketChange": 5.5,
-  "regularMarketChangePercent": 2.7431421446384037,
-  "regularMarketVolume": 67556282,
+  "timestamp": 1756186202,
+  "regularMarketPrice": 209,
+  "regularMarketChange": 1.5,
+  "regularMarketChangePercent": 0.7228915662650602,
+  "regularMarketVolume": 41313949,
   "fiftyTwoWeekHigh": 221.5,
   "fiftyTwoWeekLow": 112.5,
-  "lastUpdated": "2025-08-21T06:19:32.627Z"
+  "lastUpdated": "2025-08-26T12:49:52.899Z"
 }

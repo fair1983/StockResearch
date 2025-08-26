@@ -4,12 +4,12 @@
   "market": "US",
   "currency": "USD",
   "exchange": "NMS",
-  "timestamp": 1755720000,
-  "regularMarketPrice": 323.9,
-  "regularMarketChange": -5.410000000000025,
-  "regularMarketChangePercent": -1.642828945370631,
-  "regularMarketVolume": 77197329,
+  "timestamp": 1756152000,
+  "regularMarketPrice": 346.6,
+  "regularMarketChange": 6.590000000000032,
+  "regularMarketChangePercent": 1.938178288873866,
+  "regularMarketVolume": 86051914,
   "fiftyTwoWeekHigh": 488.54,
   "fiftyTwoWeekLow": 202.59,
-  "lastUpdated": "2025-08-21T06:19:32.401Z"
+  "lastUpdated": "2025-08-26T12:49:52.909Z"
 }

@@ -1,3 +1,4 @@
+// Jest setup file
 import '@testing-library/jest-dom'
 
 // Mock Next.js router
@@ -38,9 +39,6 @@ jest.mock('next/server', () => ({
     }
   },
 }))
-
-// Mock fetch
-global.fetch = jest.fn()
 
 // Mock logger
 jest.mock('@/lib/logger', () => ({
@@ -117,17 +115,6 @@ jest.mock('@/lib/logger', () => ({
   },
 }))
 
-
-
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
-}
-global.localStorage = localStorageMock
-
 // Mock window.matchMedia
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
@@ -143,26 +130,52 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 })
 
-// Performance monitoring mock
-global.performance = {
-  mark: jest.fn(),
-  measure: jest.fn(),
-  getEntriesByType: jest.fn(() => []),
-  getEntriesByName: jest.fn(() => []),
-  clearMarks: jest.fn(),
-  clearMeasures: jest.fn(),
-  now: jest.fn(() => Date.now()),
+// Mock ResizeObserver
+global.ResizeObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}))
+
+// Mock IntersectionObserver
+global.IntersectionObserver = jest.fn().mockImplementation(() => ({
+  observe: jest.fn(),
+  unobserve: jest.fn(),
+  disconnect: jest.fn(),
+}))
+
+// Mock console methods to reduce noise in tests
+global.console = {
+  ...console,
+  log: jest.fn(),
+  debug: jest.fn(),
+  info: jest.fn(),
+  warn: jest.fn(),
+  error: jest.fn(),
 }
 
-// Mock performance.now for Node.js environment
-if (typeof global.performance === 'undefined') {
-  global.performance = {
-    now: () => Date.now(),
-    mark: jest.fn(),
-    measure: jest.fn(),
-    getEntriesByType: jest.fn(() => []),
-    getEntriesByName: jest.fn(() => []),
-    clearMarks: jest.fn(),
-    clearMeasures: jest.fn(),
-  };
+// Mock localStorage
+const localStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}
+global.localStorage = localStorageMock
+
+// Mock sessionStorage
+const sessionStorageMock = {
+  getItem: jest.fn(),
+  setItem: jest.fn(),
+  removeItem: jest.fn(),
+  clear: jest.fn(),
+}
+global.sessionStorage = sessionStorageMock
+
+// Mock fetch
+global.fetch = jest.fn()
+
+// Mock crypto.randomUUID
+global.crypto = {
+  randomUUID: jest.fn(() => 'mock-uuid'),
 }

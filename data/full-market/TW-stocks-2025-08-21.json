@@ -1,0 +1,1009 @@
+{
+  "market": "TW",
+  "totalStocks": 100,
+  "collectedStocks": [
+    {
+      "symbol": "1101",
+      "name": "台泥",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "01",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1102",
+      "name": "亞泥",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "01",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1103",
+      "name": "嘉泥",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "01",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1104",
+      "name": "環泥",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "01",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1108",
+      "name": "幸福",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "01",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1109",
+      "name": "信大",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "01",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1110",
+      "name": "東泥",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "01",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1201",
+      "name": "味全",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1203",
+      "name": "味王",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1210",
+      "name": "大成",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1213",
+      "name": "大飲",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1215",
+      "name": "卜蜂",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1216",
+      "name": "統一",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1217",
+      "name": "愛之味",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1218",
+      "name": "泰山",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1219",
+      "name": "福壽",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1220",
+      "name": "台榮",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1225",
+      "name": "福懋油",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1227",
+      "name": "佳格",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1229",
+      "name": "聯華",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1231",
+      "name": "聯華食",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1232",
+      "name": "大統益",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1233",
+      "name": "天仁",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1234",
+      "name": "黑松",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1235",
+      "name": "興泰",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1236",
+      "name": "宏亞",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1256",
+      "name": "鮮活果汁-KY",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "02",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1301",
+      "name": "台塑",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1303",
+      "name": "南亞",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1304",
+      "name": "台聚",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1305",
+      "name": "華夏",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1307",
+      "name": "三芳",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1308",
+      "name": "亞聚",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1309",
+      "name": "台達化",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1310",
+      "name": "台苯",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1312",
+      "name": "國喬",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1313",
+      "name": "聯成",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1314",
+      "name": "中石化",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1315",
+      "name": "達新",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1316",
+      "name": "上曜",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "14",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1319",
+      "name": "東陽",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "12",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1321",
+      "name": "大洋",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1323",
+      "name": "永裕",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1324",
+      "name": "地球",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1325",
+      "name": "恆大",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1326",
+      "name": "台化",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1337",
+      "name": "再生-KY",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1338",
+      "name": "廣華-KY",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "12",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1339",
+      "name": "昭輝",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "12",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1340",
+      "name": "勝悅-KY",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1341",
+      "name": "富林-KY",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "03",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1342",
+      "name": "八貫",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "20",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1402",
+      "name": "遠東新",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1409",
+      "name": "新纖",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1410",
+      "name": "南染",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1413",
+      "name": "宏洲",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1414",
+      "name": "東和",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1416",
+      "name": "廣豐",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "20",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1417",
+      "name": "嘉裕",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1418",
+      "name": "東華",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1419",
+      "name": "新紡",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1423",
+      "name": "利華",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1432",
+      "name": "大魯閣",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "37",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1434",
+      "name": "福懋",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1435",
+      "name": "中福",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "20",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1436",
+      "name": "華友聯",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "14",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1437",
+      "name": "勤益控",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "20",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1438",
+      "name": "三地開發",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "14",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1439",
+      "name": "雋揚",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "14",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1440",
+      "name": "南紡",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1441",
+      "name": "大東",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1442",
+      "name": "名軒",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "14",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1443",
+      "name": "立益物流",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "20",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1444",
+      "name": "力麗",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1445",
+      "name": "大宇",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1446",
+      "name": "宏和",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1447",
+      "name": "力鵬",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1449",
+      "name": "佳和",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1451",
+      "name": "年興",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1452",
+      "name": "宏益",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1453",
+      "name": "大將",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "14",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1454",
+      "name": "台富",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1455",
+      "name": "集盛",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1456",
+      "name": "怡華",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "14",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1457",
+      "name": "宜進",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1459",
+      "name": "聯發",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1460",
+      "name": "宏遠",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1463",
+      "name": "強盛新",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1464",
+      "name": "得力",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1465",
+      "name": "偉全",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1466",
+      "name": "聚隆",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1467",
+      "name": "南緯",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1468",
+      "name": "昶和",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1470",
+      "name": "大統新創",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1471",
+      "name": "首利",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "28",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1472",
+      "name": "三洋實業",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "14",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1473",
+      "name": "台南",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1474",
+      "name": "弘裕",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1475",
+      "name": "業旺",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    },
+    {
+      "symbol": "1476",
+      "name": "儒鴻",
+      "market": "TW",
+      "exchange": "TWSE",
+      "sector": "04",
+      "industry": "Unknown",
+      "marketCap": 0,
+      "lastUpdated": "2025-08-21T17:44:29.792Z"
+    }
+  ],
+  "failedStocks": [],
+  "collectionTime": 9,
+  "lastUpdated": "2025-08-21T17:44:29.792Z"
+}
